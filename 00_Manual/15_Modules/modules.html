@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modules — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Documentation" href="documentation.html">
+  <link rel="prev" title="Interfaces" href="interfaces.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="modules">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell"
+ style="font-weight: bold;">
+<div dir="ltr" style="">
+<div id="tts_button">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">モ
+ジュール</span></span></h2>
+</div>
+</div>
+</div>
+<h1><a class="headerlink" href="#modules"
+ title="Permalink to this headline"></a></h1>
+<p id="index-0">Modules in Julia are separate global variable
+workspaces. They are
+delimited syntactically, inside <code class="docutils literal"><span
+ class="pre">module</span> <span class="pre">Name</span> <span
+ class="pre">...</span> <span class="pre">end</span></code>. Modules
+allow
+you to create top-level definitions without worrying about name
+conflicts
+when your code is used together with somebody else’s. Within a module,
+you
+can control which names from other modules are visible (via importing),
+and specify which of your names are intended to be public (via
+exporting).</p>
+<p>The following example demonstrates the major features of modules. It
+is
+not meant to be run, but is shown for illustrative purposes:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">module</span> <span class="n">MyModule</span>
+<span class="k">using</span> <span class="n">Lib</span>
+
+<span class="k">using</span> <span class="n">BigLib</span><span
+ class="p">:</span> <span class="n">thing1</span><span class="p">,</span> <span
+ class="n">thing2</span>
+
+<span class="k">import</span> <span class="n">Base</span><span class="o">.</span><span
+ class="n">show</span>
+
+<span class="k">importall</span> <span class="n">OtherLib</span>
+
+<span class="k">export</span> <span class="n">MyType</span><span
+ class="p">,</span> <span class="n">foo</span>
+
+<span class="k">type</span><span class="nc"> MyType</span>
+    <span
+ class="n">x</span>
+<span class="k">end</span>
+
+<span class="n">bar</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mi">2</span><span
+ class="n">x</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">a</span><span
+ class="p">::</span><span class="n">MyType</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">bar</span><span class="p">(</span><span
+ class="n">a</span><span class="o">.</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">show</span><span class="p">(</span><span class="n">io</span><span
+ class="p">,</span> <span class="n">a</span><span class="p">::</span><span
+ class="n">MyType</span><span class="p">)</span> <span class="o">=</span> <span
+ class="n">print</span><span class="p">(</span><span class="n">io</span><span
+ class="p">,</span> <span class="s">"MyType </span><span class="si">$</span><span
+ class="s">(a.x)"</span><span class="p">)</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Note that the style is not to indent the body of the module, since
+that would typically lead to whole files being indented.</p>
+<p>This module defines a type <code class="docutils literal"><span
+ class="pre">MyType</span></code>, and two functions. Function
+<code class="docutils literal"><span class="pre">foo</span></code> and
+type <code class="docutils literal"><span class="pre">MyType</span></code>
+are exported, and so will be available for
+importing into other modules. Function <code class="docutils literal"><span
+ class="pre">bar</span></code> is private to
+<code class="docutils literal"><span class="pre">MyModule</span></code>.</p>
+<p>The statement <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">Lib</span></code> means that a module called <code
+ class="docutils literal"><span class="pre">Lib</span></code> will be
+available for resolving names as needed. When a global variable is
+encountered that has no definition in the current module, the system
+will search for it among variables exported by <code
+ class="docutils literal"><span class="pre">Lib</span></code> and
+import it if
+it is found there.
+This means that all uses of that global within the current module will
+resolve to the definition of that variable in <code
+ class="docutils literal"><span class="pre">Lib</span></code>.</p>
+<p>The statement <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">BigLib:</span> <span class="pre">thing1,</span> <span
+ class="pre">thing2</span></code> is a syntactic shortcut for
+<code class="docutils literal"><span class="pre">using</span> <span
+ class="pre">BigLib.thing1,</span> <span class="pre">BigLib.thing2</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">import</span></code>
+keyword supports all the same syntax as <code class="docutils literal"><span
+ class="pre">using</span></code>, but only
+operates on a single name at a time. It does not add modules to be
+searched
+the way <code class="docutils literal"><span class="pre">using</span></code>
+does. <code class="docutils literal"><span class="pre">import</span></code>
+also differs from <code class="docutils literal"><span class="pre">using</span></code>
+in that
+functions must be imported using <code class="docutils literal"><span
+ class="pre">import</span></code> to be extended with new methods.</p>
+<p>In <code class="docutils literal"><span class="pre">MyModule</span></code>
+above we wanted to add a method to the standard <code
+ class="docutils literal"><span class="pre">show</span></code>
+function, so we had to write <code class="docutils literal"><span
+ class="pre">import</span> <span class="pre">Base.show</span></code>.
+Functions whose names are only visible via <code
+ class="docutils literal"><span class="pre">using</span></code> cannot
+be extended.</p>
+<p>The keyword <code class="docutils literal"><span class="pre">importall</span></code>
+explicitly imports all names exported by the
+specified module, as if <code class="docutils literal"><span
+ class="pre">import</span></code> were individually used on all of them.</p>
+<p>Once a variable is made visible via <code class="docutils literal"><span
+ class="pre">using</span></code> or <code class="docutils literal"><span
+ class="pre">import</span></code>, a module may
+not create its own variable with the same name.
+Imported variables are read-only; assigning to a global variable always
+affects a variable owned by the current module, or else raises an error.</p>
+<div class="section" id="summary-of-module-usage">
+<h2><span id="result_box" class="short_text" lang="ja"><span>モジュール</span><span
+ class="">の使用方法</span><span class="">の</span><span class="">概要</span></span><a
+ class="headerlink" href="#summary-of-module-usage"
+ title="Permalink to this headline"></a></h2>
+<p>To load a module, two main keywords can be used: <code
+ class="docutils literal"><span class="pre">using</span></code> and <code
+ class="docutils literal"><span class="pre">import</span></code>. To
+understand their differences, consider the following example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">module</span> <span class="n">MyModule</span>
+
+<span class="k">export</span> <span class="n">x</span><span class="p">,</span> <span
+ class="n">y</span>
+
+<span class="n">x</span><span class="p">()</span> <span class="o">=</span> <span
+ class="s">"x"</span>
+<span class="n">y</span><span class="p">()</span> <span class="o">=</span> <span
+ class="s">"y"</span>
+<span class="n">p</span><span class="p">()</span> <span class="o">=</span> <span
+ class="s">"p"</span>
+
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>In this module we export the <code class="docutils literal"><span
+ class="pre">x</span></code> and <code class="docutils literal"><span
+ class="pre">y</span></code> functions (with the keyword <code
+ class="docutils literal"><span class="pre">export</span></code>), and
+also have the non-exported function <code class="docutils literal"><span
+ class="pre">p</span></code>. There are several different ways to load
+the Module and its inner functions into the current workspace:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="18%"><col width="47%"><col width="35%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Import Command</th>
+    <th class="head">What is brought into scope</th>
+    <th class="head">Available for method extension</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">using</span>
+      <span class="pre">MyModule</span></code></td>
+      <td>All <code class="docutils literal"><span class="pre">export</span></code>ed
+names (<code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">y</span></code>),
+      <code class="docutils literal"><span class="pre">MyModule.x</span></code>,
+      <code class="docutils literal"><span class="pre">MyModule.y</span></code>
+and <code class="docutils literal"><span class="pre">MyModule.p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">MyModule.x</span></code>,
+      <code class="docutils literal"><span class="pre">MyModule.y</span></code>
+and <code class="docutils literal"><span class="pre">MyModule.p</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">using</span>
+      <span class="pre">MyModule.x,</span> <span class="pre">MyModule.p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">using</span>
+      <span class="pre">MyModule:</span> <span class="pre">x,</span> <span
+ class="pre">p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">import</span>
+      <span class="pre">MyModule</span></code></td>
+      <td><code class="docutils literal"><span class="pre">MyModule.x</span></code>,
+      <code class="docutils literal"><span class="pre">MyModule.y</span></code>
+and <code class="docutils literal"><span class="pre">MyModule.p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">MyModule.x</span></code>,
+      <code class="docutils literal"><span class="pre">MyModule.y</span></code>
+and <code class="docutils literal"><span class="pre">MyModule.p</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">import</span>
+      <span class="pre">MyModule.x,</span> <span class="pre">MyModule.p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">import</span>
+      <span class="pre">MyModule:</span> <span class="pre">x,</span> <span
+ class="pre">p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">p</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">importall</span>
+      <span class="pre">MyModule</span></code></td>
+      <td>All <code class="docutils literal"><span class="pre">export</span></code>ed
+names (<code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">y</span></code>)</td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">y</span></code></td>
+    </tr>
+  </tbody>
+</table>
+<div class="section" id="modules-and-files">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">モ
+ジュールとファイル</span></span><a class="headerlink" href="#modules-and-files"
+ title="Permalink to this headline"></a></h3>
+<p>Files and file names are mostly unrelated to modules; modules are
+associated
+only with module expressions.
+One can have multiple files per module, and multiple modules per file:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">module</span> <span class="n">Foo</span>
+
+<span class="n">include</span><span class="p">(</span><span class="s">"file1.jl"</span><span
+ class="p">)</span>
+<span class="n">include</span><span class="p">(</span><span class="s">"file2.jl"</span><span
+ class="p">)</span>
+
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Including the same code in different modules provides mixin-like
+behavior.
+One could use this to run the same code with different base
+definitions,
+for example testing code by running it with “safe” versions of some
+operators:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">module</span> <span class="n">Normal</span>
+<span class="n">include</span><span class="p">(</span><span class="s">"mycode.jl"</span><span
+ class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="n">Testing</span>
+<span class="n">include</span><span class="p">(</span><span class="s">"safe_operators.jl"</span><span
+ class="p">)</span>
+<span class="n">include</span><span class="p">(</span><span class="s">"mycode.jl"</span><span
+ class="p">)</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="standard-modules">
+<h3><span id="result_box" class="short_text" lang="ja"><span>標準</span><span
+ class="">モジュール</span></span><a class="headerlink"
+ href="#standard-modules" title="Permalink to this headline"></a></h3>
+<p>There are three important standard modules: Main, Core, and Base.</p>
+<p>Main is the top-level module, and Julia starts with Main set as the
+current module. Variables defined at the prompt go in Main, and
+<code class="docutils literal"><span class="pre">whos()</span></code>
+lists variables in Main.</p>
+<p>Core contains all identifiers considered “built in” to the language,
+i.e.
+part of the core language and not libraries. Every module implicitly
+specifies <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">Core</span></code>, since you can’t do anything
+without those
+definitions.</p>
+<p>Base is the standard library (the contents of base/). All modules
+implicitly
+contain <code class="docutils literal"><span class="pre">using</span> <span
+ class="pre">Base</span></code>, since this is needed in the vast
+majority of cases.</p>
+</div>
+<div class="section" id="default-top-level-definitions-and-bare-modules">
+<h3><span id="result_box" class="short_text" lang="ja"><span>トップレベルの</span><span
+ class="">定義と</span><span class="">裸の</span><span class="">モジュールを</span><span
+ class="">デフォルト</span></span><a class="headerlink"
+ href="#default-top-level-definitions-and-bare-modules"
+ title="Permalink to this headline"></a></h3>
+<p>In addition to <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">Base</span></code>, modules also perform <code
+ class="docutils literal"><span class="pre">import</span> <span
+ class="pre">Base.call</span></code> by
+default, to facilitate adding constructors to new types.
+A new module also automatically contains a definition of the <code
+ class="docutils literal"><span class="pre">eval</span></code>
+function,
+which evaluates expressions within the context of that module.</p>
+<p>If these default definitions are not wanted, modules can be defined
+using the
+keyword <code class="docutils literal"><span class="pre">baremodule</span></code>
+instead (note: <code class="docutils literal"><span class="pre">Core</span></code>
+is still imported, as per above).
+In terms of <code class="docutils literal"><span class="pre">baremodule</span></code>,
+a standard <code class="docutils literal"><span class="pre">module</span></code>
+looks like this:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">baremodule</span> <span class="n">Mod</span>
+
+<span class="k">using</span> <span class="n">Base</span>
+
+<span class="k">import</span> <span class="n">Base</span><span class="o">.</span><span
+ class="n">call</span>
+
+<span class="n">eval</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">Core</span><span
+ class="o">.</span><span class="n">eval</span><span class="p">(</span><span
+ class="n">Mod</span><span class="p">,</span> <span class="n">x</span><span
+ class="p">)</span>
+<span class="n">eval</span><span class="p">(</span><span class="n">m</span><span
+ class="p">,</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">Core</span><span class="o">.</span><span
+ class="n">eval</span><span class="p">(</span><span class="n">m</span><span
+ class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="relative-and-absolute-module-paths">
+<h3><span id="result_box" class="short_text" lang="ja"><span>相対および絶対</span><span
+ class="">モジュールパス</span></span><a class="headerlink"
+ href="#relative-and-absolute-module-paths"
+ title="Permalink to this headline"></a></h3>
+<p>Given the statement <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">Foo</span></code>, the system looks for <code
+ class="docutils literal"><span class="pre">Foo</span></code>
+within <code class="docutils literal"><span class="pre">Main</span></code>.
+If the module does not exist, the system
+attempts to <code class="docutils literal"><span class="pre">require("Foo")</span></code>,
+which typically results in loading
+code from an installed package.</p>
+<p>However, some modules contain submodules, which means you sometimes
+need to access a module that is not directly available in <code
+ class="docutils literal"><span class="pre">Main</span></code>.
+There are two ways to do this. The first is to use an absolute path,
+for example <code class="docutils literal"><span class="pre">using</span>
+<span class="pre">Base.Sort</span></code>. The second is to use a
+relative path,
+which makes it easier to import submodules of the current module or
+any of its enclosing modules:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">module</span> <span class="n">Parent</span>
+
+<span class="k">module</span> <span class="n">Utils</span>
+<span class="o">...</span>
+<span class="k">end</span>
+
+<span class="k">using</span> <span class="o">.</span><span class="n">Utils</span>
+
+<span class="o">...</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Here module <code class="docutils literal"><span class="pre">Parent</span></code>
+contains a submodule <code class="docutils literal"><span class="pre">Utils</span></code>,
+and code in
+<code class="docutils literal"><span class="pre">Parent</span></code>
+wants the contents of <code class="docutils literal"><span class="pre">Utils</span></code>
+to be visible. This is
+done by starting the <code class="docutils literal"><span class="pre">using</span></code>
+path with a period. Adding more leading
+periods moves up additional levels in the module hierarchy. For example
+<code class="docutils literal"><span class="pre">using</span> <span
+ class="pre">..Utils</span></code> would look for <code
+ class="docutils literal"><span class="pre">Utils</span></code> in <code
+ class="docutils literal"><span class="pre">Parent</span></code>‘s
+enclosing
+module rather than in <code class="docutils literal"><span class="pre">Parent</span></code>
+itself.</p>
+<p>Note that relative-import qualifiers are only valid in <code
+ class="docutils literal"><span class="pre">using</span></code> and
+<code class="docutils literal"><span class="pre">import</span></code>
+statements.</p>
+</div>
+<div class="section" id="module-file-paths">
+<h3><span id="result_box" class="short_text" lang="ja"><span>モジュールの</span><span
+ class="">ファイルパス</span></span><a class="headerlink"
+ href="#module-file-paths" title="Permalink to this headline"></a></h3>
+<p>The global variable LOAD_PATH contains the directories Julia
+searches for
+modules when calling <code class="docutils literal"><span class="pre">require</span></code>.
+It can be extended using <code class="docutils literal"><span
+ class="pre">push!</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">push</span><span class="o">!</span><span class="p">(</span><span
+ class="n">LOAD_PATH</span><span class="p">,</span> <span class="s">"/Path/To/My/Module/"</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Putting this statement in the file <code class="docutils literal"><span
+ class="pre">~/.juliarc.jl</span></code> will extend LOAD_PATH
+on every Julia startup. Alternatively, the module load path can be
+extended by defining the environment variable JULIA_LOAD_PATH.</p>
+</div>
+<div class="section" id="namespace-miscellanea">
+<h3><span id="result_box" class="short_text" lang="ja"><span>名前空間</span><span>の</span><span
+ class="">雑貨</span></span><a class="headerlink"
+ href="#namespace-miscellanea" title="Permalink to this headline"></a></h3>
+<p>If a name is qualified (e.g. <code class="docutils literal"><span
+ class="pre">Base.sin</span></code>), then it can be accessed even if
+it is not exported. This is often useful when debugging.</p>
+<p>Macro names are written with <code class="docutils literal"><span
+ class="pre">@</span></code> in import and export statements, e.g.
+<code class="docutils literal"><span class="pre">import</span> <span
+ class="pre">Mod.@mac</span></code>. Macros in other modules can be
+invoked as <code class="docutils literal"><span class="pre">Mod.@mac</span></code>
+or <code class="docutils literal"><span class="pre">@Mod.mac</span></code>.</p>
+<p>The syntax <code class="docutils literal"><span class="pre">M.x</span>
+<span class="pre">=</span> <span class="pre">y</span></code> does not
+work to assign a global in another module;
+global assignment is always module-local.</p>
+<p>A variable can be “reserved” for the current module without
+assigning to
+it by declaring it as <code class="docutils literal"><span class="pre">global</span>
+<span class="pre">x</span></code> at the top level. This can be used to
+prevent name conflicts for globals initialized after load time.</p>
+</div>
+<div class="section" id="module-initialization-and-precompilation">
+<span id="man-modules-initialization-precompilation"></span>
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">モ
+ジュールの初期化</span><span class="">と</span><span class="">プリコンパイル</span></span><a
+ class="headerlink" href="#module-initialization-and-precompilation"
+ title="Permalink to this headline"></a></h3>
+<p>Large modules can take several second to load because executing all
+of
+the statements in a module often involves compiling a large amount of
+code.
+Julia provides the ability to create precompiled versions of modules
+to reduce this time.</p>
+<p>There are two mechanisms that can achieve this:
+incremental compile and custom system image.</p>
+<p>To create a custom system image that can be used to start julia with
+the -J option,
+recompile Julia after modifying the file <code class="docutils literal"><span
+ class="pre">base/userimg.jl</span></code> to require the desired
+modules.</p>
+<p>To create an incremental precompiled module file, add
+<code class="docutils literal"><span class="pre">__precompile__()</span></code>
+at the top of your module file (before the
+<code class="docutils literal"><span class="pre">module</span></code>
+starts). This will cause it to be automatically compiled
+the first time it is imported. Alternatively, you can manually call
+<code class="docutils literal"><span class="pre">Base.compilecache(modulename)</span></code>.
+The resulting cache files will be
+stored in <code class="docutils literal"><span class="pre">Base.LOAD_CACHE_PATH[1]</span></code>.
+Subsequently, the module is
+automatically recompiled upon <code class="docutils literal"><span
+ class="pre">import</span></code> whenever any of its
+dependencies change; dependencies are modules it imports, the Julia
+build, files it includes, or explicit dependencies declared by
+<code class="docutils literal"><span class="pre">include_dependency(path)</span></code>
+in the module file(s). Precompiling a
+module also recursively precompiles any modules that are imported
+therein. If you know that it is <em>not</em> safe to precompile your
+module
+(for the reasons described below), you should put
+<code class="docutils literal"><span class="pre">__precompile__(false)</span></code>
+in the module file to cause <code class="docutils literal"><span
+ class="pre">Base.compilecache</span></code> to
+throw an error (and thereby prevent the module from being imported by
+any other precompiled module).</p>
+<p>In order to make your module work with precompilation,
+however, you may need to change your module to explicitly separate any
+initialization steps that must occur at <em>runtime</em> from steps
+that can
+occur at <em>compile time</em>. For this purpose, Julia allows you to
+define
+an <code class="docutils literal"><span class="pre">__init__()</span></code>
+function in your module that executes any
+initialization steps that must occur at runtime.</p>
+<p>In particular, if you define a <code class="docutils literal"><span
+ class="pre">function</span> <span class="pre">__init__()</span></code>
+in a module,
+then Julia will call <code class="docutils literal"><span class="pre">__init__()</span></code>
+immediately <em>after</em> the module is
+loaded (e.g., by <code class="docutils literal"><span class="pre">import</span></code>,
+<code class="docutils literal"><span class="pre">using</span></code>,
+or <code class="docutils literal"><span class="pre">require</span></code>)
+at runtime for
+the <em>first</em> time (i.e., <code class="docutils literal"><span
+ class="pre">__init__</span></code> is only called once, and only
+after all statements in the module have been executed). Because it is
+called after the module is fully imported, any submodules or other
+imported modules have their <code class="docutils literal"><span
+ class="pre">__init__</span></code> functions called <em>before</em>
+the
+<code class="docutils literal"><span class="pre">__init__</span></code>
+of the enclosing module.</p>
+<p>Two typical uses of <code class="docutils literal"><span class="pre">__init__</span></code>
+are calling runtime initialization
+functions of external C libraries and initializing global constants
+that involve pointers returned by external libraries. For example,
+suppose that we are calling a C library <code class="docutils literal"><span
+ class="pre">libfoo</span></code> that requires us
+to call a <code class="docutils literal"><span class="pre">foo_init()</span></code>
+initialization function at runtime. Suppose
+that we also want to define a global constant <code
+ class="docutils literal"><span class="pre">foo_data_ptr</span></code>
+that
+holds the return value of a <code class="docutils literal"><span
+ class="pre">void</span> <span class="pre">*foo_data()</span></code>
+function defined by
+<code class="docutils literal"><span class="pre">libfoo</span></code> —
+this constant must be initialized at runtime (not at compile
+time) because the pointer address will change from run to run. You
+could accomplish this by defining the following <code
+ class="docutils literal"><span class="pre">__init__</span></code>
+function
+in your module:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> __init__</span><span
+ class="p">()</span>
+    <span class="k">ccall</span><span class="p">((:</span><span
+ class="n">foo_init</span><span class="p">,:</span><span class="n">libfoo</span><span
+ class="p">),</span> <span class="n">Void</span><span class="p">,</span> <span
+ class="p">())</span>
+    <span class="kd">global</span> <span
+ class="kd">const</span> <span class="n">foo_data_ptr</span> <span
+ class="o">=</span> <span class="k">ccall</span><span class="p">((:</span><span
+ class="n">foo_data</span><span class="p">,:</span><span class="n">libfoo</span><span
+ class="p">),</span> <span class="n">Ptr</span><span class="p">{</span><span
+ class="n">Void</span><span class="p">},</span> <span class="p">())</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Notice that it is perfectly possible to define a global inside
+a function like <code class="docutils literal"><span class="pre">__init__</span></code>;
+this is one of the advantages of using a
+dynamic language.
+Obviously, any other globals in your module that depends on <code
+ class="docutils literal"><span class="pre">foo_data_ptr</span></code>
+would also have to be initialized in <code class="docutils literal"><span
+ class="pre">__init__</span></code>.</p>
+<p>Constants involving most Julia objects that are not produced by
+<code class="docutils literal"><span class="pre">ccall</span></code> do
+not need to be placed in <code class="docutils literal"><span
+ class="pre">__init__</span></code>: their definitions
+can be precompiled and loaded from the cached module image.
+This includes complicated heap-allocated objects like arrays.
+However, any routine that returns a raw pointer value must be called
+at runtime for precompilation to work
+(Ptr objects will turn into null pointers unless they are hidden inside
+an isbits object).
+This includes the return values of the Julia functions <code
+ class="docutils literal"><span class="pre">cfunction</span></code> and
+<code class="docutils literal"><span class="pre">pointer</span></code>.</p>
+<p>Dictionary and set types, or in general anything that depends on the
+output of a <code class="docutils literal"><span class="pre">hash(key)</span></code>
+method, are a trickier case. In the common
+case where the keys are numbers, strings, symbols, ranges, <code
+ class="docutils literal"><span class="pre">Expr</span></code>,
+or compositions of these types (via arrays, tuples, sets, pairs, etc.)
+they are safe to precompile. However, for a few other key types, such
+as <code class="docutils literal"><span class="pre">Function</span></code>
+or <code class="docutils literal"><span class="pre">DataType</span></code>
+and generic user-defined types where
+you haven’t defined a <code class="docutils literal"><span class="pre">hash</span></code>
+method, the fallback <code class="docutils literal"><span class="pre">hash</span></code>
+method
+depends on the memory address of the object (via its <code
+ class="docutils literal"><span class="pre">object_id</span></code>)
+and hence may change from run to run.
+If you have one of these key types, or if you aren’t sure,
+to be safe you can initialize this dictionary from within your
+<code class="docutils literal"><span class="pre">__init__</span></code>
+function.
+Alternatively, you can use the <code class="docutils literal"><span
+ class="pre">ObjectIdDict</span></code> dictionary type,
+which is specially handled by precompilation so that it is safe to
+initialize at compile-time.</p>
+<p>When using precompilation, it is important to keep a clear sense of
+the
+distinction between the compilation phase and the execution phase.
+In this mode, it will often be much more clearly apparent that
+Julia is a compiler which allows execution of arbitrary Julia code,
+not a standalone interpreter that also generates compiled code.</p>
+<p>Other known potential failure scenarios include:</p>
+<ol class="arabic">
+  <li>
+    <p class="first">Global counters (for example, for attempting to
+unique identifying objects)
+Consider the following code snippet:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">type</span><span class="nc"> UniquedById</span>
+    <span
+ class="n">myid</span><span class="p">::</span><span class="kt">Int</span>
+    <span
+ class="k">let</span> <span class="n">counter</span> <span class="o">=</span> <span
+ class="mi">0</span>
+        <span class="n">UniquedById</span><span
+ class="p">()</span> <span class="o">=</span> <span class="nb">new</span><span
+ class="p">(</span><span class="n">counter</span> <span class="o">+=</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+    <p>while the intent of this code was to give every instance a
+unique id,
+the counter value is recorded at the end of compilation.
+All subsequent usages of this incrementally compiled module
+will start from that same counter value.</p>
+    <p>Note that <code class="docutils literal"><span class="pre">object_id</span></code>
+(which works by hashing the memory pointer)
+has similar issues (see notes on Dict usage below).</p>
+    <p>One alternative is to store both <code class="docutils literal"><span
+ class="pre">current_module()</span></code> and the current <code
+ class="docutils literal"><span class="pre">counter</span></code>
+value,
+however, it may be better to redesign the code to not depend on this
+global state.</p>
+  </li>
+  <li>
+    <p class="first">Associative collections (such as <code
+ class="docutils literal"><span class="pre">Dict</span></code> and <code
+ class="docutils literal"><span class="pre">Set</span></code>) need to
+be re-hashed in <code class="docutils literal"><span class="pre">__init__</span></code>.
+(In the future, a mechanism may be provided to register an initializer
+function.)</p>
+  </li>
+  <li>
+    <p class="first">Depending on compile-time side-effects persisting
+through load-time.
+Example include:
+modifying arrays or other variables in other Julia modules;
+maintaining handles to open files or devices;
+storing pointers to other system resources (including memory);</p>
+  </li>
+  <li>
+    <p class="first">Creating accidental “copies” of global state from
+another module,
+by referencing it directly instead of via its lookup path.
+For example, (in global scope):</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="c">#mystdout = Base.STDOUT #= will not work correctly, since this will copy Base.STDOUT into this module =#</span>
+<span class="c"># instead use accessor functions:</span>
+<span class="n">getstdout</span><span class="p">()</span> <span
+ class="o">=</span> <span class="n">Base</span><span class="o">.</span><span
+ class="n">STDOUT</span> <span class="cm">#= best option =#</span>
+<span class="c"># or move the assignment into the runtime:</span>
+<span class="n">__init__</span><span class="p">()</span> <span class="o">=</span> <span
+ class="kd">global</span> <span class="n">mystdout</span> <span
+ class="o">=</span> <span class="n">Base</span><span class="o">.</span><span
+ class="n">STDOUT</span> <span class="cm">#= also works =#</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+</ol>
+<p>Several additional restrictions are placed on the operations that
+can be done while precompiling code
+to help the user avoid other wrong-behavior situations:</p>
+<ol class="arabic simple">
+  <li>Calling <code class="docutils literal"><span class="pre">eval</span></code>
+to cause a side-effect in another module.
+This will also cause a warning to be emitted when the incremental
+precompile flag is set.</li>
+  <li><code class="docutils literal"><span class="pre">global</span> <span
+ class="pre">const</span></code> statements from local scope after <code
+ class="docutils literal"><span class="pre">__init__()</span></code>
+has been started (see issue #12010 for plans to add an error for this)</li>
+  <li>Replacing a module (or calling <code class="docutils literal"><span
+ class="pre">workspace()</span></code>) is a runtime error while doing
+an incremental precompile.</li>
+</ol>
+<p>A few other points to be aware of:</p>
+<ol class="arabic simple">
+  <li>No code reload / cache invalidation is performed after changes
+are made to the source files themselves,
+(including by <code class="docutils literal"><span class="pre">Pkg.update</span></code>),
+and no cleanup is done after <code class="docutils literal"><span
+ class="pre">Pkg.rm</span></code></li>
+  <li>The memory sharing behavior of a reshaped array is disregarded by
+precompilation (each view gets its own copy)</li>
+  <li>Expecting the filesystem to be unchanged between compile-time and
+runtime
+e.g. <code class="docutils literal"><span class="pre">@__FILE__</span></code>/<code
+ class="docutils literal"><span class="pre">source_path()</span></code>
+to find resources at runtime,
+or the BinDeps <code class="docutils literal"><span class="pre">@checked_lib</span></code>
+macro. Sometimes this is unavoidable.
+However, when possible, it can be good practice to copy resources
+into the module at compile-time so they won’t need to be found at
+runtime.</li>
+  <li>WeakRef objects and finalizers are not currently handled properly
+by the serializer
+(this will be fixed in an upcoming release).</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

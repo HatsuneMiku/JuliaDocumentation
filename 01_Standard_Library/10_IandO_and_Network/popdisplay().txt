@@ -1,0 +1,105 @@
+popdisplay()
+Base.REPL.REPLDisplay{Base.REPL.LineEditREPL}(Base.REPL.LineEditREPL(Base.Termin
+als.TTYTerminal("",Base.TTY(open, 0 bytes waiting),Base.TTY(open, 0 bytes waitin
+g),Base.TTY(open, 0 bytes waiting)),true,"\e[1m\e[32m","\e[0m","\e[0m","\e[1m\e[
+31m","\e[1m\e[33m",true,false,false,true,false,nothing,Base.LineEdit.ModalInterf
+ace(Base.LineEdit.TextInterface["Prompt(\"julia> \",...)","Prompt(\"shell> \",..
+.)","Prompt(\"help?> \",...)",Base.LineEdit.HistoryPrompt{Base.REPL.REPLHistoryP
+rovider}(Base.REPL.REPLHistoryProvider(AbstractString["+(4 ,5)","D:\\Julia-0.4.3
+\\share\\doc\\julia\\examples\\bubblesort.jl","include(D:\\Julia-0.4.3\\share\\d
+oc\\julia\\examples\\bubblesort.jl)","include (/share/doc/julia/examples/bubbles
+ort.jl)","include (\"/share/doc/julia/examples/bubblesort.jl\")","import(\"/shar
+e/doc/julia/examples/bubblesort.jl\")","import(/share/doc/julia/examples/bubbles
+ort.jl)","D:\\Julia-0.4.3\\share\\doc\\julia\\examples\\hpl.jl","echo hello","~/
+.juliar.jl"  ……  "parseip(\"localhost\")","parseip(\"https://twitter.com/\")","g
+etaddrinfo(\"127.0.0.1\")","listen(80)","listen(\"user\")","connect(80)","connec
+t()","Mmap.sync!([1,2])","istext(\"TEXT\")","popdisplay()"],IOStream(<file C:\Us
+ers\Saito\.julia_history>),2728,2727,IOBuffer(data=UInt8[...], readable=true, wr
+itable=true, seekable=true, append=false, size=0, maxsize=Inf, ptr=1, mark=-1),"
+Prompt(\"julia> \",...)",Dict{Symbol,Any}(:help=>"Prompt(\"help?> \",...)",:shel
+l=>"Prompt(\"shell> \",...)",:julia=>"Prompt(\"julia> \",...)"),[:julia,:julia,:
+julia,:julia,:julia,:julia,:julia,:julia,:shell,:julia  ……  :julia,:julia,:julia
+,:julia,:julia,:julia,:julia,:julia,:julia,:julia]),Base.REPL.LatexCompletions()
+,Dict{Char,Any}('\x1e'=>nothing,'\x12'=>(anonymous function),'\x02'=>(anonymous
+function),'\x10'=>(anonymous function),'\v'=>(anonymous function),'\x15'=>(anony
+mous function),'\x1a'=>(anonymous function),'\a'=>(anonymous function),'\x19'=>(
+anonymous function),'\t'=>(anonymous function),'\n'=>(anonymous function),'\x1d'
+=>nothing,'\0'=>(anonymous function),'\x13'=>(anonymous function),'\x11'=>nothin
+g,'\b'=>(anonymous function),'\x16'=>nothing,'\x06'=>(anonymous function),'\x18'
+=>nothing,'\x04'=>(anonymous function),'\x03'=>(anonymous function),'\x1c'=>noth
+ing,'\x05'=>(anonymous function),'\x7f'=>Base.LineEdit.KeyAlias("\b"),'\x14'=>no
+thing,'\x17'=>(anonymous function),'\r'=>(anonymous function),'\x1f'=>nothing,'\
+x0e'=>(anonymous function),'\e'=>Dict{Char,Any}('\0'=>nothing,'f'=>(anonymous fu
+nction),'b'=>(anonymous function),'\e'=>(anonymous function),'O'=>Dict{Char,Any}
+('\0'=>nothing,'D'=>Base.LineEdit.KeyAlias("\e[D"),'d'=>(anonymous function),'B'
+=>Base.LineEdit.KeyAlias("\e[B"),'C'=>Base.LineEdit.KeyAlias("\e[C"),'H'=>Base.L
+ineEdit.KeyAlias("\e[H"),'c'=>(anonymous function),'A'=>Base.LineEdit.KeyAlias("
+\e[A"),'F'=>Base.LineEdit.KeyAlias("\e[F")),'\b'=>(anonymous function),'['=>Dict
+{Char,Any}('6'=>Dict{Char,Any}('\0'=>Dict{Char,Any}('\0'=>nothing),'~'=>nothing,
+'h'=>nothing,'l'=>nothing),'D'=>(anonymous function),'2'=>Dict{Char,Any}('\0'=>D
+ict{Char,Any}('\0'=>nothing),'~'=>nothing,'h'=>nothing,'0'=>Dict{Char,Any}('\0'=
+>nothing,'h'=>nothing,'0'=>Dict{Char,Any}('~'=>(anonymous function)),'l'=>nothin
+g),'l'=>nothing),'\0'=>nothing,'7'=>Dict{Char,Any}('~'=>Base.LineEdit.KeyAlias("
+\e[H"),'h'=>nothing,'l'=>nothing),'B'=>(anonymous function),'A'=>(anonymous func
+tion),'1'=>Dict{Char,Any}('6'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>no
+thing),'2'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>nothing),'\0'=>Dict{C
+har,Any}('\0'=>nothing),'7'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>noth
+ing),'h'=>nothing,';'=>Dict{Char,Any}('\0'=>nothing,'5'=>Dict{Char,Any}('D'=>(an
+onymous function),'C'=>(anonymous function))),'1'=>Dict{Char,Any}('\0'=>nothing,
+'h'=>nothing,'l'=>nothing),'3'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>n
+othing),'5'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>nothing),'9'=>Dict{C
+har,Any}('\0'=>nothing,'h'=>nothing,'l'=>nothing),'~'=>Base.LineEdit.KeyAlias("\
+e[H"),'0'=>Dict{Char,Any}('\0'=>nothing,'h'=>nothing,'l'=>nothing),'8'=>Dict{Cha
+r,Any}('\0'=>nothing,'h'=>nothing,'l'=>nothing),'l'=>nothing,'4'=>Dict{Char,Any}
+('\0'=>nothing,'h'=>nothing,'l'=>nothing)),'3'=>Dict{Char,Any}('\0'=>Dict{Char,A
+ny}('\0'=>nothing),'~'=>nothing,'h'=>nothing,'l'=>nothing),'5'=>Dict{Char,Any}('
+\0'=>Dict{Char,Any}('\0'=>nothing),'~'=>nothing,'h'=>nothing,'l'=>nothing),'H'=>
+(anonymous function),'9'=>Dict{Char,Any}('h'=>nothing,'l'=>nothing),'C'=>(anonym
+ous function),'8'=>Dict{Char,Any}('~'=>Base.LineEdit.KeyAlias("\e[F"),'h'=>nothi
+ng,'l'=>nothing),'F'=>(anonymous function),'4'=>Dict{Char,Any}('\0'=>Dict{Char,A
+ny}('\0'=>nothing),'~'=>Base.LineEdit.KeyAlias("\e[F"),'h'=>nothing,'l'=>nothing
+)),'\x7f'=>(anonymous function)),'\x0f'=>nothing,'\f'=>(anonymous function),'\x0
+1'=>(anonymous function))),Base.LineEdit.PrefixHistoryPrompt{Base.REPL.REPLHisto
+ryProvider}(Base.REPL.REPLHistoryProvider(AbstractString["+(4 ,5)","D:\\Julia-0.
+4.3\\share\\doc\\julia\\examples\\bubblesort.jl","include(D:\\Julia-0.4.3\\share
+\\doc\\julia\\examples\\bubblesort.jl)","include (/share/doc/julia/examples/bubb
+lesort.jl)","include (\"/share/doc/julia/examples/bubblesort.jl\")","import(\"/s
+hare/doc/julia/examples/bubblesort.jl\")","import(/share/doc/julia/examples/bubb
+lesort.jl)","D:\\Julia-0.4.3\\share\\doc\\julia\\examples\\hpl.jl","echo hello",
+"~/.juliar.jl"  ……  "parseip(\"localhost\")","parseip(\"https://twitter.com/\")"
+,"getaddrinfo(\"127.0.0.1\")","listen(80)","listen(\"user\")","connect(80)","con
+nect()","Mmap.sync!([1,2])","istext(\"TEXT\")","popdisplay()"],IOStream(<file C:
+\Users\Saito\.julia_history>),2728,2727,IOBuffer(data=UInt8[...], readable=true,
+ writable=true, seekable=true, append=false, size=0, maxsize=Inf, ptr=1, mark=-1
+),"Prompt(\"julia> \",...)",Dict{Symbol,Any}(:help=>"Prompt(\"help?> \",...)",:s
+hell=>"Prompt(\"shell> \",...)",:julia=>"Prompt(\"julia> \",...)"),[:julia,:juli
+a,:julia,:julia,:julia,:julia,:julia,:julia,:shell,:julia  ……  :julia,:julia,:ju
+lia,:julia,:julia,:julia,:julia,:julia,:julia,:julia]),"Prompt(\"julia> \",...)"
+,Base.LineEdit.EmptyCompletionProvider(),Dict{Char,Any}('\0'=>(anonymous functio
+n),'\e'=>Dict{Char,Any}('\0'=>(anonymous function),'O'=>Dict{Char,Any}('\0'=>(an
+onymous function)),'['=>Dict{Char,Any}('6'=>Dict{Char,Any}('~'=>(anonymous funct
+ion),'h'=>(anonymous function),'l'=>(anonymous function)),'2'=>Dict{Char,Any}('~
+'=>(anonymous function),'h'=>(anonymous function),'0'=>Dict{Char,Any}('h'=>(anon
+ymous function),'0'=>Dict{Char,Any}('~'=>(anonymous function)),'l'=>(anonymous f
+unction)),'l'=>(anonymous function)),'\0'=>(anonymous function),'7'=>Dict{Char,A
+ny}('~'=>(anonymous function),'h'=>(anonymous function),'l'=>(anonymous function
+)),'B'=>(anonymous function),'A'=>(anonymous function),'1'=>Dict{Char,Any}('6'=>
+Dict{Char,Any}('h'=>(anonymous function),'l'=>(anonymous function)),'2'=>Dict{Ch
+ar,Any}('h'=>(anonymous function),'l'=>(anonymous function)),'7'=>Dict{Char,Any}
+('h'=>(anonymous function),'l'=>(anonymous function)),'h'=>(anonymous function),
+';'=>Dict{Char,Any}('5'=>Dict{Char,Any}('\0'=>(anonymous function))),'1'=>Dict{C
+har,Any}('h'=>(anonymous function),'l'=>(anonymous function)),'3'=>Dict{Char,Any
+}('h'=>(anonymous function),'l'=>(anonymous function)),'5'=>Dict{Char,Any}('h'=>
+(anonymous function),'l'=>(anonymous function)),'9'=>Dict{Char,Any}('h'=>(anonym
+ous function),'l'=>(anonymous function)),'~'=>(anonymous function),'0'=>Dict{Cha
+r,Any}('h'=>(anonymous function),'l'=>(anonymous function)),'8'=>Dict{Char,Any}(
+'h'=>(anonymous function),'l'=>(anonymous function)),'l'=>(anonymous function),'
+4'=>Dict{Char,Any}('h'=>(anonymous function),'l'=>(anonymous function))),'3'=>Di
+ct{Char,Any}('~'=>(anonymous function),'h'=>(anonymous function),'l'=>(anonymous
+ function)),'5'=>Dict{Char,Any}('~'=>(anonymous function),'h'=>(anonymous functi
+on),'l'=>(anonymous function)),'9'=>Dict{Char,Any}('h'=>(anonymous function),'l'
+=>(anonymous function)),'8'=>Dict{Char,Any}('~'=>(anonymous function),'h'=>(anon
+ymous function),'l'=>(anonymous function)),'4'=>Dict{Char,Any}('~'=>(anonymous f
+unction),'h'=>(anonymous function),'l'=>(anonymous function))))))]),Base.REPL.RE
+PLBackendRef(Channel{Any}(sz_max:1,sz_curr:0),Channel{Any}(sz_max:1,sz_curr:0)))
+)

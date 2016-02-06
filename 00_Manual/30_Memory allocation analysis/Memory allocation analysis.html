@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body>
+<h1>ÉÅÉÇÉääÑÇËìñÇƒÇÃï™êÕ<a class="headerlink"
+ href="file:///C:/Users/Saito/Desktop/Julia/%83%7D%83j%83%85%83A%83%8B/Julia%20Documentation/Manual/29Profiling/profile.html#memory-allocation-analysis"
+ title="Permalink to this headline"></a></h1>
+<p>One of the most common techniques to improve performance is to
+reduce
+memory allocation. The total amount of allocation can be measured
+with <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%83%7D%83j%83%85%83A%83%8B/Julia%20Documentation/Manual/stdlib/base.html#Base.@time"
+ title="Base.@time"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">@time</span></code></a>
+and <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%83%7D%83j%83%85%83A%83%8B/Julia%20Documentation/Manual/stdlib/base.html#Base.@allocated"
+ title="Base.@allocated"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">@allocated</span></code></a>,
+and specific lines triggering
+allocation can often be inferred from profiling via the cost of
+garbage collection that these lines incur. However, sometimes it is
+more efficient to directly measure the amount of memory allocated by
+each line of code.</p>
+<p>To measure allocation line-by-line, start Julia with the
+<code class="docutils literal"><span class="pre">--track-allocation=&lt;setting&gt;</span></code>
+command-line option, for which you
+can choose <code class="docutils literal"><span class="pre">none</span></code>
+(the default, do not measure allocation), <code
+ class="docutils literal"><span class="pre">user</span></code>
+(measure memory allocation everywhere except JuliaÅfs core code), or
+<code class="docutils literal"><span class="pre">all</span></code>
+(measure memory allocation at each line of Julia code).
+Allocation gets measured for each line of compiled code. When you quit
+Julia, the cumulative results are written to text files with <code
+ class="docutils literal"><span class="pre">.mem</span></code>
+appended after the file name, residing in the same directory as the
+source file. Each line lists the total number of bytes allocated.
+The <code class="docutils literal"><span class="pre">Coverage</span></code>
+package contains some elementary analysis tools, for
+example to sort the lines in order of number of bytes allocated.</p>
+<p>In interpreting the results, there are a few important details.
+Under
+the <code class="docutils literal"><span class="pre">user</span></code>
+setting, the first line of any function directly called
+from the REPL will exhibit allocation due to events that happen in the
+REPL code itself. More significantly, JIT-compilation also adds to
+allocation counts, because much of JuliaÅfs compiler is written in
+Julia (and compilation usually requires memory allocation). The
+recommended procedure is to force compilation by executing all the
+commands you want to analyze, then call <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%83%7D%83j%83%85%83A%83%8B/Julia%20Documentation/Manual/stdlib/profile.html#Base.Profile.clear_malloc_data"
+ title="Base.Profile.clear_malloc_data"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.clear_malloc_data()</span></code></a>
+to
+reset all allocation counters. Finally, execute the desired commands
+and quit Julia to trigger the generation of the <code
+ class="docutils literal"><span class="pre">.mem</span></code> files.</p>
+<br>
+<a href="https://readthedocs.org"></a>
+</body>
+</html>

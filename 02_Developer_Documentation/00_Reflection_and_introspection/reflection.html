@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflection and introspection — Julia Language 0.4.3
+documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="prev" title="Profiling" href="../stdlib/profile.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <br>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="reflection-and-introspection">
+<h1>Reflection and introspection<a class="headerlink"
+ href="#reflection-and-introspection" title="Permalink to this headline">¶</a></h1>
+<p>Julia provides a variety of runtime reflection capabilities.</p>
+<p class="rubric">Module bindings</p>
+<p>The exported names for a <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Module</span></code>
+are available using <a class="reference internal"
+ href="../stdlib/base.html#Base.names" title="Base.names"><code
+ class="xref jl jl-func docutils literal"><span class="pre">names(m::Module)</span></code></a>,
+which will return
+an array of <code class="xref jl jl-obj docutils literal"><span
+ class="pre">Symbol</span></code> elements representing the exported
+bindings.
+<code class="docutils literal"><span class="pre">names(m::Module,</span>
+<span class="pre">true)</span></code> returns symbols for all bindings
+in <code class="docutils literal"><span class="pre">m</span></code>,
+regardless of export status.</p>
+<p class="rubric">DataType fields</p>
+<p>The names of <code class="xref jl jl-obj docutils literal"><span
+ class="pre">DataType</span></code> fields may be interrogated
+using <a class="reference internal"
+ href="../stdlib/base.html#Base.fieldnames" title="Base.fieldnames"><code
+ class="xref jl jl-func docutils literal"><span class="pre">fieldnames()</span></code></a>.
+For example, given the following type, <code class="docutils literal"><span
+ class="pre">fieldnames(Point)</span></code> returns an arrays of <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Symbol</span></code>
+elements representing the field names:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="k">type</span><span class="nc"> Point</span>
+           <span
+ class="n">x</span><span class="p">::</span><span class="kt">Int</span>
+           <span
+ class="n">y</span>
+       <span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">fieldnames</span><span
+ class="p">(</span><span class="n">Point</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">Symbol</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="p">:</span><span class="n">x</span>
+ <span class="p">:</span><span
+ class="n">y</span>
+</pre>
+</div>
+</div>
+<p>The type of each field in a <code class="docutils literal"><span
+ class="pre">Point</span></code> object is stored in the <code
+ class="docutils literal"><span class="pre">types</span></code> field
+of the <code class="docutils literal"><span class="pre">Point</span></code>
+variable itself:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Point</span><span class="o">.</span><span class="n">types</span>
+<span class="n">svec</span><span class="p">(</span><span class="kt">Int64</span><span
+ class="p">,</span><span class="kt">Any</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>While <code class="docutils literal"><span class="pre">x</span></code>
+is annotated as an <code class="docutils literal"><span class="pre">Int</span></code>,
+<code class="docutils literal"><span class="pre">y</span></code> was
+unannotated in the type definition, therefore <code
+ class="docutils literal"><span class="pre">y</span></code> defaults to
+the <code class="docutils literal"><span class="pre">Any</span></code>
+type.</p>
+<p>Types are themselves represented as a structure called <code
+ class="xref jl jl-obj docutils literal"><span class="pre">DataType</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="nb">typeof</span><span class="p">(</span><span class="n">Point</span><span
+ class="p">)</span>
+<span class="n">DataType</span>
+</pre>
+</div>
+</div>
+<p>Note that <code class="docutils literal"><span class="pre">fieldnames(DataType)</span></code>
+gives the names for each field of <code
+ class="xref jl jl-obj docutils literal"><span class="pre">DataType</span></code>
+itself, and
+one of these fields is the <code class="docutils literal"><span
+ class="pre">types</span></code> field observed in the example above.</p>
+<p class="rubric">Subtypes</p>
+<p>The <em>direct</em> subtypes of any <code
+ class="xref jl jl-obj docutils literal"><span class="pre">DataType</span></code>
+may be listed using
+<a class="reference internal" href="../stdlib/base.html#Base.subtypes"
+ title="Base.subtypes"><code class="xref jl jl-func docutils literal"><span
+ class="pre">subtypes()</span></code></a>. For example, the abstract <code
+ class="xref jl jl-obj docutils literal"><span class="pre">DataType</span></code>
+<code class="xref jl jl-obj docutils literal"><span class="pre">AbstractFloat</span></code>
+has four (concrete) subtypes:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">subtypes</span><span class="p">(</span><span class="n">AbstractFloat</span><span
+ class="p">)</span>
+<span class="mi">4</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="kt">Any</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="n">BigFloat</span>
+ <span class="n">Float16</span>
+ <span
+ class="kt">Float32</span>
+ <span class="kt">Float64</span>
+</pre>
+</div>
+</div>
+<p>Any abstract subtype will also be included in this list, but further
+subtypes
+thereof will not; recursive application of <a
+ class="reference internal" href="../stdlib/base.html#Base.subtypes"
+ title="Base.subtypes"><code class="xref jl jl-func docutils literal"><span
+ class="pre">subtypes()</span></code></a> may be used to inspect
+the full type tree.</p>
+<p class="rubric">DataType layout</p>
+<p>The internal representation of a <code
+ class="xref jl jl-obj docutils literal"><span class="pre">DataType</span></code>
+is critically important when interfacing with
+C code and several functions are available to inspect these details.
+<a class="reference internal" href="../stdlib/base.html#Base.isbits"
+ title="Base.isbits"><code class="xref jl jl-func docutils literal"><span
+ class="pre">isbits(T::DataType)</span></code></a> returns true if <code
+ class="docutils literal"><span class="pre">T</span></code> is
+stored with C-compatible alignment.
+<a class="reference internal"
+ href="../stdlib/base.html#Base.fieldoffsets" title="Base.fieldoffsets"><code
+ class="xref jl jl-func docutils literal"><span class="pre">fieldoffsets(T::DataType)</span></code></a>
+returns the (byte) offset for each
+field relative to the start of the type.</p>
+<p class="rubric">Function methods</p>
+<p>The methods of any generic function may be listed using <a
+ class="reference internal" href="../stdlib/base.html#Base.methods"
+ title="Base.methods"><code class="xref jl jl-func docutils literal"><span
+ class="pre">methods()</span></code></a>. The method dispatch
+table may be searched for methods accepting a given type using <a
+ class="reference internal" href="../stdlib/base.html#Base.methodswith"
+ title="Base.methodswith"><code class="xref jl jl-func docutils literal"><span
+ class="pre">methodswith()</span></code></a>.</p>
+<p class="rubric">Expansion and lowering</p>
+<p>As discussed in the <a class="reference internal"
+ href="../manual/metaprogramming.html#man-metaprogramming"><span>Metaprogramming</span></a>
+section, the
+<a class="reference internal"
+ href="../stdlib/base.html#Base.macroexpand" title="Base.macroexpand"><code
+ class="xref jl jl-func docutils literal"><span class="pre">macroexpand()</span></code></a>
+function gives the unquoted and interpolated expression (<code
+ class="docutils literal"><span class="pre">Expr</span></code>) form
+for a given macro. To use <code class="docutils literal"><span
+ class="pre">macroexpand</span></code>, <code class="docutils literal"><span
+ class="pre">quote</span></code> the expression block itself
+(otherwise,
+the macro will be evaluated and the result will be passed instead!).
+For example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">macroexpand</span><span class="p">(</span> <span class="p">:(@</span><span
+ class="nb">edit</span> <span class="n">println</span><span class="p">(</span><span
+ class="s">""</span><span class="p">))</span> <span class="p">)</span>
+<span class="p">:(</span><span class="n">Base</span><span class="o">.</span><span
+ class="nb">edit</span><span class="p">(</span><span class="n">println</span><span
+ class="p">,(</span><span class="n">Base</span><span class="o">.</span><span
+ class="n">typesof</span><span class="p">)(</span><span class="s">""</span><span
+ class="p">)))</span>
+</pre>
+</div>
+</div>
+<p>The functions <code class="xref jl jl-func docutils literal"><span
+ class="pre">Base.Meta.show_sexpr()</span></code> and <a
+ class="reference internal" href="../stdlib/io-network.html#Base.dump"
+ title="Base.dump"><code class="xref jl jl-func docutils literal"><span
+ class="pre">dump()</span></code></a> are used to display S-expr style
+views
+and depth-nested detail views for any expression.</p>
+<p>Finally, the <a class="reference internal"
+ href="../stdlib/base.html#Base.expand" title="Base.expand"><code
+ class="xref jl jl-func docutils literal"><span class="pre">expand()</span></code></a>
+function gives the <code class="docutils literal"><span class="pre">lowered</span></code>
+form of any expression and is of particular
+interest for understanding both macros and top-level statements such as
+function declarations and
+variable assignments:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">expand</span><span class="p">(</span> <span class="p">:(</span><span
+ class="n">f</span><span class="p">()</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+<span class="p">:(</span><span class="o">$</span><span class="p">(</span><span
+ class="n">Expr</span><span class="p">(:</span><span class="n">method</span><span
+ class="p">,</span> <span class="p">:</span><span class="n">f</span><span
+ class="p">,</span> <span class="p">:((</span><span class="n">top</span><span
+ class="p">(</span><span class="n">svec</span><span class="p">))((</span><span
+ class="n">top</span><span class="p">(</span><span class="n">apply_type</span><span
+ class="p">))(</span><span class="n">Tuple</span><span class="p">),(</span><span
+ class="n">top</span><span class="p">(</span><span class="n">svec</span><span
+ class="p">))())),</span> <span class="n">AST</span><span class="p">(:(</span><span
+ class="o">$</span><span class="p">(</span><span class="n">Expr</span><span
+ class="p">(:</span><span class="n">lambda</span><span class="p">,</span> <span
+ class="kt">Any</span><span class="p">[],</span> <span class="kt">Any</span><span
+ class="p">[</span><span class="kt">Any</span><span class="p">[],</span><span
+ class="kt">Any</span><span class="p">[],</span><span class="mi">0</span><span
+ class="p">,</span><span class="kt">Any</span><span class="p">[]],</span> <span
+ class="p">:(</span><span class="k">begin</span>  <span class="c"># none, line 1:</span>
+        <span
+ class="k">return</span> <span class="mi">1</span>
+    <span class="k">end</span><span
+ class="p">))))),</span> <span class="n">false</span><span class="p">)))</span>
+</pre>
+</div>
+</div>
+<p class="rubric">Intermediate and compiled representations</p>
+<p>Inspecting the lowered form for functions requires selection of the
+specific method to display,
+because generic functions may have many methods with different type
+signatures. For this purpose,
+method-specific code-lowering is available using <a
+ class="reference internal" href="../stdlib/base.html#Base.code_lowered"
+ title="Base.code_lowered"><code
+ class="xref jl jl-func docutils literal"><span class="pre">code_lowered(f::Function,</span>
+<span class="pre">(Argtypes...))</span></code></a>,
+and the type-inferred form is available using <a
+ class="reference internal" href="../stdlib/base.html#Base.code_typed"
+ title="Base.code_typed"><code class="xref jl jl-func docutils literal"><span
+ class="pre">code_typed(f::Function,</span> <span class="pre">(Argtypes...))</span></code></a>.
+<a class="reference internal"
+ href="../stdlib/base.html#Base.code_warntype"
+ title="Base.code_warntype"><code
+ class="xref jl jl-func docutils literal"><span class="pre">code_warntype(f::Function,</span>
+<span class="pre">(Argtypes...))</span></code></a> adds
+highlighting to the output of <a class="reference internal"
+ href="../stdlib/base.html#Base.code_typed" title="Base.code_typed"><code
+ class="xref jl jl-func docutils literal"><span class="pre">code_typed()</span></code></a>
+(see <a class="reference internal"
+ href="../manual/performance-tips.html#man-code-warntype"><span>@code_warntype</span></a>).</p>
+<p>Closer to the machine, the LLVM intermediate representation of a
+function may be printed using by
+<a class="reference internal" href="../stdlib/base.html#Base.code_llvm"
+ title="Base.code_llvm"><code class="xref jl jl-func docutils literal"><span
+ class="pre">code_llvm(f::Function,</span> <span class="pre">(Argtypes...))</span></code></a>,
+and finally the compiled machine code is
+available using <a class="reference internal"
+ href="../stdlib/base.html#Base.code_native" title="Base.code_native"><code
+ class="xref jl jl-func docutils literal"><span class="pre">code_native(f::Function,</span>
+<span class="pre">(Argtypes...)</span></code></a> (this will trigger
+JIT
+compilation/code generation for any function which has not previously
+been called).</p>
+<p>For convenience, there are macro versions of the above functions
+which take standard function calls
+and expand argument types automatically:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">@</span><span class="n">code_llvm</span> <span class="o">+</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">)</span>
+
+<span class="p">;</span> <span class="n">Function</span> <span class="n">Attrs</span><span
+ class="p">:</span> <span class="n">sspreq</span>
+<span class="n">define</span> <span class="n">i64</span> <span class="p">@</span><span
+ class="s">"julia_+_130862"</span><span class="p">(</span><span
+ class="n">i64</span><span class="p">,</span> <span class="n">i64</span><span
+ class="p">)</span> <span class="c">#0 {</span>
+<span class="n">top</span><span class="p">:</span>
+    <span class="o">%</span><span
+ class="mi">2</span> <span class="o">=</span> <span class="n">add</span> <span
+ class="n">i64</span> <span class="o">%</span><span class="mi">1</span><span
+ class="p">,</span> <span class="o">%</span><span class="mi">0</span><span
+ class="p">,</span> <span class="o">!</span><span class="n">dbg</span> <span
+ class="o">!</span><span class="mi">8</span>
+    <span class="n">ret</span> <span
+ class="n">i64</span> <span class="o">%</span><span class="mi">2</span><span
+ class="p">,</span> <span class="o">!</span><span class="n">dbg</span> <span
+ class="o">!</span><span class="mi">8</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+<p>(likewise <code class="docutils literal"><span class="pre">@code_typed</span></code>,
+<code class="docutils literal"><span class="pre">@code_warntype</span></code>,
+<code class="docutils literal"><span class="pre">@code_lowered</span></code>,
+and <code class="docutils literal"><span class="pre">@code_native</span></code>)</p>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="julia.html"
+ class="btn btn-neutral float-right"
+ title="Documentation of Julia’s Internals">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a
+ href="../stdlib/profile.html" class="btn btn-neutral" title="Profiling"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

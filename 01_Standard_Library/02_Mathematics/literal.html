@@ -1,0 +1,635 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>リテラル</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">リテラルと型</span>：言語の特有の意味のある文字表記，引数で使える型のリスト<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">{T}<br>
+{T,N}<br>
+      </td>
+      <td style="vertical-align: top;">インスタンス化<br>
+Complex<br>
+Real<br>
+Number<br>
+Union<br>
+      </td>
+      <td style="vertical-align: top;">Complex{Float64}<br>
+Complex<br>
+      </td>
+      <td style="vertical-align: top;">Complex{Float64}<br>
+Complex{T&lt;:Real}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ans<br>
+      </td>
+      <td style="vertical-align: top;">最後に吐き出した値<br>
+      </td>
+      <td style="vertical-align: top;">ans<br>
+      </td>
+      <td style="vertical-align: top;">（直前の答え)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <pre><span class="kd">const</span></pre>
+      </td>
+      <td style="vertical-align: top;">定数の宣言<br>
+      </td>
+      <td style="vertical-align: top;">
+      <pre><span class="kd">const</span> <span class="n">e</span>  <span
+ class="o">=</span> <span class="mf">2.71828182845904523536</span></pre>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pi<br>
+      </td>
+      <td style="vertical-align: top;">π<br>
+      </td>
+      <td style="vertical-align: top;">pi </td>
+      <td style="vertical-align: top;">ππ = 3.1415926535897...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">e<br>
+      </td>
+      <td style="vertical-align: top;">オイラー数<br>
+      </td>
+      <td style="vertical-align: top;">e<br>
+      </td>
+      <td style="vertical-align: top;">e = 2.7182818284590... </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">INF<br>
+      </td>
+      <td style="vertical-align: top;">無限<br>
+      </td>
+      <td style="vertical-align: top;"> INF </td>
+      <td style="vertical-align: top;">ERROR: UndefVarError: INF not
+defined<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">true<br>
+      </td>
+      <td style="vertical-align: top;">真<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">false<br>
+      </td>
+      <td style="vertical-align: top;">偽<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">:str<br>
+      </td>
+      <td style="vertical-align: top;">シンボル(記号)<br>
+      </td>
+      <td style="vertical-align: top;">
+      <pre>typeof(<span class="p">:</span><span class="n">foo</span>t)</pre>
+      </td>
+      <td style="vertical-align: top;">Symbol<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DataType<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ByteString<br>
+      </td>
+      <td style="vertical-align: top;">バイト文字列<br>
+      </td>
+      <td style="vertical-align: top;">ByteString</td>
+      <td style="vertical-align: top;">Union{ASCIIString,UTF8String}</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Symbol<br>
+      </td>
+      <td style="vertical-align: top;">:a　　シンボル<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">AbstractString<br>
+      </td>
+      <td style="vertical-align: top;">clipboard()</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Module<br>
+      </td>
+      <td style="vertical-align: top;">current_module() </td>
+      <td style="vertical-align: top;">current_module() <br>
+      </td>
+      <td style="vertical-align: top;">Main<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Method<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dict<br>
+      </td>
+      <td style="vertical-align: top;">Dict()<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">key<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">iter</td>
+      <td style="vertical-align: top;"> (2,3,4)<br>
+      </td>
+      <td style="vertical-align: top;">typeof((2,3,4))<br>
+      </td>
+      <td style="vertical-align: top;">Tuple{Int64,Int64,Int64}</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">terable<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">collection<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;function(f(x))<br>
+x^2<br>
+end<br>
+&nbsp;map(f,1:10)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">op<br>
+      </td>
+      <td style="vertical-align: top;">演算子　+*/<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">state<br>
+      </td>
+      <td style="vertical-align: top;">start(iter)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">r<br>
+      </td>
+      <td style="vertical-align: top;">1:4 [2,3] 他のパラメーターと同じ数の要素をもつ<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">p<br>
+      </td>
+      <td style="vertical-align: top;">i-&gt;(4&lt;=i&lt;=6)</td>
+      <td style="vertical-align: top;">i-&gt;(4&lt;=i&lt;=6)<br>
+      </td>
+      <td style="vertical-align: top;">(anonymous function)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">v<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Bool<br>
+      </td>
+      <td style="vertical-align: top;">true,false<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Int<br>
+Int8<br>
+Int16<br>
+Int32<br>
+Int64<br>
+Int128<br>
+      </td>
+      <td style="vertical-align: top;"> 整数型<br>
+      <span class="kt">Int8</span><span class="p">:</span> <span
+ class="p">[</span><span class="o">-</span><span class="mi">128</span><span
+ class="p">,</span><span class="mi">127</span><span class="p">]</span> <br>
+      <span class="kt">Int16</span><span class="p">:</span> <span
+ class="p">[</span><span class="o">-</span><span class="mi">32768</span><span
+ class="p">,</span><span class="mi">32767</span><span class="p">]</span><br>
+      <span class="kt">Int32</span><span class="p">:</span> <span
+ class="p">[</span><span class="o">-</span><span class="mi">2147483648</span><span
+ class="p">,</span><span class="mi">2147483647</span><span class="p">]</span><br>
+      <span class="kt">Int64</span><span class="p">:</span> <span
+ class="p">[</span><span class="o">-</span><span class="mi">9223372036854775808</span><span
+ class="p">,</span><span class="mi">9223372036854775807</span><span
+ class="p">]</span><br>
+      <span class="n">Int128</span><span class="p">:</span> <span
+ class="p">[</span><span class="o">-</span><span class="mi">170141183460469231731687303715884105728</span><span
+ class="p">,</span><span class="mi">170141183460469231731687303715884105727</span><span
+ class="p">]</span><br>
+      </td>
+      <td style="vertical-align: top;">Int<br>
+      </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">UIint<br>
+UInt8<br>
+UInt16<br>
+UInt32<br>
+UInt64<br>
+UInt128 </td>
+      <td style="vertical-align: top;"><span class="p"></span><span
+ class="p"></span> 符号なし整数型<br>
+      <span class="n">UInt8</span><span class="p">:</span> <span
+ class="p">[</span><span class="mi">0</span><span class="p">,</span><span
+ class="mi">255</span><span class="p">]</span><br>
+      <span class="n">UInt16</span><span class="p">:</span> <span
+ class="p">[</span><span class="mi">0</span><span class="p">,</span><span
+ class="mi">65535</span><span class="p">]</span><br>
+      <span class="n">UInt32</span><span class="p">:</span> <span
+ class="p">[</span><span class="mi">0</span><span class="p">,</span><span
+ class="mi">4294967295</span><span class="p">]</span><br>
+      <span class="n">UInt64</span><span class="p">:</span> <span
+ class="p">[</span><span class="mi">0</span><span class="p">,</span><span
+ class="mi">18446744073709551615</span><span class="p">]</span><br>
+      <span class="n">UInt128</span><span class="p">:</span> <span
+ class="p">[</span><span class="mi">0</span><span class="p">,</span><span
+ class="mi">340282366920938463463374607431768211455</span><span
+ class="p">]</span> </td>
+      <td style="vertical-align: top;">UInt<br>
+      </td>
+      <td style="vertical-align: top;">UInt64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Float32<br>
+Float64<br>
+      </td>
+      <td style="vertical-align: top;">nf0はFloat</td>
+      <td style="vertical-align: top;">0.5f0<br>
+2.5f-4<br>
+      </td>
+      <td style="vertical-align: top;">0.5f0<br>
+0.00025f0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0bn<br>
+      </td>
+      <td style="vertical-align: top;">2進数のリテラル<br>
+      </td>
+      <td style="vertical-align: top;">0b10<br>
+      </td>
+      <td style="vertical-align: top;">0x02<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0on<br>
+      </td>
+      <td style="vertical-align: top;">8進数のリテラル<br>
+      </td>
+      <td style="vertical-align: top;">0o10<br>
+      </td>
+      <td style="vertical-align: top;">0x08<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0xn<br>
+      </td>
+      <td style="vertical-align: top;">16進数のリテラル<br>
+      </td>
+      <td style="vertical-align: top;">0x1<br>
+0x1p0<br>
+0x1.8p3<br>
+0x.4p-1<br>
+      </td>
+      <td style="vertical-align: top;">0x01<br>
+1.0<br>
+12.0<br>
+0.125<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">n<br>
+      </td>
+      <td style="vertical-align: top;">数値リテラル<br>
+      </td>
+      <td style="vertical-align: top;">1.0<br>
+1.<br>
+0.5<br>
+.5<br>
+-1.23<br>
+1e10<br>
+2.5e-4<br>
+      </td>
+      <td style="vertical-align: top;">1.0<br>
+1.0<br>
+0.5<br>
+0.5<br>
+-1.23<br>
+1.0e10<br>
+0.00025<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">[a,b,c,…]<br>
+      </td>
+      <td style="vertical-align: top;">配列<br>
+      </td>
+      <td style="vertical-align: top;">[1,2,3,4]<br>
+      </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">a:b<br>
+      </td>
+      <td style="vertical-align: top;">1:10<br>
+      </td>
+      <td style="vertical-align: top;">sind(1:3)</td>
+      <td style="vertical-align: top;">3-element
+Array{Union{Float64,Int64},1}:<br>
+&nbsp;0.0174524<br>
+&nbsp;0.0348995<br>
+&nbsp;0.052336<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">[a b;c d]<br>
+      </td>
+      <td style="vertical-align: top;">行列<br>
+      </td>
+      <td style="vertical-align: top;"> [1 2;3 5]</td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">配列<br>
+→ｖector<br>
+      </td>
+      <td style="vertical-align: top;">ベクトルの作成<br>
+      </td>
+      <td style="vertical-align: top;">vec([1,2])<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">expr::Expr<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">args</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bitArray<br>
+      </td>
+      <td style="vertical-align: top;">bitpack(array())<br>
+[true true;false false]<br>
+      </td>
+      <td style="vertical-align: top;">bitpack([2])</td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cond</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spzeros<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">spzeros(5, 3)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">5x3 sparse matrix with 0 Float64
+entries:</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparse</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">sparse([2],[3],[5])</td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 1 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 3]&nbsp; =&nbsp; 5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gradient</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">gradient([1,2,3,4])<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">4-element Array{Float64,1}:<br>
+&nbsp;1.0<br>
+&nbsp;1.0<br>
+&nbsp;1.0<br>
+&nbsp;1.0</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sub2ind(dims, i, j, k...)<br>
+→index<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ind2sub(dims, index) <br>
+→subscripts<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">current_task()<br>
+→task<br>
+      </td>
+      <td style="vertical-align: top;">タスク型<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">addprocs()<br>
+→ List of process identifiers<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">a+bim<br>
+      </td>
+      <td style="vertical-align: top;">複素数表記　aは実部　bは虚部<br>
+a+bi<br>
+      </td>
+      <td style="vertical-align: top;">5+4im</td>
+      <td style="vertical-align: top;">5 + 4im<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">xs</td>
+      <td style="vertical-align: top;">tuple(xs...)</td>
+      <td style="vertical-align: top;"> tuple(1,2)</td>
+      <td style="vertical-align: top;">(1,2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">function<br>
+      </td>
+      <td style="vertical-align: top;">function (x)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x^2 + 2x -
+1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Symbol</td>
+      <td style="vertical-align: top;">gensym()</td>
+      <td style="vertical-align: top;"><code class="docutils literal"></code>gensym()</td>
+      <td style="vertical-align: top;">symbol("##7171")<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

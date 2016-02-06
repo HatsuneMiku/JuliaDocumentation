@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embedding Julia — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Packages" href="packages.html">
+  <link rel="prev" title="Interacting With Julia"
+ href="interacting-with-julia.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="embedding-julia">
+<h1><span id="result_box" class="short_text" lang="ja"><span>埋め込み</span>Julia</span><a
+ class="headerlink" href="#embedding-julia"
+ title="Permalink to this headline"></a></h1>
+<p>As we have seen in <a class="reference internal"
+ href="calling-c-and-fortran-code.html#man-calling-c-and-fortran-code"><span>Calling
+C and Fortran Code</span></a>, Julia has a simple and efficient way to
+call functions written in C. But there are situations where the
+opposite is needed: calling Julia function from C code. This can be
+used to integrate Julia code into a larger C/C++ project, without the
+need to rewrite everything in C/C++. Julia has a C API to make this
+possible. As almost all programming languages have some way to call C
+functions, the Julia C API can also be used to build further language
+bridges (e.g. calling Julia from Python or C#).</p>
+<div class="section" id="high-level-embedding">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<div id="tts_button">
+<h2><span id="result_box" class="short_text" lang="ja"><span>高レベル</span><span
+ class="">の埋め込み</span></span></h2>
+</div>
+</div>
+</div>
+<p>We start with a simple C program that initializes Julia and calls
+some Julia code:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="cp">#include &lt;julia.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span
+ class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span
+ class="p">[])</span>
+<span class="p">{</span>
+    <span class="cm">/* required: setup the julia context */</span>
+    <span
+ class="n">jl_init</span><span class="p">(</span><span class="nb">NULL</span><span
+ class="p">);</span>
+
+    <span class="cm">/* run julia commands */</span>
+    <span
+ class="n">jl_eval_string</span><span class="p">(</span><span class="s">"print(sqrt(2.0))"</span><span
+ class="p">);</span>
+
+    <span class="cm">/* strongly recommended: notify julia that the</span>
+<span class="cm">         program is about to terminate. this allows</span>
+<span class="cm">         julia time to cleanup pending write requests</span>
+<span class="cm">         and run all finalizers</span>
+<span class="cm">    */</span>
+    <span class="n">jl_atexit_hook</span><span
+ class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span
+ class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+<p>In order to build this program you have to put the path to the Julia
+header into the include path and link against <code
+ class="docutils literal"><span class="pre">libjulia</span></code>. For
+instance, when Julia is installed to <code class="docutils literal"><span
+ class="pre">$JULIA_DIR</span></code>, one can compile the above test
+program <code class="docutils literal"><span class="pre">test.c</span></code>
+with <code class="docutils literal"><span class="pre">gcc</span></code>
+using:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre>gcc -o test -fPIC -I$JULIA_DIR/include/julia -L$JULIA_DIR/usr/lib test.c -ljulia<br></pre>
+</div>
+</div>
+<p>Alternatively, look at the <code class="docutils literal"><span
+ class="pre">embedding.c</span></code> program in the Julia source tree
+in the <code class="docutils literal"><span class="pre">examples/</span></code>
+folder. The file <code class="docutils literal"><span class="pre">ui/repl.c</span></code>
+program is another simple example of how to set <code
+ class="docutils literal"><span class="pre">jl_options</span></code>
+options while linking against <code class="docutils literal"><span
+ class="pre">libjulia</span></code>.</p>
+<p>The first thing that has to be done before calling any other Julia C
+function is to initialize Julia. This is done by calling <code
+ class="docutils literal"><span class="pre">jl_init</span></code>,
+which takes as argument a C string (<code class="docutils literal"><span
+ class="pre">const</span> <span class="pre">char*</span></code>) to
+the location where Julia is installed. When the argument is <code
+ class="docutils literal"><span class="pre">NULL</span></code>, Julia
+tries to determine the install location automatically.</p>
+<p>The second statement in the test program evaluates a Julia statement
+using a call to <code class="docutils literal"><span class="pre">jl_eval_string</span></code>.</p>
+<p>Before the program terminates, it is strongly recommended to call <code
+ class="docutils literal"><span class="pre">jl_atexit_hook</span></code>.
+The above example program calls this before returning from <code
+ class="docutils literal"><span class="pre">main</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Currently, dynamically linking with the <code
+ class="docutils literal"><span class="pre">libjulia</span></code>
+shared library requires passing the <code class="docutils literal"><span
+ class="pre">RTLD_GLOBAL</span></code> option. In Python, this looks
+like:</p>
+<div class="last highlight-c">
+<div class="highlight">
+<pre>&gt;&gt;&gt; julia=CDLL('./libjulia.dylib',RTLD_GLOBAL)<br>&gt;&gt;&gt; julia.jl_init.argtypes = [c_char_p]<br>&gt;&gt;&gt; julia.jl_init('.')<br>250593296<br></pre>
+</div>
+</div>
+</div>
+<div class="section"
+ id="using-julia-config-to-automatically-determine-build-parameters">
+<h3><span id="result_box" class="short_text" lang="ja"><span>自動的に</span><span>ビ
+ルド</span><span>パラメータを決定するためにJulia</span><span>-config設定</span><span>を</span><span
+ class="">使用して、</span></span><a class="headerlink"
+ href="#using-julia-config-to-automatically-determine-build-parameters"
+ title="Permalink to this headline"></a></h3>
+<p>The script <em>julia-config.jl</em> was created to aid in
+determining what build parameters are required by a program that uses
+embedded Julia. This script uses the
+build parameters and system configuration of the particular Julia
+distribution it is invoked by to export the necessary compiler flags
+for an embedding program to
+interact with that distribution. This script is located in the Julia
+shared data directory.</p>
+<div class="section" id="example">
+<h4>例</h4>
+<p>Below is essentially the same as above with one small change; the
+argument to <code class="docutils literal"><span class="pre">jl_init</span></code>
+is
+now <strong>JULIA_INIT_DIR</strong> which is defined by <em>julia-config.jl</em>.:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="cp">#include &lt;julia.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span
+ class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span
+ class="p">[])</span>
+<span class="p">{</span>
+   <span class="n">jl_init</span><span
+ class="p">(</span><span class="n">JULIA_INIT_DIR</span><span class="p">);</span>
+   <span
+ class="p">(</span><span class="kt">void</span><span class="p">)</span><span
+ class="n">jl_eval_string</span><span class="p">(</span><span class="s">"println(sqrt(2.0))"</span><span
+ class="p">);</span>
+   <span class="n">jl_atexit_hook</span><span
+ class="p">(</span><span class="mi">0</span><span class="p">);</span>
+   <span
+ class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="on-the-command-line">
+<h4><span id="result_box" class="short_text" lang="ja"><span class="">コマ
+ンドラインで</span></span><a class="headerlink" href="#on-the-command-line"
+ title="Permalink to this headline"></a></h4>
+<p>A simple use of this script is from the command line. Assuming that <em>julia-config.jl</em>
+is located
+in <em>/usr/local/julia/share/julia</em>, it can be invoked on the
+command line directly and takes any
+combination of 3 flags:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span
+ class="n">local</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">/</span><span class="n">share</span><span class="o">/</span><span
+ class="n">julia</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">-</span><span class="n">config</span><span class="p">.</span><span
+ class="n">jl</span>
+<span class="nl">Usage</span><span class="p">:</span> <span class="n">julia</span><span
+ class="o">-</span><span class="n">config</span> <span class="p">[</span><span
+ class="o">--</span><span class="n">cflags</span><span class="o">|--</span><span
+ class="n">ldflags</span><span class="o">|--</span><span class="n">ldlibs</span><span
+ class="p">]</span>
+</pre>
+</div>
+</div>
+<p>If the above example source is saved in the file <em>embed_example.c</em>,
+then the following command will compile it into a running program on
+Linux and Windows (MSYS2 environment),
+or if on OS/X, then substitute <code class="docutils literal"><span
+ class="pre">clang</span></code> for <code class="docutils literal"><span
+ class="pre">gcc</span></code>.:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span
+ class="n">local</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">/</span><span class="n">share</span><span class="o">/</span><span
+ class="n">julia</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">-</span><span class="n">config</span><span class="p">.</span><span
+ class="n">jl</span> <span class="o">--</span><span class="n">cflags</span> <span
+ class="o">--</span><span class="n">ldflags</span> <span class="o">--</span><span
+ class="n">ldlibs</span> <span class="o">|</span> <span class="n">xargs</span> <span
+ class="n">gcc</span> <span class="n">embed_example</span><span
+ class="p">.</span><span class="n">c</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="use-in-makefiles">
+<h4><span id="result_box" class="short_text" lang="ja"><span>メイクファイルの</span><span>中
+で</span><span class="">使用してください</span></span><a class="headerlink"
+ href="#use-in-makefiles" title="Permalink to this headline"></a></h4>
+<p>But in general, embedding projects will be more complicated than the
+above, and so the following allows general makefile support as well –
+assuming GNU make because
+of the use of the <strong>shell</strong> macro expansions.
+Additionally, though many times <em>julia-config.jl</em> may be found
+in the directory <em>/usr/local</em>, this is not necessarily the
+case,
+but Julia can be used to locate <em>julia-config.jl</em> too, and the
+makefile can be used to take advantage of that. The above example is
+extended to use a Makefile:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre>JL_SHARE = $(shell julia -e 'print(joinpath(JULIA_HOME,Base.DATAROOTDIR,"julia"))')<br>CFLAGS   += $(shell $(JL_SHARE)/julia-config.jl --cflags)<br>CXXFLAGS += $(shell $(JL_SHARE)/julia-config.jl --cflags)<br>LDFLAGS  += $(shell $(JL_SHARE)/julia-config.jl --ldflags)<br>LDLIBS   += $(shell $(JL_SHARE)/julia-config.jl --ldlibs)<br><br>all: embed_example<br></pre>
+</div>
+</div>
+<p>Now the build command is simply <strong>make</strong>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="converting-types">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span>タイプ</span><span
+ class="">の変換</span></span></h2>
+</div>
+</div>
+<h2><a class="headerlink" href="#converting-types"
+ title="Permalink to this headline"></a></h2>
+<p>Real applications will not just need to execute expressions, but
+also return their values to the host program. <code
+ class="docutils literal"><span class="pre">jl_eval_string</span></code>
+returns a <code class="docutils literal"><span class="pre">jl_value_t*</span></code>,
+which is a pointer to a heap-allocated Julia object. Storing simple
+data types like <code class="docutils literal"><span class="pre">Float64</span></code>
+in this way is called <code class="docutils literal"><span class="pre">boxing</span></code>,
+and extracting the stored primitive data is called <code
+ class="docutils literal"><span class="pre">unboxing</span></code>. Our
+improved sample program that calculates the square root of 2 in Julia
+and reads back the result in C looks as follows:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">ret</span> <span class="o">=</span> <span class="n">jl_eval_string</span><span
+ class="p">(</span><span class="s">"sqrt(2.0)"</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">jl_is_float64</span><span
+ class="p">(</span><span class="n">ret</span><span class="p">))</span> <span
+ class="p">{</span>
+    <span class="kt">double</span> <span class="n">ret_unboxed</span> <span
+ class="o">=</span> <span class="n">jl_unbox_float64</span><span
+ class="p">(</span><span class="n">ret</span><span class="p">);</span>
+    <span
+ class="n">printf</span><span class="p">(</span><span class="s">"sqrt(2.0) in C: %e </span><span
+ class="se">\n</span><span class="s">"</span><span class="p">,</span> <span
+ class="n">ret_unboxed</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+<p>In order to check whether <code class="docutils literal"><span
+ class="pre">ret</span></code> is of a specific Julia type, we can use
+the <code class="docutils literal"><span class="pre">jl_is_...</span></code>
+functions. By typing <code class="docutils literal"><span class="pre">typeof(sqrt(2.0))</span></code>
+into the Julia shell we can see that the return type is <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Float64</span></code>
+(<code class="docutils literal"><span class="pre">double</span></code>
+in C). To convert the boxed Julia value into a C double the <code
+ class="docutils literal"><span class="pre">jl_unbox_float64</span></code>
+function is used in the above code snippet.</p>
+<p>Corresponding <code class="docutils literal"><span class="pre">jl_box_...</span></code>
+functions are used to convert the other way:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">a</span> <span class="o">=</span> <span class="n">jl_box_float64</span><span
+ class="p">(</span><span class="mf">3.0</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">b</span> <span class="o">=</span> <span class="n">jl_box_float32</span><span
+ class="p">(</span><span class="mf">3.0f</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">c</span> <span class="o">=</span> <span class="n">jl_box_int32</span><span
+ class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>As we will see next, boxing is required to call Julia functions with
+specific arguments.</p>
+</div>
+<div class="section" id="calling-julia-functions">
+<h2><span id="result_box" class="short_text" lang="ja">Julia<span
+ class="">関数の呼び出し</span></span><a class="headerlink"
+ href="#calling-julia-functions" title="Permalink to this headline"></a></h2>
+<p>While <code class="docutils literal"><span class="pre">jl_eval_string</span></code>
+allows C to obtain the result of a Julia expression, it does not allow
+passing arguments computed in C to Julia. For this you will need to
+invoke Julia functions directly, using <code class="docutils literal"><span
+ class="pre">jl_call</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_function_t</span> <span class="o">*</span><span
+ class="n">func</span> <span class="o">=</span> <span class="n">jl_get_function</span><span
+ class="p">(</span><span class="n">jl_base_module</span><span class="p">,</span> <span
+ class="s">"sqrt"</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">argument</span> <span class="o">=</span> <span class="n">jl_box_float64</span><span
+ class="p">(</span><span class="mf">2.0</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">ret</span> <span class="o">=</span> <span class="n">jl_call1</span><span
+ class="p">(</span><span class="n">func</span><span class="p">,</span> <span
+ class="n">argument</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>In the first step, a handle to the Julia function <code
+ class="docutils literal"><span class="pre">sqrt</span></code> is
+retrieved by calling <code class="docutils literal"><span class="pre">jl_get_function</span></code>.
+The first argument passed to <code class="docutils literal"><span
+ class="pre">jl_get_function</span></code> is a pointer to the <code
+ class="docutils literal"><span class="pre">Base</span></code> module
+in which <code class="docutils literal"><span class="pre">sqrt</span></code>
+is defined. Then, the double value is boxed using <code
+ class="docutils literal"><span class="pre">jl_box_float64</span></code>.
+Finally, in the last step, the function is called using <code
+ class="docutils literal"><span class="pre">jl_call1</span></code>. <code
+ class="docutils literal"><span class="pre">jl_call0</span></code>, <code
+ class="docutils literal"><span class="pre">jl_call2</span></code>, and
+<code class="docutils literal"><span class="pre">jl_call3</span></code>
+functions also exist, to conveniently handle different numbers of
+arguments. To pass more arguments, use <code class="docutils literal"><span
+ class="pre">jl_call</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">jl_call</span><span class="p">(</span><span class="kt">jl_function_t</span> <span
+ class="o">*</span><span class="n">f</span><span class="p">,</span> <span
+ class="kt">jl_value_t</span> <span class="o">**</span><span class="n">args</span><span
+ class="p">,</span> <span class="kt">int32_t</span> <span class="n">nargs</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Its second argument <code class="docutils literal"><span class="pre">args</span></code>
+is an array of <code class="docutils literal"><span class="pre">jl_value_t*</span></code>
+arguments and <code class="docutils literal"><span class="pre">nargs</span></code>
+is the number of arguments.</p>
+</div>
+<div class="section" id="memory-management">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">メモ
+リ管理</span></span><a class="headerlink" href="#memory-management"
+ title="Permalink to this headline"></a></h2>
+<p>As we have seen, Julia objects are represented in C as pointers.
+This raises the question of who is responsible for freeing these
+objects.</p>
+<p>Typically, Julia objects are freed by a garbage collector (GC), but
+the GC does not automatically know that we are holding a reference to a
+Julia value from C. This means the GC can free objects out from under
+you, rendering pointers invalid.</p>
+<p>The GC can only run when Julia objects are allocated. Calls like <code
+ class="docutils literal"><span class="pre">jl_box_float64</span></code>
+perform allocation, and allocation might also happen at any point in
+running Julia code. However, it is generally safe to use pointers in
+between <code class="docutils literal"><span class="pre">jl_...</span></code>
+calls. But in order to make sure that values can survive <code
+ class="docutils literal"><span class="pre">jl_...</span></code> calls,
+we have to tell Julia that we hold a reference to a Julia value. This
+can be done using the <code class="docutils literal"><span class="pre">JL_GC_PUSH</span></code>
+macros:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">ret</span> <span class="o">=</span> <span class="n">jl_eval_string</span><span
+ class="p">(</span><span class="s">"sqrt(2.0)"</span><span class="p">);</span>
+<span class="n">JL_GC_PUSH1</span><span class="p">(</span><span
+ class="o">&amp;</span><span class="n">ret</span><span class="p">);</span>
+<span class="c1">// Do something with ret</span>
+<span class="n">JL_GC_POP</span><span class="p">();</span>
+</pre>
+</div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">JL_GC_POP</span></code>
+call releases the references established by the previous <code
+ class="docutils literal"><span class="pre">JL_GC_PUSH</span></code>.
+Note that <code class="docutils literal"><span class="pre">JL_GC_PUSH</span></code>
+is working on the stack, so it must be exactly paired with a <code
+ class="docutils literal"><span class="pre">JL_GC_POP</span></code>
+before the stack frame is destroyed.</p>
+<p>Several Julia values can be pushed at once using the <code
+ class="docutils literal"><span class="pre">JL_GC_PUSH2</span></code> ,
+<code class="docutils literal"><span class="pre">JL_GC_PUSH3</span></code>
+, and <code class="docutils literal"><span class="pre">JL_GC_PUSH4</span></code>
+macros. To push an array of Julia values one can use the <code
+ class="docutils literal"><span class="pre">JL_GC_PUSHARGS</span></code>
+macro, which can be used as follows:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">**</span><span
+ class="n">args</span><span class="p">;</span>
+<span class="n">JL_GC_PUSHARGS</span><span class="p">(</span><span
+ class="n">args</span><span class="p">,</span> <span class="mi">2</span><span
+ class="p">);</span> <span class="c1">// args can now hold 2 `jl_value_t*` objects</span>
+<span class="n">args</span><span class="p">[</span><span class="mi">0</span><span
+ class="p">]</span> <span class="o">=</span> <span class="n">some_value</span><span
+ class="p">;</span>
+<span class="n">args</span><span class="p">[</span><span class="mi">1</span><span
+ class="p">]</span> <span class="o">=</span> <span class="n">some_other_value</span><span
+ class="p">;</span>
+<span class="c1">// Do something with args (e.g. call jl_... functions)</span>
+<span class="n">JL_GC_POP</span><span class="p">();</span>
+</pre>
+</div>
+</div>
+<p>The garbage collector also operates under the assumption that it is
+aware of every old-generation object pointing to a young-generation
+one. Any time a pointer is updated breaking that assumption, it must be
+signaled to the collector with the <code class="docutils literal"><span
+ class="pre">jl_gc_wb</span></code> (write barrier) function like so:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">parent</span> <span class="o">=</span> <span class="n">some_old_value</span><span
+ class="p">,</span> <span class="o">*</span><span class="n">child</span> <span
+ class="o">=</span> <span class="n">some_young_value</span><span
+ class="p">;</span>
+<span class="p">((</span><span class="n">some_specific_type</span><span
+ class="o">*</span><span class="p">)</span><span class="n">parent</span><span
+ class="p">)</span><span class="o">-&gt;</span><span class="n">field</span> <span
+ class="o">=</span> <span class="n">child</span><span class="p">;</span>
+<span class="n">jl_gc_wb</span><span class="p">(</span><span class="n">parent</span><span
+ class="p">,</span> <span class="n">child</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>It is in general impossible to predict which values will be old at
+runtime, so the write barrier must be inserted after all explicit
+stores. One notable exception is if the <code class="docutils literal"><span
+ class="pre">parent</span></code> object was just allocated and garbage
+collection was not run since then. Remember that most <code
+ class="docutils literal"><span class="pre">jl_...</span></code>
+functions can sometimes invoke garbage collection.</p>
+<p>The write barrier is also necessary for arrays of pointers when
+updating their data directly. For example:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="n">some_array</span> <span class="o">=</span> <span class="p">...;</span> <span
+ class="c1">// e.g. a Vector{Any}</span>
+<span class="kt">void</span> <span class="o">**</span><span class="n">data</span> <span
+ class="o">=</span> <span class="p">(</span><span class="kt">void</span><span
+ class="o">**</span><span class="p">)</span><span class="n">jl_array_data</span><span
+ class="p">(</span><span class="n">some_array</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">some_value</span> <span class="o">=</span> <span class="p">...;</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span
+ class="p">]</span> <span class="o">=</span> <span class="n">some_value</span><span
+ class="p">;</span>
+<span class="n">jl_gc_wb</span><span class="p">(</span><span class="n">some_array</span><span
+ class="p">,</span> <span class="n">some_value</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<div class="section" id="manipulating-the-garbage-collector">
+<h3><span id="result_box" class="short_text" lang="ja"><span>ガベージコレクタ</span><span
+ class="">の操作</span></span><a class="headerlink"
+ href="#manipulating-the-garbage-collector"
+ title="Permalink to this headline"></a></h3>
+<p>There are some functions to control the GC. In normal use cases,
+these should not be necessary.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="30%"><col width="70%"></colgroup> <tbody
+ valign="top">
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">jl_gc_collect()</span></code></td>
+      <td>Force a GC run</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">jl_gc_enable(0)</span></code></td>
+      <td>Disable the GC, return previous state as int</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">jl_gc_enable(1)</span></code></td>
+      <td>Enable the GC, return previous state as int</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">jl_gc_is_enabled()</span></code></td>
+      <td>Return current state as int</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="section" id="working-with-arrays">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">配列
+の操作</span></span><a class="headerlink" href="#working-with-arrays"
+ title="Permalink to this headline"></a></h2>
+<p>Julia and C can share array data without copying. The next example
+will show how this works.</p>
+<p>Julia arrays are represented in C by the datatype <code
+ class="docutils literal"><span class="pre">jl_array_t*</span></code>.
+Basically, <code class="docutils literal"><span class="pre">jl_array_t</span></code>
+is a struct that contains:</p>
+<ul class="simple">
+  <li>Information about the datatype</li>
+  <li>A pointer to the data block</li>
+  <li>Information about the sizes of the array</li>
+</ul>
+<p>To keep things simple, we start with a 1D array. Creating an array
+containing Float64 elements of length 10 is done by:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span><span class="o">*</span> <span
+ class="n">array_type</span> <span class="o">=</span> <span class="n">jl_apply_array_type</span><span
+ class="p">(</span><span class="n">jl_float64_type</span><span class="p">,</span> <span
+ class="mi">1</span><span class="p">);</span>
+<span class="kt">jl_array_t</span><span class="o">*</span> <span
+ class="n">x</span>          <span class="o">=</span> <span class="n">jl_alloc_array_1d</span><span
+ class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span
+ class="mi">10</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Alternatively, if you have already allocated the array you can
+generate a thin wrapper around its data:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">double</span> <span class="o">*</span><span
+ class="n">existingArray</span> <span class="o">=</span> <span class="p">(</span><span
+ class="kt">double</span><span class="o">*</span><span class="p">)</span><span
+ class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span
+ class="p">(</span><span class="kt">double</span><span class="p">)</span><span
+ class="o">*</span><span class="mi">10</span><span class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="n">x</span> <span class="o">=</span> <span class="n">jl_ptr_to_array_1d</span><span
+ class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span
+ class="n">existingArray</span><span class="p">,</span> <span class="mi">10</span><span
+ class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>The last argument is a boolean indicating whether Julia should take
+ownership of the data. If this argument is non-zero, the GC will call <code
+ class="docutils literal"><span class="pre">free</span></code> on the
+data pointer when the array is no longer referenced.</p>
+<p>In order to access the data of x, we can use <code
+ class="docutils literal"><span class="pre">jl_array_data</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">double</span> <span class="o">*</span><span
+ class="n">xData</span> <span class="o">=</span> <span class="p">(</span><span
+ class="kt">double</span><span class="o">*</span><span class="p">)</span><span
+ class="n">jl_array_data</span><span class="p">(</span><span class="n">x</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Now we can fill the array:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span
+ class="n">i</span><span class="o">=</span><span class="mi">0</span><span
+ class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span
+ class="n">jl_array_len</span><span class="p">(</span><span class="n">x</span><span
+ class="p">);</span> <span class="n">i</span><span class="o">++</span><span
+ class="p">)</span>
+    <span class="n">xData</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span> <span class="o">=</span> <span
+ class="n">i</span><span class="p">;</span>
+</pre>
+</div>
+</div>
+<p>Now let us call a Julia function that performs an in-place operation
+on <code class="docutils literal"><span class="pre">x</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_function_t</span> <span class="o">*</span><span
+ class="n">func</span>  <span class="o">=</span> <span class="n">jl_get_function</span><span
+ class="p">(</span><span class="n">jl_base_module</span><span class="p">,</span> <span
+ class="s">"reverse!"</span><span class="p">);</span>
+<span class="n">jl_call1</span><span class="p">(</span><span class="n">func</span><span
+ class="p">,</span> <span class="p">(</span><span class="kt">jl_value_t</span><span
+ class="o">*</span><span class="p">)</span><span class="n">x</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>By printing the array, one can verify that the elements of <code
+ class="docutils literal"><span class="pre">x</span></code> are now
+reversed.</p>
+<div class="section" id="accessing-returned-arrays">
+<h3><span id="result_box" class="short_text" lang="ja"><span>返される</span><span
+ class="">配列へのアクセス</span></span><a class="headerlink"
+ href="#accessing-returned-arrays" title="Permalink to this headline"></a></h3>
+<p>If a Julia function returns an array, the return value of <code
+ class="docutils literal"><span class="pre">jl_eval_string</span></code>
+and <code class="docutils literal"><span class="pre">jl_call</span></code>
+can be cast to a <code class="docutils literal"><span class="pre">jl_array_t*</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_function_t</span> <span class="o">*</span><span
+ class="n">func</span>  <span class="o">=</span> <span class="n">jl_get_function</span><span
+ class="p">(</span><span class="n">jl_base_module</span><span class="p">,</span> <span
+ class="s">"reverse"</span><span class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="n">y</span> <span class="o">=</span> <span class="p">(</span><span
+ class="kt">jl_array_t</span><span class="o">*</span><span class="p">)</span><span
+ class="n">jl_call1</span><span class="p">(</span><span class="n">func</span><span
+ class="p">,</span> <span class="p">(</span><span class="kt">jl_value_t</span><span
+ class="o">*</span><span class="p">)</span><span class="n">x</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Now the content of <code class="docutils literal"><span class="pre">y</span></code>
+can be accessed as before using <code class="docutils literal"><span
+ class="pre">jl_array_data</span></code>.
+As always, be sure to keep a reference to the array while it is in use.</p>
+</div>
+<div class="section" id="multidimensional-arrays">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">多次
+元配列</span></span><a class="headerlink" href="#multidimensional-arrays"
+ title="Permalink to this headline"></a></h3>
+<p>Julia’s multidimensional arrays are stored in memory in column-major
+order. Here is some code that creates a 2D array and accesses its
+properties:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="c1">// Create 2D array of float64 type</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">array_type</span> <span class="o">=</span> <span class="n">jl_apply_array_type</span><span
+ class="p">(</span><span class="n">jl_float64_type</span><span class="p">,</span> <span
+ class="mi">2</span><span class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="n">x</span>  <span class="o">=</span> <span class="n">jl_alloc_array_2d</span><span
+ class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span
+ class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span
+ class="p">);</span>
+
+<span class="c1">// Get array pointer</span>
+<span class="kt">double</span> <span class="o">*</span><span class="n">p</span> <span
+ class="o">=</span> <span class="p">(</span><span class="kt">double</span><span
+ class="o">*</span><span class="p">)</span><span class="n">jl_array_data</span><span
+ class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="c1">// Get number of dimensions</span>
+<span class="kt">int</span> <span class="n">ndims</span> <span class="o">=</span> <span
+ class="n">jl_array_ndims</span><span class="p">(</span><span class="n">x</span><span
+ class="p">);</span>
+<span class="c1">// Get the size of the i-th dim</span>
+<span class="kt">size_t</span> <span class="n">size0</span> <span
+ class="o">=</span> <span class="n">jl_array_dim</span><span class="p">(</span><span
+ class="n">x</span><span class="p">,</span><span class="mi">0</span><span
+ class="p">);</span>
+<span class="kt">size_t</span> <span class="n">size1</span> <span
+ class="o">=</span> <span class="n">jl_array_dim</span><span class="p">(</span><span
+ class="n">x</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">);</span>
+
+<span class="c1">// Fill array with data</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span
+ class="n">i</span><span class="o">=</span><span class="mi">0</span><span
+ class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span
+ class="n">size1</span><span class="p">;</span> <span class="n">i</span><span
+ class="o">++</span><span class="p">)</span>
+    <span class="k">for</span><span
+ class="p">(</span><span class="kt">size_t</span> <span class="n">j</span><span
+ class="o">=</span><span class="mi">0</span><span class="p">;</span> <span
+ class="n">j</span><span class="o">&lt;</span><span class="n">size0</span><span
+ class="p">;</span> <span class="n">j</span><span class="o">++</span><span
+ class="p">)</span>
+        <span class="n">p</span><span class="p">[</span><span
+ class="n">j</span> <span class="o">+</span> <span class="n">size0</span><span
+ class="o">*</span><span class="n">i</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span
+ class="n">j</span><span class="p">;</span>
+</pre>
+</div>
+</div>
+<p>Notice that while Julia arrays use 1-based indexing, the C API uses
+0-based indexing (for example in calling <code class="docutils literal"><span
+ class="pre">jl_array_dim</span></code>) in order to read as idiomatic
+C code.</p>
+</div>
+</div>
+<div class="section" id="exceptions">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">例外</span></span><a
+ class="headerlink" href="#exceptions"
+ title="Permalink to this headline"></a></h2>
+<p>Julia code can throw exceptions. For example, consider:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="n">jl_eval_string</span><span class="p">(</span><span
+ class="s">"this_function_does_not_exist()"</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>This call will appear to do nothing. However, it is possible to
+check whether an exception was thrown:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="p">(</span><span class="n">jl_exception_occurred</span><span
+ class="p">())</span>
+    <span class="n">printf</span><span class="p">(</span><span
+ class="s">"%s </span><span class="se">\n</span><span class="s">"</span><span
+ class="p">,</span> <span class="n">jl_typeof_str</span><span class="p">(</span><span
+ class="n">jl_exception_occurred</span><span class="p">()));</span>
+</pre>
+</div>
+</div>
+<p>If you are using the Julia C API from a language that supports
+exceptions (e.g. Python, C#, C++), it makes sense to wrap each call
+into <code class="docutils literal"><span class="pre">libjulia</span></code>
+with a function that checks whether an exception was thrown, and then
+rethrows the exception in the host language.</p>
+<div class="section" id="throwing-julia-exceptions">
+<h3><span id="result_box" class="short_text" lang="ja"><span>Julia</span><span
+ class="">の例外</span><span class="">を</span><span class="">投げます</span></span><a
+ class="headerlink" href="#throwing-julia-exceptions"
+ title="Permalink to this headline"></a></h3>
+<p>When writing Julia callable functions, it might be necessary to
+validate arguments and throw exceptions to indicate errors. A typical
+type check looks like:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span
+ class="n">jl_is_float64</span><span class="p">(</span><span class="n">val</span><span
+ class="p">))</span> <span class="p">{</span>
+    <span class="n">jl_type_error</span><span
+ class="p">(</span><span class="n">function_name</span><span class="p">,</span> <span
+ class="p">(</span><span class="kt">jl_value_t</span><span class="o">*</span><span
+ class="p">)</span><span class="n">jl_float64_type</span><span class="p">,</span> <span
+ class="n">val</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+<p>General exceptions can be raised using the functions:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">void</span> <span class="nf">jl_error</span><span
+ class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span
+ class="o">*</span><span class="n">str</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">jl_errorf</span><span
+ class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span
+ class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span
+ class="p">...);</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">jl_error</span></code>
+takes a C string, and <code class="docutils literal"><span class="pre">jl_errorf</span></code>
+is called like <code class="docutils literal"><span class="pre">printf</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="n">jl_errorf</span><span class="p">(</span><span
+ class="s">"argument x = %d is too large"</span><span class="p">,</span> <span
+ class="n">x</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>where in this example <code class="docutils literal"><span
+ class="pre">x</span></code> is assumed to be an integer.</p>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+<div class="wy-nav-content"> </div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

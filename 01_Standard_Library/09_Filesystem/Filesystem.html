@@ -1,0 +1,800 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>ファイルシステム</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">ファイルシステム<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pwd() <br>
+→AbstractString </td>
+      <td style="vertical-align: top;">Get the current working
+directory.<br>
+      </td>
+      <td style="vertical-align: top;">pwd() </td>
+      <td style="vertical-align: top;">"D:\\Julia-0.4.3"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cd([dir::AbstractString=homedir()])
+      </td>
+      <td style="vertical-align: top;">Set the current working
+directory.<br>
+      </td>
+      <td style="vertical-align: top;">cd()<br>
+      </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cd(f[, dir=homedir()]) </td>
+      <td style="vertical-align: top;">Temporarily changes the current
+working directory
+and applies function f before returning.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdir([dir]) →
+Vector{ByteString} </td>
+      <td style="vertical-align: top;">Returns the files and
+directories in the directory
+dir (or the current working directory if not given).<br>
+      </td>
+      <td style="vertical-align: top;">readdir() </td>
+      <td style="vertical-align: top;"><a href="readdir%28%29.txt">readdir().txt</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mkdir(path[, mode]) </td>
+      <td style="vertical-align: top;">Make a new directory with name
+path and permissions
+mode. mode defaults to 0o777, modified by the current file creation
+mask.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mkpath(path[, mode]) </td>
+      <td style="vertical-align: top;">Create all directories in the
+given path, with
+permissions mode. mode defaults to 0o777, modified by the current file
+creation mask.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symlink(target, link) </td>
+      <td style="vertical-align: top;">Creates a symbolic link to
+target with the name link.<br>
+      <span style="font-weight: bold;">note</span><br>
+&nbsp;&nbsp;&nbsp; This function raises an error under operating
+systems that do not support soft symbolic links, such as Windows XP.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readlink(path) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Returns the value of a symbolic
+link path.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">chmod(path, mode)<br>
+      </td>
+      <td style="vertical-align: top;">Change the permissions mode of
+path to mode. Only
+integer modes (e.g. 0o777) are currently supported.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">stat(file) </td>
+      <td style="vertical-align: top;">Returns a structure whose fields
+contain information
+about the file. The fields of the structure are:<br>
+      <table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 80%; margin-left: auto; margin-right: auto;">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">size</td>
+            <td style="vertical-align: top;">The size (in bytes) of the
+file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">device </td>
+            <td style="vertical-align: top;">ID of the device that
+contains the file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">inode </td>
+            <td style="vertical-align: top;">The inode number of the
+file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">mode </td>
+            <td style="vertical-align: top;">The protection mode of the
+file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">nlink</td>
+            <td style="vertical-align: top;">The number of hard links
+to the file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">uid </td>
+            <td style="vertical-align: top;">The user id of the owner
+of the file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">gid</td>
+            <td style="vertical-align: top;">The group id of the file
+owner</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">rdev&nbsp; <br>
+            </td>
+            <td style="vertical-align: top;"> If this file refers to a
+device, the ID of the device it refers to</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">blksize </td>
+            <td style="vertical-align: top;">The file-system preferred
+block size for the file</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">blocks </td>
+            <td style="vertical-align: top;">The number of such blocks
+allocated</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">mtime</td>
+            <td style="vertical-align: top;">Unix timestamp of when the
+file was last modified</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">ctime</td>
+            <td style="vertical-align: top;">Unix timestamp of when the
+file was created</td>
+          </tr>
+        </tbody>
+      </table>
+&nbsp; <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lstat(file) </td>
+      <td style="vertical-align: top;">Like stat, but for symbolic
+links gets the info for
+the link itself rather than the file it refers to. This function must
+be called on a file path rather than a file object or a file descriptor.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ctime(file) </td>
+      <td style="vertical-align: top;">Equivalent to stat(file).ctime<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mtime(file) </td>
+      <td style="vertical-align: top;">Equivalent to stat(file).mtime<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filemode(file) </td>
+      <td style="vertical-align: top;">Equivalent to stat(file).mode<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filesize(path...) </td>
+      <td style="vertical-align: top;">Equivalent to stat(file).size<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">uperm(file)</td>
+      <td style="vertical-align: top;">Gets the permissions of the
+owner of the file as a bitfield of<br>
+      <table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 80%; margin-left: auto; margin-right: auto;">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">01</td>
+            <td style="vertical-align: top;">実行権限</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">02 </td>
+            <td style="vertical-align: top;">書き込み権限<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">04&nbsp; <br>
+            </td>
+            <td style="vertical-align: top;"> 読み込み権限<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+For allowed arguments, see <code class="docutils literal"><span
+ class="pre">stat</span></code>.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gperm(file) </td>
+      <td style="vertical-align: top;">Like uperm but gets the
+permissions of the group
+owning the file<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">operm(file) </td>
+      <td style="vertical-align: top;">Like uperm but gets the
+permissions for people who
+neither own the file nor are a member of the group owning the file<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cp(src::AbstractString,
+dst::AbstractString;
+remove_destination::Bool=false, follow_symlinks::Bool=false) </td>
+      <td style="vertical-align: top;">Copy the file, link, or
+directory from src to dest.
+remove_destination=true will first remove an existing dst.<br>
+If follow_symlinks=false, and src is a symbolic
+link, dst will be created as a symbolic link. If follow_symlinks=true
+and src is a symbolic link, dst will be a copy of the file or directory
+src refers to.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">download(url[, localfile]) </td>
+      <td style="vertical-align: top;">Download a file from the given
+url, optionally
+renaming it to the given local file name. Note that this function
+relies on the availability of external tools such as curl, wget or
+fetch to download the file and is provided for convenience. For
+production use or situations in which more options are needed, please
+use a package that provides the desired functionality instead.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mv(src::AbstractString,
+dst::AbstractString;
+remove_destination::Bool=false) </td>
+      <td style="vertical-align: top;">Move the file, link, or
+directory from src to dst.
+remove_destination=true will first remove an existing dst.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rm(path::AbstractString;
+recursive=false) </td>
+      <td style="vertical-align: top;">Delete the file, link, or empty
+directory at the
+given path. If recursive=true is passed and the path is a directory,
+then all contents are removed recursively.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">touch(path::AbstractString) </td>
+      <td style="vertical-align: top;">Update the last-modified
+timestamp on a file to the
+current time.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tempname() </td>
+      <td style="vertical-align: top;">Generate a unique temporary file
+path.<br>
+      </td>
+      <td style="vertical-align: top;">tempname() </td>
+      <td style="vertical-align: top;">"C:\\Users\\***\\AppData\\Local\\Temp\\jul3809.tmp"<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tempdir() </td>
+      <td style="vertical-align: top;">Obtain the path of a temporary
+directory (possibly
+shared with other processes).<br>
+      </td>
+      <td style="vertical-align: top;"> tempdir() </td>
+      <td style="vertical-align: top;">"C:\\Users\\***\\AppData\\Local\\Temp\\"<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mktemp([parent=tempdir()]) </td>
+      <td style="vertical-align: top;">Returns (path, io), where path
+is the path of a new
+temporary file in parent and io is an open file object for this path.<br>
+      </td>
+      <td style="vertical-align: top;">mktemp() </td>
+      <td style="vertical-align: top;">("C:\\Users\\***\\AppData\\Local\\Temp\\jul862C.tmp",IOStream(&lt;file
+C:\Users\***\AppData\Local\Temp\jul862C.tmp&gt;))<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mktemp(f::Function[,
+parent=tempdir()]) </td>
+      <td style="vertical-align: top;">Apply the function f to the
+result of mktemp(parent)
+and remove the temporary file upon completion.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mktempdir([parent=tempdir()]) </td>
+      <td style="vertical-align: top;">Create a temporary directory in
+the parent directory
+and return its path.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mktempdir(f::Function[,
+parent=tempdir()]) </td>
+      <td style="vertical-align: top;">Apply the function f to the
+result of
+mktempdir(parent) and remove the temporary directory upon completion.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isblockdev(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a block
+device, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isblockdev(homedir()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ischardev(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a
+character device, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">ischardev(homedir()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isdir(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a
+directory, false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isdir(homedir()) </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isexecutable(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if the current user
+has permission to
+execute path, false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isexecutable(homedir()) <br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isfifo(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a FIFO,
+false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isexecutable(homedri()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isfile(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a
+regular file, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isfile(homedir)<br>
+isfile(homedir()*"\\python")<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">islink(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a
+symbolic link, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">islink(homedir())<br>
+      </td>
+      <td style="vertical-align: top;">false </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ismount(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a mount
+point, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">ismount(homedir()) <br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ispath(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a valid
+filesystem path,
+false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">ispath(homedir())<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isreadable(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if the current user
+has permission to
+read path, false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">isreadable(homedir())<br>
+&nbsp;isreadable(homedir()*"\\file")<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false(現在そのパスにないファイル名)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issetgid(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path has the
+setgid flag set, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">issetgid(homedir()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issetuid(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path has the
+setuid flag set, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">issetuid(homedir()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issocket(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path is a
+socket, false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">issocket(homedir()) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issticky(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if path has the
+sticky bit set, false
+otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">issticky(homedir()) <br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">iswritable(path) → Bool </td>
+      <td style="vertical-align: top;">Returns true if the current user
+has permission to
+write to path, false otherwise.<br>
+      </td>
+      <td style="vertical-align: top;">iswritable(homedir()) </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">homedir() <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Return the current user’s home
+directory.<br>
+      </td>
+      <td style="vertical-align: top;">homedir() </td>
+      <td style="vertical-align: top;">"C:\\Users\\***"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dirname(path::AbstractString) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Get the directory part of a path.<br>
+      </td>
+      <td style="vertical-align: top;">iswritable("C:\\Users\\***") </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">basename(path::AbstractString) <br>
+→ AbstractString<br>
+      </td>
+      <td style="vertical-align: top;">Get the file name part of a path.<br>
+      </td>
+      <td style="vertical-align: top;">basename(homedir()) </td>
+      <td style="vertical-align: top;">"***"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@__FILE__ -&gt; AbstractString </td>
+      <td style="vertical-align: top;">@__FILE__ expands to a string
+with the absolute path
+and file name of the script being run. Returns nothing if run from a
+REPL or an empty string if evaluated by julia -e &lt;expr&gt;.<br>
+      </td>
+      <td style="vertical-align: top;">@__FILE__<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@__LINE__ -&gt; Int </td>
+      <td style="vertical-align: top;">@__LINE__ expands to the line
+number of the
+call-site.<br>
+      </td>
+      <td style="vertical-align: top;">@__LINE__ </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isabspath(path::AbstractString) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Determines whether a path is
+absolute (begins at the
+root directory).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isdirpath(path::AbstractString)<br>
+&nbsp;→ Bool </td>
+      <td style="vertical-align: top;">Determines whether a path refers
+to a directory (for
+example, ends with a path separator).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">joinpath(parts...) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Join path components into a full
+path. If some
+argument is an absolute path, then prior components are dropped.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">abspath(path::AbstractString) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Convert a path to an absolute
+path by adding the
+current directory if necessary.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">normpath(path::AbstractString) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Normalize a path, removing ”.”
+and ”..” entries.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">realpath(path::AbstractString) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Canonicalize a path by expanding
+symbolic links and
+removing ”.” and ”..” entries.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">relpath(path::AbstractString,
+startpath::AbstractString = ".") <br>
+→
+AbstractString </td>
+      <td style="vertical-align: top;">Return a relative filepath to
+path either from the
+current directory or from an optional start directory. This is a path
+computation: the filesystem is not accessed to confirm the existence or
+nature of path or startpath.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">expanduser(path::AbstractString)
+      <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">On Unix systems, replace a tilde
+character at the
+start of a path with the current user’s home directory.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plitdir(path::AbstractString)
+-&gt; (AbstractString, AbstractString) </td>
+      <td style="vertical-align: top;">Split a path into a tuple of the
+directory name and
+file name.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">splitdrive(path::AbstractString)<br>
+&nbsp;-&gt; (AbstractString, AbstractString) </td>
+      <td style="vertical-align: top;">On Windows, split a path into
+the drive letter part
+and the path part. On Unix systems, the first component is always the
+empty string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">splitext(path::AbstractString) <br>
+-&gt; (AbstractString, AbstractString) </td>
+      <td style="vertical-align: top;">If the last component of a path
+contains a dot,
+split the path into everything before the dot and everything including
+and after the dot. Otherwise, return a tuple of the argument unmodified
+and the empty string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

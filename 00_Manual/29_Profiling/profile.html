@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profiling — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Performance Tips" href="performance-tips.html">
+  <link rel="prev" title="Packages" href="packages.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="profiling"><span id="man-profiling"></span>
+<h1><span id="result_box" class="short_text" lang="ja"><span class="">プロ
+ファイリング</span></span><a class="headerlink" href="#profiling"
+ title="Permalink to this headline"></a></h1>
+<p>The <a class="reference internal"
+ href="../stdlib/profile.html#module-Profile" title="Profile"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Profile</span></code></a>
+module provides tools to help developers improve the
+performance of their code. When used, it takes measurements on running
+code, and produces output that helps you understand how much time is
+spent on individual line(s). The most common usage is to identify
+“bottlenecks” as targets for optimization.</p>
+<p><a class="reference internal"
+ href="../stdlib/profile.html#module-Profile" title="Profile"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Profile</span></code></a>
+implements what is known as a “sampling” or <a
+ class="reference external"
+ href="https://en.wikipedia.org/wiki/Profiling_%28computer_programming%29">statistical
+profiler</a>. It
+works by periodically taking a backtrace during the execution of any
+task. Each backtrace captures the currently-running function and
+line number, plus the complete chain of function calls that led to
+this line, and hence is a “snapshot” of the current state of
+execution.</p>
+<p>If much of your run time is spent executing a particular line of
+code,
+this line will show up frequently in the set of all backtraces. In
+other words, the “cost” of a given line—or really, the cost of the
+sequence of function calls up to and including this line—is
+proportional to how often it appears in the set of all backtraces.</p>
+<p>A sampling profiler does not provide complete line-by-line coverage,
+because the backtraces occur at intervals (by default, 1 ms on Unix
+systems and 10 ms on Windows, although the actual scheduling is
+subject to operating system load). Moreover, as discussed further
+below, because samples are collected at a sparse subset of all
+execution points, the data collected by a sampling profiler is subject
+to statistical noise.</p>
+<p>Despite these limitations, sampling profilers have substantial
+strengths:</p>
+<ul class="simple">
+  <li>You do not have to make any modifications to your code to take
+timing measurements (in contrast to the alternative <a
+ class="reference external"
+ href="https://github.com/timholy/IProfile.jl">instrumenting
+profiler</a>).</li>
+  <li>It can profile into Julia’s core code and even (optionally) into
+C
+and Fortran libraries.</li>
+  <li>By running “infrequently” there is very little performance
+overhead;
+while profiling, your code can run at nearly native speed.</li>
+</ul>
+<p>For these reasons, it’s recommended that you try using the built-in
+sampling profiler before considering any alternatives.</p>
+<div class="section" id="basic-usage">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">基本
+的な使用法</span></span><a class="headerlink" href="#basic-usage"
+ title="Permalink to this headline"></a></h2>
+<p>Let’s work with a simple test case:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> myfunc</span><span
+ class="p">()</span>
+    <span class="n">A</span> <span class="o">=</span> <span
+ class="n">rand</span><span class="p">(</span><span class="mi">100</span><span
+ class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span
+ class="mi">200</span><span class="p">)</span>
+    <span class="n">maximum</span><span
+ class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>It’s a good idea to first run the code you intend to profile at
+least
+once (unless you want to profile Julia’s JIT-compiler):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">myfunc</span><span class="p">()</span>  <span class="c"># run once to force compilation</span>
+</pre>
+</div>
+</div>
+<p>Now we’re ready to profile this function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">@</span><span class="n">profile</span> <span class="n">myfunc</span><span
+ class="p">()</span>
+</pre>
+</div>
+</div>
+<p>To see the profiling results, there is a <a
+ class="reference external"
+ href="https://github.com/timholy/ProfileView.jl">graphical browser</a>
+available, but here
+we’ll use the text-based display that comes with the standard library:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Profile</span><span class="o">.</span><span class="n">print</span><span
+ class="p">()</span>
+      <span class="mi">23</span> <span class="n">client</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">_start</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">373</span>
+        <span
+ class="mi">23</span> <span class="n">client</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">run_repl</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">166</span>
+           <span class="mi">23</span> <span
+ class="n">client</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">eval_user_input</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">91</span>
+              <span class="mi">23</span> <span
+ class="n">profile</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">anonymous</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">14</span>
+                 <span
+ class="mi">8</span>  <span class="n">none</span><span class="p">;</span> <span
+ class="n">myfunc</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">2</span>
+                  <span
+ class="mi">8</span> <span class="n">dSFMT</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">dsfmt_gv_fill_array_close_open</span><span
+ class="o">!</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">128</span>
+                 <span
+ class="mi">15</span> <span class="n">none</span><span class="p">;</span> <span
+ class="n">myfunc</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">3</span>
+                  <span
+ class="mi">2</span>  <span class="n">reduce</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">max</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">35</span>
+                  <span class="mi">2</span>  <span
+ class="n">reduce</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">max</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">36</span>
+                  <span
+ class="mi">11</span> <span class="n">reduce</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">max</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">37</span>
+</pre>
+</div>
+</div>
+<p>Each line of this display represents a particular spot (line number)
+in the code. Indentation is used to indicate the nested sequence of
+function calls, with more-indented lines being deeper in the sequence
+of calls. In each line, the first “field” indicates the number of
+backtraces (samples) taken <em>at this line or in any functions
+executed
+by this line</em>. The second field is the file name, followed by a
+semicolon; the third is the function name followed by a semicolon, and
+the fourth is the line number. Note that the specific line numbers
+may change as Julia’s code changes; if you want to follow along, it’s
+best to run this example yourself.</p>
+<p>In this example, we can see that the top level is <code
+ class="docutils literal"><span class="pre">client.jl</span></code>‘s
+<code class="docutils literal"><span class="pre">_start</span></code>
+function. This is the first Julia function that gets called
+when you launch Julia. If you examine line 373 of <code
+ class="docutils literal"><span class="pre">client.jl</span></code>,
+you’ll see that (at the time of this writing) it calls <code
+ class="xref jl jl-func docutils literal"><span class="pre">run_repl()</span></code>,
+mentioned on the second line. This in turn calls <code
+ class="xref jl jl-func docutils literal"><span class="pre">eval_user_input()</span></code>.
+These are the functions in <code class="docutils literal"><span
+ class="pre">client.jl</span></code> that interpret what you type
+at the REPL, and since we’re working interactively these functions
+were invoked when we entered <code class="docutils literal"><span
+ class="pre">@profile</span> <span class="pre">myfunc()</span></code>.
+The next line
+reflects actions taken in the <a class="reference internal"
+ href="../stdlib/profile.html#Base.@profile" title="Base.@profile"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@profile</span></code></a>
+macro.</p>
+<p>The first line shows that 23 backtraces were taken at line 373 of
+<code class="docutils literal"><span class="pre">client.jl</span></code>,
+but it’s not that this line was “expensive” on its own:
+the second line reveals that all 23 of these backtraces were actually
+triggered inside its call to <code class="docutils literal"><span
+ class="pre">run_repl</span></code>, and so on. To find out
+which operations are actually taking the time, we need to look deeper
+in the call chain.</p>
+<p>The first “important” line in this output is this one:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="mi">8</span>  <span class="n">none</span><span
+ class="p">;</span> <span class="n">myfunc</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">2</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">none</span></code>
+refers to the fact that we defined <code class="docutils literal"><span
+ class="pre">myfunc</span></code> in the REPL,
+rather than putting it in a file; if we had used a file, this would
+show the file name. Line 2 of <code class="docutils literal"><span
+ class="pre">myfunc()</span></code> contains the call to
+<code class="docutils literal"><span class="pre">rand</span></code>,
+and there were 8 (out of 23) backtraces that occurred at
+this line. Below that, you can see a call to
+<code class="xref jl jl-func docutils literal"><span class="pre">dsfmt_gv_fill_array_close_open!()</span></code>
+inside <code class="docutils literal"><span class="pre">dSFMT.jl</span></code>.
+You might be surprised not to see the
+<code class="docutils literal"><span class="pre">rand</span></code>
+function listed explicitly: that’s because <code
+ class="docutils literal"><span class="pre">rand</span></code> is <em>inlined</em>,
+and hence doesn’t appear in the backtraces.</p>
+<p>A little further down, you see:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="mi">15</span> <span class="n">none</span><span
+ class="p">;</span> <span class="n">myfunc</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>Line 3 of <code class="docutils literal"><span class="pre">myfunc</span></code>
+contains the call to <code class="docutils literal"><span class="pre">max</span></code>,
+and there were 15
+(out of 23) backtraces taken here. Below that, you can see the
+specific places in <code class="docutils literal"><span class="pre">base/reduce.jl</span></code>
+that carry out the
+time-consuming operations in the <code class="docutils literal"><span
+ class="pre">max</span></code> function for this type of
+input data.</p>
+<p>Overall, we can tentatively conclude that finding the maximum
+element
+is approximately twice as expensive as generating the random
+numbers. We could increase our confidence in this result by collecting
+more samples:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">@</span><span class="n">profile</span> <span class="p">(</span><span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="mi">100</span><span
+ class="p">;</span> <span class="n">myfunc</span><span class="p">();</span> <span
+ class="k">end</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Profile</span><span
+ class="o">.</span><span class="n">print</span><span class="p">()</span>
+       <span
+ class="mi">3121</span> <span class="n">client</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">_start</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">373</span>
+        <span class="mi">3121</span> <span
+ class="n">client</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">run_repl</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">166</span>
+           <span
+ class="mi">3121</span> <span class="n">client</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">eval_user_input</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">91</span>
+              <span class="mi">3121</span> <span
+ class="n">profile</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">anonymous</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">1</span>
+                 <span
+ class="mi">848</span>  <span class="n">none</span><span class="p">;</span> <span
+ class="n">myfunc</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">2</span>
+                  <span
+ class="mi">842</span> <span class="n">dSFMT</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">dsfmt_gv_fill_array_close_open</span><span
+ class="o">!</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">128</span>
+                 <span
+ class="mi">1510</span> <span class="n">none</span><span class="p">;</span> <span
+ class="n">myfunc</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">3</span>
+                  <span
+ class="mi">74</span>   <span class="n">reduce</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">max</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">35</span>
+                  <span class="mi">122</span>  <span
+ class="n">reduce</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">max</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">36</span>
+                  <span
+ class="mi">1314</span> <span class="n">reduce</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">;</span> <span class="n">max</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">37</span>
+</pre>
+</div>
+</div>
+<p>In general, if you have <code class="docutils literal"><span
+ class="pre">N</span></code> samples collected at a line, you can
+expect an uncertainty on the order of <code class="docutils literal"><span
+ class="pre">sqrt(N)</span></code> (barring other
+sources of noise, like how busy the computer is with other tasks). The
+major exception to this rule is garbage collection, which runs
+infrequently but tends to be quite expensive. (Since Julia’s garbage
+collector is written in C, such events can be detected using the
+<code class="docutils literal"><span class="pre">C=true</span></code>
+output mode described below, or by using <a class="reference external"
+ href="https://github.com/timholy/ProfileView.jl">ProfileView.jl</a>.)</p>
+<p>This illustrates the default “tree” dump; an alternative is the
+“flat”
+dump, which accumulates counts independent of their nesting:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Profile</span><span class="o">.</span><span class="n">print</span><span
+ class="p">(</span><span class="n">format</span><span class="o">=</span><span
+ class="p">:</span><span class="n">flat</span><span class="p">)</span>
+ <span
+ class="n">Count</span> <span class="n">File</span>         <span
+ class="n">Function</span>                         <span class="n">Line</span>
+  <span
+ class="mi">3121</span> <span class="n">client</span><span class="o">.</span><span
+ class="n">jl</span>    <span class="n">_start</span>                            <span
+ class="mi">373</span>
+  <span class="mi">3121</span> <span class="n">client</span><span
+ class="o">.</span><span class="n">jl</span>    <span class="n">eval_user_input</span>                    <span
+ class="mi">91</span>
+  <span class="mi">3121</span> <span class="n">client</span><span
+ class="o">.</span><span class="n">jl</span>    <span class="n">run_repl</span>                          <span
+ class="mi">166</span>
+   <span class="mi">842</span> <span class="n">dSFMT</span><span
+ class="o">.</span><span class="n">jl</span>     <span class="n">dsfmt_gv_fill_array_close_open</span><span
+ class="o">!</span>   <span class="mi">128</span>
+   <span class="mi">848</span> <span
+ class="n">none</span>         <span class="n">myfunc</span>                              <span
+ class="mi">2</span>
+  <span class="mi">1510</span> <span class="n">none</span>         <span
+ class="n">myfunc</span>                              <span class="mi">3</span>
+  <span
+ class="mi">3121</span> <span class="n">profile</span><span class="o">.</span><span
+ class="n">jl</span>   <span class="n">anonymous</span>                           <span
+ class="mi">1</span>
+    <span class="mi">74</span> <span class="n">reduce</span><span
+ class="o">.</span><span class="n">jl</span>    <span class="n">max</span>                                <span
+ class="mi">35</span>
+   <span class="mi">122</span> <span class="n">reduce</span><span
+ class="o">.</span><span class="n">jl</span>    <span class="n">max</span>                                <span
+ class="mi">36</span>
+  <span class="mi">1314</span> <span class="n">reduce</span><span
+ class="o">.</span><span class="n">jl</span>    <span class="n">max</span>                                <span
+ class="mi">37</span>
+</pre>
+</div>
+</div>
+<p>If your code has recursion, one potentially-confusing point is that
+a
+line in a “child” function can accumulate more counts than there are
+total backtraces. Consider the following function definitions:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">dumbsum</span><span class="p">(</span><span
+ class="n">n</span><span class="p">::</span><span class="n">Integer</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">n</span> <span
+ class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span
+ class="mi">1</span> <span class="p">:</span> <span class="mi">1</span> <span
+ class="o">+</span> <span class="n">dumbsum</span><span class="p">(</span><span
+ class="n">n</span><span class="o">-</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="n">dumbsum3</span><span class="p">()</span> <span class="o">=</span> <span
+ class="n">dumbsum</span><span class="p">(</span><span class="mi">3</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>If you were to profile <code class="docutils literal"><span
+ class="pre">dumbsum3</span></code>, and a backtrace was taken while it
+was executing <code class="docutils literal"><span class="pre">dumbsum(1)</span></code>,
+the backtrace would look like this:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">dumbsum3</span>
+    <span class="n">dumbsum</span><span
+ class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span
+ class="n">dumbsum</span><span class="p">(</span><span class="mi">2</span><span
+ class="p">)</span>
+            <span class="n">dumbsum</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Consequently, this child function gets 3 counts, even though the
+parent only gets one. The “tree” representation makes this much
+clearer, and for this reason (among others) is probably the most
+useful way to view the results.</p>
+</div>
+<div class="section" id="accumulation-and-clearing">
+<h2><span id="result_box" class="short_text" lang="ja"><span>蓄積と</span><span>ク
+リア</span></span><a class="headerlink" href="#accumulation-and-clearing"
+ title="Permalink to this headline"></a></h2>
+<p>Results from <a class="reference internal"
+ href="../stdlib/profile.html#Base.@profile" title="Base.@profile"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@profile</span></code></a>
+accumulate in a buffer; if you run multiple
+pieces of code under <a class="reference internal"
+ href="../stdlib/profile.html#Base.@profile" title="Base.@profile"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@profile</span></code></a>,
+then <a class="reference internal"
+ href="../stdlib/profile.html#Base.Profile.print"
+ title="Base.Profile.print"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.print()</span></code></a>
+will show
+you the combined results. This can be very useful, but sometimes you
+want to start fresh; you can do so with <a class="reference internal"
+ href="../stdlib/profile.html#Base.Profile.clear"
+ title="Base.Profile.clear"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.clear()</span></code></a>.</p>
+</div>
+<div class="section"
+ id="options-for-controlling-the-display-of-profile-results">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">プロ
+ファイル</span><span>結果</span><span>の</span><span>表示を制御する</span><span>オプション</span></span><a
+ class="headerlink"
+ href="#options-for-controlling-the-display-of-profile-results"
+ title="Permalink to this headline"></a></h2>
+<p><a class="reference internal"
+ href="../stdlib/profile.html#Base.Profile.print"
+ title="Base.Profile.print"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.print()</span></code></a>
+has more options than we’ve described so far.
+Let’s see the full declaration:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> print</span><span
+ class="p">(</span><span class="n">io</span><span class="p">::</span><span
+ class="n">IO</span> <span class="o">=</span> <span class="n">STDOUT</span><span
+ class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span
+ class="n">fetch</span><span class="p">();</span> <span class="n">format</span> <span
+ class="o">=</span> <span class="p">:</span><span class="n">tree</span><span
+ class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span
+ class="n">false</span><span class="p">,</span> <span class="n">combine</span> <span
+ class="o">=</span> <span class="n">true</span><span class="p">,</span> <span
+ class="n">cols</span> <span class="o">=</span> <span class="n">tty_cols</span><span
+ class="p">(),</span> <span class="n">maxdepth</span> <span class="o">=</span> <span
+ class="nb">typemax</span><span class="p">(</span><span class="kt">Int</span><span
+ class="p">),</span> <span class="n">sortedby</span> <span class="o">=</span> <span
+ class="p">:</span><span class="n">filefuncline</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Let’s discuss these arguments in order:</p>
+<ul>
+  <li>
+    <p class="first">The first argument allows you to save the results
+to a file, but the
+default is to print to <code class="docutils literal"><span class="pre">STDOUT</span></code>
+(the console).</p>
+  </li>
+  <li>
+    <p class="first">The second argument contains the data you want to
+analyze; by
+default that is obtained from <a class="reference internal"
+ href="../stdlib/profile.html#Base.Profile.fetch"
+ title="Base.Profile.fetch"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.fetch()</span></code></a>,
+which pulls out
+the backtraces from a pre-allocated buffer. For example, if you want
+to profile the profiler, you could say:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="n">data</span> <span class="o">=</span> <span
+ class="n">copy</span><span class="p">(</span><span class="n">Profile</span><span
+ class="o">.</span><span class="n">fetch</span><span class="p">())</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">clear</span><span
+ class="p">()</span>
+<span class="p">@</span><span class="n">profile</span> <span class="n">Profile</span><span
+ class="o">.</span><span class="n">print</span><span class="p">(</span><span
+ class="n">STDOUT</span><span class="p">,</span> <span class="n">data</span><span
+ class="p">)</span> <span class="c"># Prints the previous results</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">print</span><span
+ class="p">()</span>                      <span class="c"># Prints results from Profile.print()</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+  <li>
+    <p class="first">The first keyword argument, <code
+ class="docutils literal"><span class="pre">format</span></code>, was
+introduced above. The
+possible choices are <code class="docutils literal"><span class="pre">:tree</span></code>
+and <code class="docutils literal"><span class="pre">:flat</span></code>.</p>
+  </li>
+  <li>
+    <p class="first"><code class="docutils literal"><span class="pre">C</span></code>,
+if set to <code class="docutils literal"><span class="pre">true</span></code>,
+allows you to see even the calls to C
+code. Try running the introductory example with <code
+ class="docutils literal"><span class="pre">Profile.print(C</span> <span
+ class="pre">=</span> <span class="pre">true)</span></code>. This can
+be extremely
+helpful in deciding whether it’s
+Julia code or C code that is causing a bottleneck; setting <code
+ class="docutils literal"><span class="pre">C=true</span></code>
+also improves the interpretability of the nesting, at
+the cost of longer profile dumps.</p>
+  </li>
+  <li>
+    <p class="first">Some lines of code contain multiple operations;
+for example, <code class="docutils literal"><span class="pre">s</span>
+    <span class="pre">+=</span> <span class="pre">A[i]</span></code>
+contains both an array
+reference (<code class="docutils literal"><span class="pre">A[i]</span></code>)
+and a sum
+operation. These correspond to different lines in the generated
+machine code, and hence there may be two or more different addresses
+captured during backtraces on this line. <code class="docutils literal"><span
+ class="pre">combine=true</span></code> lumps
+them together, and is probably what you typically want, but you can
+generate an output separately for each unique instruction pointer
+with <code class="docutils literal"><span class="pre">combine=false</span></code>.</p>
+  </li>
+  <li>
+    <p class="first"><code class="docutils literal"><span class="pre">cols</span></code>
+allows you to control the number of columns that you are
+willing to use for display. When the text would be wider than the
+display, you might see output like this:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="mi">33</span> <span class="n">inference</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">abstract_call</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">645</span>
+  <span class="mi">33</span> <span
+ class="n">inference</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="n">abstract_call</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">645</span>
+    <span
+ class="mi">33</span> <span class="o">...</span><span class="n">rence</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">abstract_call_gf</span><span class="p">;</span> <span
+ class="n">line</span><span class="p">:</span> <span class="mi">567</span>
+       <span
+ class="mi">33</span> <span class="o">...</span><span class="n">nce</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">typeinf</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">1201</span>
+     <span class="o">+</span><span
+ class="mi">1</span> <span class="mi">5</span>  <span class="o">...</span><span
+ class="n">nce</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="o">...</span><span class="n">t_interpret</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">900</span>
+     <span class="o">+</span><span class="mi">3</span> <span
+ class="mi">5</span> <span class="o">...</span><span class="n">ence</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">abstract_eval</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">758</span>
+     <span class="o">+</span><span
+ class="mi">4</span> <span class="mi">5</span> <span class="o">...</span><span
+ class="n">ence</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">;</span> <span class="o">...</span><span class="n">ct_eval_call</span><span
+ class="p">;</span> <span class="n">line</span><span class="p">:</span> <span
+ class="mi">733</span>
+     <span class="o">+</span><span class="mi">6</span> <span
+ class="mi">5</span> <span class="o">...</span><span class="n">ence</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">;</span> <span
+ class="n">abstract_call</span><span class="p">;</span> <span class="n">line</span><span
+ class="p">:</span> <span class="mi">645</span>
+    </pre>
+    </div>
+    </div>
+    <p>File/function names are sometimes truncated (with <code
+ class="docutils literal"><span class="pre">...</span></code>),
+and indentation is truncated with a <code class="docutils literal"><span
+ class="pre">+n</span></code> at the beginning,
+where <code class="docutils literal"><span class="pre">n</span></code>
+is the number of extra spaces that would have been
+inserted, had there been room. If you want a complete profile
+of deeply-nested code, often a good idea is to save to a file and
+use a very wide <code class="docutils literal"><span class="pre">cols</span></code>
+setting:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="n">s</span> <span class="o">=</span> <span
+ class="n">open</span><span class="p">(</span><span class="s">"/tmp/prof.txt"</span><span
+ class="p">,</span><span class="s">"w"</span><span class="p">)</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">print</span><span
+ class="p">(</span><span class="n">s</span><span class="p">,</span><span
+ class="n">cols</span> <span class="o">=</span> <span class="mi">500</span><span
+ class="p">)</span>
+<span class="n">close</span><span class="p">(</span><span class="n">s</span><span
+ class="p">)</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+  <li>
+    <p class="first"><code class="docutils literal"><span class="pre">maxdepth</span></code>
+can be used to limit the size of the output in <code
+ class="docutils literal"><span class="pre">:tree</span></code>
+format (it nests only up to level <code class="docutils literal"><span
+ class="pre">maxdepth</span></code>)</p>
+  </li>
+  <li>
+    <p class="first"><code class="docutils literal"><span class="pre">sortedby</span>
+    <span class="pre">=</span> <span class="pre">:count</span></code>
+sorts the <code class="docutils literal"><span class="pre">:flat</span></code>
+format in order of
+increasing counts</p>
+  </li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">コン
+フィギュレーション</span></span><a class="headerlink" href="#configuration"
+ title="Permalink to this headline"></a></h2>
+<p><a class="reference internal"
+ href="../stdlib/profile.html#Base.@profile" title="Base.@profile"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@profile</span></code></a>
+just accumulates backtraces, and the analysis happens
+when you call <a class="reference internal"
+ href="../stdlib/profile.html#Base.Profile.print"
+ title="Base.Profile.print"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Profile.print()</span></code></a>.
+For a long-running computation,
+it’s entirely possible that the pre-allocated buffer for storing
+backtraces will be filled. If that happens, the backtraces stop but
+your computation continues. As a consequence, you may miss some
+important profiling data (you will get a warning when that happens).</p>
+<p>You can obtain and configure the relevant parameters this way:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">Profile</span><span class="o">.</span><span
+ class="n">init</span><span class="p">()</span>            <span
+ class="c"># returns the current settings</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">init</span><span
+ class="p">(</span><span class="n">n</span><span class="p">,</span> <span
+ class="n">delay</span><span class="p">)</span>
+<span class="n">Profile</span><span class="o">.</span><span class="n">init</span><span
+ class="p">(</span><span class="n">delay</span> <span class="o">=</span> <span
+ class="mf">0.01</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">n</span></code> is
+the total number of instruction pointers you can store, with
+a default value of <code class="docutils literal"><span class="pre">10^6</span></code>.
+If your typical backtrace is 20
+instruction pointers, then you can collect 50000 backtraces, which
+suggests a statistical uncertainty of less than 1%. This may be good
+enough for most applications.</p>
+<p>Consequently, you are more likely to need to modify <code
+ class="docutils literal"><span class="pre">delay</span></code>,
+expressed in seconds, which sets the amount of time that Julia gets
+between snapshots to perform the requested computations. A very
+long-running job might not need frequent backtraces. The default
+setting is <code class="docutils literal"><span class="pre">delay</span>
+<span class="pre">=</span> <span class="pre">0.001</span></code>. Of
+course, you can decrease the delay
+as well as increase it; however, the overhead of profiling grows once
+the delay becomes similar to the amount of time needed to take a
+backtrace (~30 microseconds on the author’s laptop).</p>
+</div>
+</div>
+</div>
+<a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

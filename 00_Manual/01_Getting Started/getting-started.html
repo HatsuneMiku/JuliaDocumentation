@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Variables" href="variables.html">
+  <link rel="prev" title="Introduction" href="introduction.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started"
+ title="Permalink to this headline">¶</a></h1>
+<p>Julia installation is straightforward, whether using precompiled
+binaries or compiling from source. Download and install Julia by
+following the instructions at
+<a class="reference external" href="http://julialang.org/downloads/">http://julialang.org/downloads/</a>.</p>
+<p>The easiest way to learn and experiment with Julia is by starting an
+interactive session (also known as a read-eval-print loop or “repl”)
+by double-clicking the Julia executable or running <code
+ class="docutils literal"><span class="pre">julia</span></code> from
+the
+command line:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>$ julia<br>               _<br>   _       _ _(_)_     |  A fresh approach to technical computing<br>  (_)     | (_) (_)    |  Documentation: http://docs.julialang.org<br>   _ _   _| |_  __ _   |  Type "help()" to list help topics<br>  | | | | | | |/ _` |  |<br>  | | |_| | | | (_| |  |  Version 0.3.0-prerelease+3690 (2014-06-16 05:11 UTC)<br> _/ |\__'_|_|_|\__'_|  |  Commit 1b73f04* (0 days old master)<br>|__/                   |  x86_64-apple-darwin13.1.0<br><br>julia&gt; 1 + 2<br>3<br><br>julia&gt; ans<br>3<br></pre>
+</div>
+</div>
+<p>To exit the interactive session, type <code class="docutils literal"><span
+ class="pre">^D</span></code> — the control key
+together with the <code class="docutils literal"><span class="pre">d</span></code>
+key or type <code class="docutils literal"><span class="pre">quit()</span></code>.
+When run in interactive
+mode, <code class="docutils literal"><span class="pre">julia</span></code>
+displays a banner and prompts the user for input. Once
+the user has entered a complete expression, such as <code
+ class="docutils literal"><span class="pre">1</span> <span class="pre">+</span>
+<span class="pre">2</span></code>, and
+hits enter, the interactive session evaluates the expression and shows
+its value. If an expression is entered into an interactive session
+with a trailing semicolon, its value is not shown. The variable
+<code class="docutils literal"><span class="pre">ans</span></code> is
+bound to the value of the last evaluated expression whether
+it is shown or not. The <code class="docutils literal"><span
+ class="pre">ans</span></code> variable is only bound in interactive
+sessions, not when Julia code is run in other ways.</p>
+<p>To evaluate expressions written in a source file <code
+ class="docutils literal"><span class="pre">file.jl</span></code>,
+write
+<code class="docutils literal"><span class="pre">include("file.jl")</span></code>.</p>
+<p>To run code in a file non-interactively, you can give it as the
+first
+argument to the julia command:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">julia</span> <span
+ class="n">script</span><span class="o">.</span><span class="n">jl</span> <span
+ class="n">arg1</span> <span class="n">arg2</span><span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>As the example implies, the following command-line arguments to
+julia
+are taken as command-line arguments to the program <code
+ class="docutils literal"><span class="pre">script.jl</span></code>,
+passed
+in the global constant <code class="docutils literal"><span class="pre">ARGS</span></code>.
+<code class="docutils literal"><span class="pre">ARGS</span></code> is
+also set when script code
+is given using the <code class="docutils literal"><span class="pre">-e</span></code>
+option on the command line (see the <code class="docutils literal"><span
+ class="pre">julia</span></code>
+help output below). For example, to just print the arguments given to a
+script, you could do this:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>$ julia -e 'for x in ARGS; println(x); end' foo bar<br>foo<br>bar<br></pre>
+</div>
+</div>
+<p>Or you could put that code into a script and run it:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>$ echo 'for x in ARGS; println(x); end' &gt; script.jl<br>$ julia script.jl foo bar<br>foo<br>bar<br></pre>
+</div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">--</span></code>
+delimiter can be used to separate command-line args to the scriptfile
+from args to Julia:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">julia</span> <span
+ class="o">--</span><span class="n">color</span><span class="o">=</span><span
+ class="n">yes</span> <span class="o">-</span><span class="n">O</span> <span
+ class="o">--</span> <span class="n">foo</span><span class="o">.</span><span
+ class="n">jl</span> <span class="n">arg1</span> <span class="n">arg2</span><span
+ class="o">..</span>
+</pre>
+</div>
+</div>
+<p>Julia can be started in parallel mode with either the <code
+ class="docutils literal"><span class="pre">-p</span></code> or the
+<code class="docutils literal"><span class="pre">--machinefile</span></code>
+options. <code class="docutils literal"><span class="pre">-p</span> <span
+ class="pre">n</span></code> will launch an additional <code
+ class="docutils literal"><span class="pre">n</span></code> worker
+processes, while <code class="docutils literal"><span class="pre">--machinefile</span>
+<span class="pre">file</span></code> will launch a worker for each line
+in
+file <code class="docutils literal"><span class="pre">file</span></code>.
+The machines defined in <code class="docutils literal"><span
+ class="pre">file</span></code> must be accessible via a
+passwordless <code class="docutils literal"><span class="pre">ssh</span></code>
+login, with Julia installed at the same location as the
+current host. Each machine definition takes the form
+<code class="docutils literal"><span class="pre">[count*][user@]host[:port]</span>
+<span class="pre">[bind_addr[:port]]</span></code> . <code
+ class="docutils literal"><span class="pre">user</span></code> defaults
+to current user,
+<code class="docutils literal"><span class="pre">port</span></code> to
+the standard ssh port. <code class="docutils literal"><span class="pre">count</span></code>
+is the number of workers to spawn
+on the node, and defaults to 1. The optional <code
+ class="docutils literal"><span class="pre">bind-to</span> <span
+ class="pre">bind_addr[:port]</span></code>
+specifies the ip-address and port that other workers should use to
+connect to this worker.</p>
+<p>If you have code that you want executed whenever julia is run, you
+can
+put it in <code class="docutils literal"><span class="pre">~/.juliarc.jl</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>$ echo 'println("Greetings! 你好! 안녕하세요?")' &gt; ~/.juliarc.jl<br>$ julia<br>Greetings! 你好! 안녕하세요?<br><br>...<br></pre>
+</div>
+</div>
+<p>There are various ways to run Julia code and provide options,
+similar to
+those available for the <code class="docutils literal"><span
+ class="pre">perl</span></code> and <code class="docutils literal"><span
+ class="pre">ruby</span></code> programs:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span> <span class="p">[</span><span
+ class="n">switches</span><span class="p">]</span> <span class="o">--</span> <span
+ class="p">[</span><span class="n">programfile</span><span class="p">]</span> <span
+ class="p">[</span><span class="n">args</span><span class="o">...</span><span
+ class="p">]</span>
+ <span class="o">-</span><span class="n">v</span><span
+ class="p">,</span> <span class="o">--</span><span class="n">version</span>             <span
+ class="n">Display</span> <span class="n">version</span> <span class="n">information</span>
+ <span
+ class="o">-</span><span class="n">h</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">help</span>                <span
+ class="n">Print</span> <span class="n">this</span> <span class="n">message</span>
+
+ <span
+ class="o">-</span><span class="n">J</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">sysimage</span> <span class="o">&lt;</span><span
+ class="n">file</span><span class="o">&gt;</span>     <span class="n">Start</span> <span
+ class="n">up</span> <span class="n">with</span> <span class="n">the</span> <span
+ class="n">given</span> <span class="nb">system</span> <span class="n">image</span> <span
+ class="n">file</span>
+ <span class="o">--</span><span class="n">precompiled</span><span
+ class="o">=</span><span class="p">{</span><span class="n">yes</span><span
+ class="o">|</span><span class="n">no</span><span class="p">}</span>    <span
+ class="n">Use</span> <span class="n">precompiled</span> <span class="n">code</span> <span
+ class="n">from</span> <span class="nb">system</span> <span class="n">image</span> <span
+ class="k">if</span> <span class="n">available</span>
+ <span class="o">-</span><span
+ class="n">H</span><span class="p">,</span> <span class="o">--</span><span
+ class="n">home</span> <span class="o">&lt;</span><span class="n">dir</span><span
+ class="o">&gt;</span>          <span class="n">Set</span> <span
+ class="n">location</span> <span class="n">of</span> <span class="n">julia</span> <span
+ class="n">executable</span>
+ <span class="o">--</span><span class="n">startup</span><span
+ class="o">-</span><span class="n">file</span><span class="o">=</span><span
+ class="p">{</span><span class="n">yes</span><span class="o">|</span><span
+ class="n">no</span><span class="p">}</span>   <span class="n">Load</span> <span
+ class="o">~/.</span><span class="n">juliarc</span><span class="o">.</span><span
+ class="n">jl</span>
+ <span class="o">-</span><span class="n">f</span><span
+ class="p">,</span> <span class="o">--</span><span class="n">no</span><span
+ class="o">-</span><span class="n">startup</span>          <span
+ class="n">Don</span><span class="o">'</span><span class="n">t</span> <span
+ class="nb">load</span> <span class="o">~/.</span><span class="n">juliarc</span> <span
+ class="p">(</span><span class="n">deprecated</span><span class="p">,</span> <span
+ class="n">use</span> <span class="o">--</span><span class="n">startup</span><span
+ class="o">-</span><span class="n">file</span><span class="o">=</span><span
+ class="n">no</span><span class="p">)</span>
+ <span class="o">-</span><span
+ class="n">F</span>                        <span class="n">Load</span> <span
+ class="o">~/.</span><span class="n">juliarc</span> <span class="p">(</span><span
+ class="n">deprecated</span><span class="p">,</span> <span class="n">use</span> <span
+ class="o">--</span><span class="n">startup</span><span class="o">-</span><span
+ class="n">file</span><span class="o">=</span><span class="n">yes</span><span
+ class="p">)</span>
+ <span class="o">--</span><span class="n">handle</span><span
+ class="o">-</span><span class="n">signals</span><span class="o">=</span><span
+ class="p">{</span><span class="n">yes</span><span class="o">|</span><span
+ class="n">no</span><span class="p">}</span> <span class="n">Enable</span> <span
+ class="n">or</span> <span class="n">disable</span> <span class="n">Julia</span><span
+ class="o">'</span><span class="n">s</span> <span class="n">default</span> <span
+ class="n">signal</span> <span class="n">handlers</span>
+
+ <span
+ class="o">-</span><span class="n">e</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">eval</span> <span class="o">&lt;</span><span
+ class="n">expr</span><span class="o">&gt;</span>         <span
+ class="n">Evaluate</span> <span class="o">&lt;</span><span class="n">expr</span><span
+ class="o">&gt;</span>
+ <span class="o">-</span><span class="n">E</span><span
+ class="p">,</span> <span class="o">--</span><span class="n">print</span> <span
+ class="o">&lt;</span><span class="n">expr</span><span class="o">&gt;</span>        <span
+ class="n">Evaluate</span> <span class="n">and</span> <span class="n">show</span> <span
+ class="o">&lt;</span><span class="n">expr</span><span class="o">&gt;</span>
+ <span
+ class="o">-</span><span class="n">P</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">post</span><span class="o">-</span><span
+ class="n">boot</span> <span class="o">&lt;</span><span class="n">expr</span><span
+ class="o">&gt;</span>    <span class="n">Evaluate</span> <span
+ class="o">&lt;</span><span class="n">expr</span><span class="o">&gt;</span><span
+ class="p">,</span> <span class="n">but</span> <span class="n">don</span><span
+ class="o">'</span><span class="n">t</span> <span class="n">disable</span> <span
+ class="n">interactive</span> <span class="n">mode</span> <span
+ class="p">(</span><span class="n">deprecated</span><span class="p">,</span> <span
+ class="n">use</span> <span class="o">-</span><span class="n">i</span> <span
+ class="o">-</span><span class="n">e</span> <span class="n">instead</span><span
+ class="p">)</span>
+ <span class="o">-</span><span class="n">L</span><span
+ class="p">,</span> <span class="o">--</span><span class="nb">load</span> <span
+ class="o">&lt;</span><span class="n">file</span><span class="o">&gt;</span>         <span
+ class="n">Load</span> <span class="o">&lt;</span><span class="n">file</span><span
+ class="o">&gt;</span> <span class="n">immediately</span> <span
+ class="n">on</span> <span class="n">all</span> <span class="n">processors</span>
+
+ <span
+ class="o">-</span><span class="n">p</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">procs</span> <span class="p">{</span><span
+ class="n">N</span><span class="o">|</span><span class="n">auto</span><span
+ class="p">}</span>      <span class="n">Integer</span> <span class="n">value</span> <span
+ class="n">N</span> <span class="n">launches</span> <span class="n">N</span> <span
+ class="n">additional</span> <span class="kd">local</span> <span
+ class="n">worker</span> <span class="n">processes</span>
+                           <span
+ class="s">"auto"</span> <span class="n">launches</span> <span class="n">as</span> <span
+ class="n">many</span> <span class="n">workers</span> <span class="n">as</span> <span
+ class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span
+ class="kd">local</span> <span class="n">cores</span>
+ <span class="o">--</span><span
+ class="n">machinefile</span> <span class="o">&lt;</span><span class="n">file</span><span
+ class="o">&gt;</span>      <span class="n">Run</span> <span class="n">processes</span> <span
+ class="n">on</span> <span class="n">hosts</span> <span class="n">listed</span> <span
+ class="k">in</span> <span class="o">&lt;</span><span class="n">file</span><span
+ class="o">&gt;</span>
+
+ <span class="o">-</span><span class="n">i</span>                        <span
+ class="n">Interactive</span> <span class="n">mode</span><span class="p">;</span> <span
+ class="n">REPL</span> <span class="n">runs</span> <span class="n">and</span> <span
+ class="n">isinteractive</span><span class="p">()</span> <span
+ class="nb">is</span> <span class="n">true</span>
+ <span class="o">-</span><span
+ class="n">q</span><span class="p">,</span> <span class="o">--</span><span
+ class="n">quiet</span>               <span class="n">Quiet</span> <span
+ class="n">startup</span> <span class="p">(</span><span class="n">no</span> <span
+ class="n">banner</span><span class="p">)</span>
+ <span class="o">--</span><span
+ class="n">color</span><span class="o">=</span><span class="p">{</span><span
+ class="n">yes</span><span class="o">|</span><span class="n">no</span><span
+ class="p">}</span>          <span class="n">Enable</span> <span
+ class="n">or</span> <span class="n">disable</span> <span class="n">color</span> <span
+ class="n">text</span>
+ <span class="o">--</span><span class="n">history</span><span
+ class="o">-</span><span class="n">file</span><span class="o">=</span><span
+ class="p">{</span><span class="n">yes</span><span class="o">|</span><span
+ class="n">no</span><span class="p">}</span>   <span class="n">Load</span> <span
+ class="n">or</span> <span class="n">save</span> <span class="n">history</span>
+ <span
+ class="o">--</span><span class="n">no</span><span class="o">-</span><span
+ class="n">history</span><span class="o">-</span><span class="n">file</span>         <span
+ class="n">Don</span><span class="o">'</span><span class="n">t</span> <span
+ class="nb">load</span> <span class="n">history</span> <span class="n">file</span> <span
+ class="p">(</span><span class="n">deprecated</span><span class="p">,</span> <span
+ class="n">use</span> <span class="o">--</span><span class="n">history</span><span
+ class="o">-</span><span class="n">file</span><span class="o">=</span><span
+ class="n">no</span><span class="p">)</span>
+
+ <span class="o">--</span><span
+ class="n">compile</span><span class="o">=</span><span class="p">{</span><span
+ class="n">yes</span><span class="o">|</span><span class="n">no</span><span
+ class="o">|</span><span class="n">all</span><span class="p">}</span>    <span
+ class="n">Enable</span> <span class="n">or</span> <span class="n">disable</span> <span
+ class="n">compiler</span><span class="p">,</span> <span class="n">or</span> <span
+ class="n">request</span> <span class="n">exhaustive</span> <span
+ class="n">compilation</span>
+ <span class="o">-</span><span class="n">C</span><span
+ class="p">,</span> <span class="o">--</span><span class="n">cpu</span><span
+ class="o">-</span><span class="n">target</span> <span class="o">&lt;</span><span
+ class="n">target</span><span class="o">&gt;</span> <span class="n">Limit</span> <span
+ class="n">usage</span> <span class="n">of</span> <span class="n">cpu</span> <span
+ class="n">features</span> <span class="n">up</span> <span class="n">to</span> <span
+ class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span>
+ <span
+ class="o">-</span><span class="n">O</span><span class="p">,</span> <span
+ class="o">--</span><span class="n">optimize</span>            <span
+ class="n">Run</span> <span class="n">time</span><span class="o">-</span><span
+ class="n">intensive</span> <span class="n">code</span> <span class="n">optimizations</span>
+ <span
+ class="o">--</span><span class="n">inline</span><span class="o">=</span><span
+ class="p">{</span><span class="n">yes</span><span class="o">|</span><span
+ class="n">no</span><span class="p">}</span>         <span class="n">Control</span> <span
+ class="n">whether</span> <span class="n">inlining</span> <span
+ class="nb">is</span> <span class="n">permitted</span> <span class="p">(</span><span
+ class="n">overrides</span> <span class="n">functions</span> <span
+ class="n">declared</span> <span class="n">as</span> <span class="p">@</span><span
+ class="n">inline</span><span class="p">)</span>
+ <span class="o">--</span><span
+ class="n">check</span><span class="o">-</span><span class="n">bounds</span><span
+ class="o">=</span><span class="p">{</span><span class="n">yes</span><span
+ class="o">|</span><span class="n">no</span><span class="p">}</span>   <span
+ class="n">Emit</span> <span class="n">bounds</span> <span class="n">checks</span> <span
+ class="n">always</span> <span class="n">or</span> <span class="n">never</span> <span
+ class="p">(</span><span class="n">ignoring</span> <span class="n">declarations</span><span
+ class="p">)</span>
+ <span class="o">--</span><span class="n">math</span><span
+ class="o">-</span><span class="n">mode</span><span class="o">=</span><span
+ class="p">{</span><span class="n">ieee</span><span class="p">,</span><span
+ class="n">fast</span><span class="p">}</span>   <span class="n">Disallow</span> <span
+ class="n">or</span> <span class="n">enable</span> <span class="n">unsafe</span> <span
+ class="n">floating</span> <span class="n">point</span> <span class="n">optimizations</span> <span
+ class="p">(</span><span class="n">overrides</span> <span class="p">@</span><span
+ class="n">fastmath</span> <span class="n">declaration</span><span
+ class="p">)</span>
+
+ <span class="o">--</span><span class="n">depwarn</span><span
+ class="o">=</span><span class="p">{</span><span class="n">yes</span><span
+ class="o">|</span><span class="n">no</span><span class="o">|</span><span
+ class="nb">error</span><span class="p">}</span>  <span class="n">Enable</span> <span
+ class="n">or</span> <span class="n">disable</span> <span class="n">syntax</span> <span
+ class="n">and</span> <span class="n">method</span> <span class="n">deprecation</span> <span
+ class="n">warnings</span> <span class="p">(</span><span class="s">"error"</span> <span
+ class="n">turns</span> <span class="n">warnings</span> <span class="n">into</span> <span
+ class="n">errors</span><span class="p">)</span>
+
+ <span class="o">--</span><span
+ class="n">output</span><span class="o">-</span><span class="n">o</span> <span
+ class="n">name</span>           <span class="n">Generate</span> <span
+ class="n">an</span> <span class="n">object</span> <span class="n">file</span> <span
+ class="p">(</span><span class="n">including</span> <span class="nb">system</span> <span
+ class="n">image</span> <span class="n">data</span><span class="p">)</span>
+ <span
+ class="o">--</span><span class="n">output</span><span class="o">-</span><span
+ class="n">ji</span> <span class="n">name</span>          <span
+ class="n">Generate</span> <span class="n">a</span> <span class="nb">system</span> <span
+ class="n">image</span> <span class="n">data</span> <span class="n">file</span> <span
+ class="p">(</span><span class="o">.</span><span class="n">ji</span><span
+ class="p">)</span>
+ <span class="o">--</span><span class="n">output</span><span
+ class="o">-</span><span class="n">bc</span> <span class="n">name</span>          <span
+ class="n">Generate</span> <span class="n">LLVM</span> <span class="n">bitcode</span> <span
+ class="p">(</span><span class="o">.</span><span class="n">bc</span><span
+ class="p">)</span>
+
+ <span class="o">--</span><span class="n">output</span><span
+ class="o">-</span><span class="n">incremental</span><span class="o">=</span><span
+ class="n">no</span>   <span class="n">Generate</span> <span class="n">an</span> <span
+ class="n">incremental</span> <span class="n">output</span> <span
+ class="n">file</span> <span class="p">(</span><span class="n">rather</span> <span
+ class="n">than</span> <span class="n">complete</span><span class="p">)</span>
+
+ <span
+ class="o">--</span><span class="n">code</span><span class="o">-</span><span
+ class="n">coverage</span><span class="o">=</span><span class="p">{</span><span
+ class="n">none</span><span class="o">|</span><span class="n">user</span><span
+ class="o">|</span><span class="n">all</span><span class="p">},</span> <span
+ class="o">--</span><span class="n">code</span><span class="o">-</span><span
+ class="n">coverage</span>
+                           <span class="n">Count</span> <span
+ class="n">executions</span> <span class="n">of</span> <span class="n">source</span> <span
+ class="n">lines</span> <span class="p">(</span><span class="n">omitting</span> <span
+ class="n">setting</span> <span class="nb">is</span> <span class="n">equivalent</span> <span
+ class="n">to</span> <span class="s">"user"</span><span class="p">)</span>
+ <span
+ class="o">--</span><span class="n">track</span><span class="o">-</span><span
+ class="n">allocation</span><span class="o">=</span><span class="p">{</span><span
+ class="n">none</span><span class="o">|</span><span class="n">user</span><span
+ class="o">|</span><span class="n">all</span><span class="p">},</span> <span
+ class="o">--</span><span class="n">track</span><span class="o">-</span><span
+ class="n">allocation</span>
+                           <span class="n">Count</span> <span
+ class="n">bytes</span> <span class="n">allocated</span> <span class="n">by</span> <span
+ class="n">each</span> <span class="n">source</span> <span class="n">line</span>
+</pre>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources"
+ title="Permalink to this headline">¶</a></h2>
+<p>In addition to this manual, there are various other resources that
+may
+help new users get started with Julia:</p>
+<ul class="simple">
+  <li><a class="reference external"
+ href="http://math.mit.edu/%7Estevenj/Julia-cheatsheet.pdf">Julia and
+IJulia cheatsheet</a></li>
+  <li><a class="reference external"
+ href="http://learnxinyminutes.com/docs/julia/">Learn Julia in a few
+minutes</a></li>
+  <li><a class="reference external"
+ href="http://homerreid.dyndns.org/teaching/18.330/JuliaProgramming.shtml">Tutorial
+for Homer Reid’s numerical analysis class</a></li>
+  <li><a class="reference external"
+ href="https://raw.githubusercontent.com/ViralBShah/julia-presentations/master/Fifth-Elephant-2013/Fifth-Elephant-2013.pdf">An
+introductory presentation</a></li>
+  <li><a class="reference external"
+ href="http://julialang.org/blog/2013/03/julia-tutorial-MIT/">Videos
+from the Julia tutorial at MIT</a></li>
+  <li><a class="reference external"
+ href="http://forio.com/labs/julia-studio/tutorials/">Forio Julia
+Tutorials</a></li>
+</ul>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+<div class="wy-nav-content"> </div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

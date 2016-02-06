@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punctuation — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Sorting and Related Functions"
+ href="sort.html">
+  <link rel="prev" title="I/O and Network" href="io-network.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="punctuation">
+<h1>区切り記号</h1>
+<p><span id="result_box" class="short_text" lang="ja"><span>数学記号</span><span>＆</span><span>機
+能</span><span>の拡張</span><span>ドキュメント</span><span class="">はこちらです</span><span
+ class="">。</span></span></p>
+<table border="1" class="docutils"
+ style="text-align: left; margin-left: auto; margin-right: auto;">
+  <colgroup><col width="9%"><col width="91%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">symbol</th>
+    <th class="head">meaning</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">@m</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>マクロ</span><span>メー
+トル</span><span>を呼び出します</span><span>。</span><span>スペースで区切られた</span><span
+ class="">表現</span><span class="">が続きます</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">!</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">否定</span><span>演算子</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">a!(</span> <span
+ class="pre">)</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>関数名</span><span>の</span><span>末
+尾</span><span>！</span><span>関数は</span><span>、引数</span><span>を修正する</span><span
+ class="">ことを示しています</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">#</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">1行コメント</span><span>を開始</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">#=</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>複数行の</span><span>コ
+メントを</span><span>（</span><span>これらは</span><span>ネスト可能</span><span>です</span><span>）</span><span
+ class="">開始</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">=#</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>複数行の</span><span
+ class="">コメントを</span><span>終わらせます</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">$</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">ビットごとの</span><span class="">XOR演算</span><span>、</span><span>文字
+列と</span><span>表現</span><span>補間</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">%</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">剰余演算子</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>指数</span><span
+ class="">演算子</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">&amp;</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">ビット論理積</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">&amp;&amp;</span></code></td>
+      <td>かつ</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">|</span></code></td>
+      <td>
+      <div id="gt-src-c" class="g-unit">
+      <div id="gt-src-p"> </div>
+      </div>
+      <div id="gt-res-content" class="almost_half_cell">
+      <div dir="ltr" style="">
+      <div id="tts_button"><span id="result_box" class="short_text"
+ lang="ja"><span class="">ビット論理和</span></span></div>
+      </div>
+      </div>
+      </td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">||</span></code></td>
+      <td>または</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">*</span></code></td>
+      <td>乗算、または行列乗算</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">()</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">空のタプル</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">~</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">ビット単位の</span><span class="">ない</span><span>オペレータ</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">\</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">バックスラッシュ</span><span>演算子</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">'</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">複雑な</span><span class="">転置演算子</span></span>A<sup>H</sup></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">a[]</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">配列インデックス</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">[,]</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>垂直</span><span
+ class="">連結</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">[;]</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>また、</span><span
+ class="">垂直方向の</span><span>連結</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">[</span>&nbsp;
+      <span class="pre">]</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">スペースで区切られた</span><span>式と</span><span>、</span><span>水平方向の</span><span>連
+結</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">T{</span> <span
+ class="pre">}</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">パラメトリック</span><span>タイプ</span><span>のインスタンス化</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">{</span>&nbsp;
+      <span class="pre">}</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">セル・配列</span><span class="">構築</span><span>（</span><span>任意</span><span>の
+賛成で</span><span>バージョン0.4</span><span>で非推奨</span><span class="">に</span>な
+りました<span class="">）</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">;</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">文の</span><span class="">区切り（表示しない役割もある）</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">,</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">関数の引数</span><span>やタプル</span><span>コンポーネントの区切り</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">?</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>3項演算子
+（</span><span>条件付き</span><span>trueの場合</span><span>：</span><span
+ class="">？</span><span class="">falseの</span><span class="">場合</span><span
+ class="">）</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">""</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">文字列リテラル</span><span>を区切ります</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">''</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>区切り</span><span
+ class="">文字リテラル</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">`</span> <span
+ class="pre">`</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>外部プロセ
+ス</span><span class="">（</span><span>コマンド</span><span>）</span><span>の仕様</span><span>を
+区切ります</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">...</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>関数呼び出
+し</span><span>に</span><span>引数を</span><span>スプライス</span><span>または</span><span>可
+変引数</span><span class="">関数</span><span>や</span><span>型を宣言</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">.</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>モジュール</span><span>内
+のオブジェクト</span><span>や名前</span><span>でのアクセス</span><span class="">という名前</span><span>の
+フィールドは</span><span>、</span><span>また、</span><span>要素</span><span class="">単
+位の演算子</span><span>を</span><span>接頭辞</span></span></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">a:b</span></code></td>
+      <td>範囲 a, a+1, a+2, ..., b</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">a:s:b</span></code></td>
+      <td>範囲 a, a+s, a+2s, ..., b</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">:</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">インデックス</span><span>全体の</span><span>寸法（</span><span>1</span><span>：</span><span>終
+了</span><span>）</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">::</span></code></td>
+      <td>コンテキストに応じて、注釈を入力</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">:(</span> <span
+ class="pre">)</span></code></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span
+ class="">引用符で囲まれた</span><span class="">式</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">:a</span></code></td>
+      <td>シンボル a</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

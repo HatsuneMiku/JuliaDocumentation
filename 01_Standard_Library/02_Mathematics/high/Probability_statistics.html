@@ -1,0 +1,962 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>確率統計</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">確率統計<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">binomial(n, k)<br>
+      </td>
+      <td style="vertical-align: top;">組み合わせnCk<br>
+      </td>
+      <td style="vertical-align: top;">binomial(8,2)<br>
+      </td>
+      <td style="vertical-align: top;">28<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">factorial(n)<br>
+      </td>
+      <td style="vertical-align: top;">nの階乗<br>
+      </td>
+      <td style="vertical-align: top;">factorial(5)<br>
+      </td>
+      <td style="vertical-align: top;">120<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">factorial(n, k)<br>
+      </td>
+      <td style="vertical-align: top;">nの階乗÷kの階乗<br>
+      </td>
+      <td style="vertical-align: top;">factorial(5, 3)<br>
+      </td>
+      <td style="vertical-align: top;">20<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erf(x)<br>
+      </td>
+      <td style="vertical-align: top;">\drac{2}{\sqrt{\pi}}\int_0^xe^{-t^2}
+\,dtのｘを与えた値を求める<br>
+      </td>
+      <td style="vertical-align: top;">erf(1)<br>
+      </td>
+      <td style="vertical-align: top;">0.8427007929497149<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erfc(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the complementary error
+function of x, defined <br>
+by 1－erf(x)1－erf&#8289;(x).<br>
+      </td>
+      <td style="vertical-align: top;">erfc(2)<br>
+      </td>
+      <td style="vertical-align: top;">0.004677734981047266 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erfcx(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the scaled complementary
+error function of x, defined <br>
+by ex2erfc(x)ex2erfc&#8289;(x). Note also that erfcx(－ix)erfcx&#8289;(－ix) computes
+the Faddeeva function w(x)w(x).<br>
+      </td>
+      <td style="vertical-align: top;">erfcx(2) </td>
+      <td style="vertical-align: top;">0.2553956763105058<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erfi(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the imaginary error
+function of x, defined by －ierf(ix)－ierf&#8289;(ix).<br>
+      </td>
+      <td style="vertical-align: top;">erfi(2) </td>
+      <td style="vertical-align: top;">18.564802414575553<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dawson(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the Dawson function
+(scaled imaginary error function) <br>
+of <code class="docutils literal"><span class="pre">x</span></code>,
+defined by <span class="math"><span role="presentation"
+ data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mfrac&gt;&lt;msqrt&gt;&lt;mi&gt;&amp;#x03C0;&lt;/mi&gt;&lt;/msqrt&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mfrac&gt;&lt;msup&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/mrow&gt;&lt;/msup&gt;&lt;mi&gt;erfi&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;"
+ style="position: relative;" tabindex="0" id="MathJax-Element-89-Frame"
+ class="MathJax"><nobr aria-hidden="true"><span style="width: 7.328em;"
+ role="math" id="MathJax-Span-538" class="math"><span
+ style="position: relative; width: 6.094em; height: 0px; font-size: 120%;"><span
+ style="clip: rect(1.073em, 1006em, 2.879em, -1000em); position: absolute; top: -2.344em; left: 0em;"><span
+ id="MathJax-Span-539" class="mrow"><span id="MathJax-Span-540"
+ class="mfrac"><span
+ style="position: relative; width: 1.114em; height: 0px; margin-right: 0.12em; margin-left: 0.12em;"><span
+ style="clip: rect(3.359em, 1000.99em, 4.378em, -1000em); position: absolute; top: -4.63em; left: 50%; margin-left: -0.497em;"><span
+ id="MathJax-Span-541" class="msqrt"><span
+ style="position: relative; width: 0.994em; height: 0px;"><span
+ style="clip: rect(3.549em, 1000.41em, 4.174em, -1000em); position: absolute; top: -4.01em; left: 0.589em;"><span
+ id="MathJax-Span-542" class="mrow"><span
+ style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-543" class="mi">π</span></span></span><span
+ style="clip: rect(3.288em, 1000.6em, 4.308em, -1000em); position: absolute; top: -3.94em; left: 0em;"><span><span
+ style="font-size: 70.7%; font-family: MathJax_Main;">√</span></span></span></span></span></span><span
+ style="clip: rect(3.383em, 1000.32em, 4.167em, -1000em); position: absolute; top: -3.632em; left: 50%; margin-left: -0.177em;"><span
+ style="font-size: 70.7%; font-family: MathJax_Main;"
+ id="MathJax-Span-544" class="mn">2</span></span></span></span><span
+ id="MathJax-Span-545" class="msubsup"><span
+ style="position: relative; width: 1.799em; height: 0px;"><span
+ style="clip: rect(3.412em, 1000.43em, 4.178em, -1000em); position: absolute; top: -4.01em; left: 0em;"><span
+ style="font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-546" class="mi">e</span></span><span
+ style="position: absolute; top: -4.373em; left: 0.466em;"><span
+ id="MathJax-Span-547" class="texatom"><span id="MathJax-Span-548"
+ class="mrow"><span style="font-size: 70.7%; font-family: MathJax_Main;"
+ id="MathJax-Span-549" class="mo">－</span><span id="MathJax-Span-550"
+ class="msubsup"><span
+ style="position: relative; width: 0.707em; height: 0px;"><span
+ style="clip: rect(3.542em, 1000.37em, 4.174em, -1000em); position: absolute; top: -4.01em; left: 0em;"><span
+ style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-551" class="mi">x</span></span><span
+ style="position: absolute; top: -4.267em; left: 0.404em;"><span
+ style="font-size: 50%; font-family: MathJax_Main;"
+ id="MathJax-Span-552" class="mn">2</span></span></span></span></span></span></span></span></span><span
+ style="font-family: MathJax_Main; padding-left: 0.167em;"
+ id="MathJax-Span-553" class="mi">erfi</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-555" class="mo">(</span><span
+ style="font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-556" class="mi">x</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-557" class="mo">)</span></span></span></span></span></nobr><span
+ role="presentation" class="MJX_Assistive_MathML"><math
+ xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><msqrt><mi>π</mi></msqrt><mn>2</mn></mfrac><msup><mi>e</mi><mrow
+ class="MJX-TeXAtom-ORD"><mo>－</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mi>erfi</mi><mo>&#8289;</mo><mo
+ stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span></span>.
+      </td>
+      <td style="vertical-align: top;">dawson(2) </td>
+      <td style="vertical-align: top;">0.301340388923792<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erfinv(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the inverse error
+function of a real <code class="docutils literal"><span class="pre">x</span></code>,
+defined by <span class="math"><span role="presentation"
+ data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;erf&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;erfinv&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;"
+ style="position: relative;" tabindex="0" id="MathJax-Element-90-Frame"
+ class="MathJax"><nobr aria-hidden="true"><span style="width: 9.203em;"
+ role="math" id="MathJax-Span-558" class="math"><span
+ style="position: relative; width: 7.656em; height: 0px; font-size: 120%;"><span
+ style="clip: rect(1.438em, 1007.61em, 2.75em, -1000em); position: absolute; top: -2.344em; left: 0em;"><span
+ id="MathJax-Span-559" class="mrow"><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-560" class="mi">erf</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-562" class="mo">(</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-563" class="mi">erfinv</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-565" class="mo">(</span><span
+ style="font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-566" class="mi">x</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-567" class="mo">)</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-568" class="mo">)</span><span
+ style="font-family: MathJax_Main; padding-left: 0.278em;"
+ id="MathJax-Span-569" class="mo">=</span><span
+ style="font-family: MathJax_Math; font-style: italic; padding-left: 0.278em;"
+ id="MathJax-Span-570" class="mi">x</span></span></span></span></span></nobr><span
+ role="presentation" class="MJX_Assistive_MathML"><math
+ xmlns="http://www.w3.org/1998/Math/MathML"><mi>erf</mi><mo>&#8289;</mo><mo
+ stretchy="false">(</mo><mi>erfinv</mi><mo>&#8289;</mo><mo stretchy="false">(</mo><mi>x</mi><mo
+ stretchy="false">)</mo><mo stretchy="false">)</mo><mo>=</mo><mi>x</mi></math></span></span></span>.
+      </td>
+      <td style="vertical-align: top;">erfinv(true)<br>
+      </td>
+      <td style="vertical-align: top;">Inf </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">erfcinv(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the inverse error
+complementary function of a real <code class="docutils literal"><span
+ class="pre">x</span></code>, defined by <span class="math"><span
+ role="presentation"
+ data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;erfc&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;erfcinv&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;"
+ style="position: relative;" tabindex="0" id="MathJax-Element-91-Frame"
+ class="MathJax"><nobr aria-hidden="true"><span style="width: 10.266em;"
+ role="math" id="MathJax-Span-571" class="math"><span
+ style="position: relative; width: 8.542em; height: 0px; font-size: 120%;"><span
+ style="clip: rect(1.438em, 1008.49em, 2.75em, -1000em); position: absolute; top: -2.344em; left: 0em;"><span
+ id="MathJax-Span-572" class="mrow"><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-573" class="mi">erfc</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-575" class="mo">(</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-576" class="mi">erfcinv</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-578" class="mo">(</span><span
+ style="font-family: MathJax_Math; font-style: italic;"
+ id="MathJax-Span-579" class="mi">x</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-580" class="mo">)</span><span
+ style="font-family: MathJax_Main;" id="MathJax-Span-581" class="mo">)</span><span
+ style="font-family: MathJax_Main; padding-left: 0.278em;"
+ id="MathJax-Span-582" class="mo">=</span><span
+ style="font-family: MathJax_Math; font-style: italic; padding-left: 0.278em;"
+ id="MathJax-Span-583" class="mi">x</span></span></span></span></span></nobr><span
+ role="presentation" class="MJX_Assistive_MathML"><math
+ xmlns="http://www.w3.org/1998/Math/MathML"><mi>erfc</mi><mo>&#8289;</mo><mo
+ stretchy="false">(</mo><mi>erfcinv</mi><mo>&#8289;</mo><mo stretchy="false">(</mo><mi>x</mi><mo
+ stretchy="false">)</mo><mo stretchy="false">)</mo><mo>=</mo><mi>x</mi></math></span></span></span>.
+      </td>
+      <td style="vertical-align: top;">erfcinv(2) </td>
+      <td style="vertical-align: top;">-Inf<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gamma(x)<br>
+      </td>
+      <td style="vertical-align: top;">Γ(x)<br>
+      </td>
+      <td style="vertical-align: top;">gamma(2+3im)<br>
+      </td>
+      <td style="vertical-align: top;">-0.0823952726655382 +
+0.09177428743524771im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lgamma(x)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the logarithm of the
+absolute value of gamma() for Real x, <br>
+while for Complex x it computes the logarithm of gamma(x)<br>
+      </td>
+      <td style="vertical-align: top;">lgamma(2+3im)<br>
+      </td>
+      <td style="vertical-align: top;">-2.0928517530932025 +
+2.302396543466486im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lfact(x)</td>
+      <td style="vertical-align: top;">Compute the logarithmic
+factorial of x<br>
+      </td>
+      <td style="vertical-align: top;">lfact(5)<br>
+      </td>
+      <td style="vertical-align: top;">4.787491742782046<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airy(k, x)<br>
+      </td>
+      <td style="vertical-align: top;">Ai&#8289;(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyai(x)<br>
+      </td>
+      <td style="vertical-align: top;">Ai(x)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyaiprime(x)<br>
+      </td>
+      <td style="vertical-align: top;">Ai′&#8289;(x).</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airybi(x)<br>
+      </td>
+      <td style="vertical-align: top;">Bi&#8289;(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airybiprime(x)<br>
+      </td>
+      <td style="vertical-align: top;">Bi′&#8289;(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyx(k, x)<br>
+      </td>
+      <td style="vertical-align: top;">Ai&#8289;(x)e－|Re&#8289;(23xx)| for k == 2
+||&nbsp; k == 3.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj0(x)<br>
+      </td>
+      <td style="vertical-align: top;">J0(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj1(x)<br>
+      </td>
+      <td style="vertical-align: top;">J1(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Jν(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besseljx(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Jν(x)e－|Im&#8289;(x)|.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely0(x)<br>
+      </td>
+      <td style="vertical-align: top;">Y0(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely1(x)<br>
+      </td>
+      <td style="vertical-align: top;">Y1(x)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Yν(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselyx(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Yν(x)e－|Im&#8289;(x)|.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh1(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Hν(1)(x).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh1x(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Hν(1)(x)e－xi.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh2(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">H^(2)_ν(x)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh2x(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">H_ν^(2)(x)e^{xi}<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselh(nu, k, x)<br>
+      </td>
+      <td style="vertical-align: top;">Bessel function of the third
+kind of order nu (Hankel function). <br>
+k is either 1 or 2, selecting hankelh1 or hankelh2, respectively.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besseli(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">I_ν(x)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselix(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">I_ν(x)e^{－|Re(x) |I}<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselk(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">K_ν(x)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselkx(nu, x)<br>
+      </td>
+      <td style="vertical-align: top;">Kν(x)e^x<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">beta(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">B(x,y)=Γ(x)Γ(y)/Γ(x+y)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lbeta(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;log(|B(x,y)|)log&#8289;(|B&#8289;(x,y)|).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ndigits(n, b)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the number of digits in
+number n written in base b.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">widemul(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">Multiply x and y, giving the
+result as a larger type.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@evalpoly(z, c...)<br>
+      </td>
+      <td style="vertical-align: top;">Evaluate the polynomial
+∑kc[k]zk－1∑kc[k]zk－1 for the coefficients <br>
+c[1], c[2], ...; that is, the coefficients are given in ascending <br>
+order by power of z. This macro expands to efficient inline code <br>
+that uses either Horner’s method or, for complex z, a more efficient <br>
+Goertzel-like algorithm.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="1">nextprod([k_1,
+k_2, ..., ]n)<br>
+      </td>
+      <td style="vertical-align: top;" colspan="1">Π(i=1to n)πk_i^pi<br>
+積記号<br>
+      </td>
+      <td style="vertical-align: top;" colspan="1"><br>
+      </td>
+      <td style="vertical-align: top;">エラー<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevprod([k_1, k_2, ..., ]n)<br>
+      </td>
+      <td style="vertical-align: top;">Π(i=1to n)πk_i^pi<br>
+積の記号<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">エラー<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">統計関数</span></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式</td>
+      <td style="vertical-align: top; font-weight: bold;">機能</td>
+      <td style="vertical-align: top; font-weight: bold;">例題</td>
+      <td style="vertical-align: top; font-weight: bold;">結果</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mean(v[, region])<br>
+      </td>
+      <td style="vertical-align: top;">平均vは配列　　region=1.0<br>
+Compute the mean of whole array
+v, or optionally along the dimensions in region. Note: Julia does not
+ignore NaN values in the computation. For applications requiring the
+handling of missing data, the DataArray package is recommended.<br>
+      </td>
+      <td style="vertical-align: top;">mean([1,2,3,4]) </td>
+      <td style="vertical-align: top;">2.5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mean!(r, v)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the mean of v over the
+singleton dimensions of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">std(v[, region])<br>
+      </td>
+      <td style="vertical-align: top;">vは配列，region=1.0 標準偏差を求める<br>
+Compute the sample standard
+deviation of a vector or array v, optionally along dimensions in
+region. The algorithm returns an estimator of the generative
+distribution’s standard deviation under the assumption that each entry
+of v is an IID drawn from that generative distribution. This
+computation is equivalent to calculating sqrt(sum((v&nbsp; -
+mean(v)).^2) / (length(v) - 1)). Note: Julia does not ignore NaN values
+in the computation. For applications requiring the handling of missing
+data, the DataArray package is recommended.<br>
+      </td>
+      <td style="vertical-align: top;">std([1,2,3,4])<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1.2909944487358056 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">stdm(v, m)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the sample standard
+deviation of a vector v with known mean m. Note: Julia does not ignore
+NaN values in the computation.<br>
+      </td>
+      <td style="vertical-align: top;">stdm([1,2,3], 2.3) </td>
+      <td style="vertical-align: top;">1.0653637876331257<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">var(v[, region])<br>
+      </td>
+      <td style="vertical-align: top;">分散<br>
+Compute the sample variance of a
+vector or array v, optionally along dimensions in region. The algorithm
+will return an estimator of the generative distribution’s variance
+under the assumption that each entry of v is an IID drawn from that
+generative distribution. This computation is equivalent to calculating
+sumabs2(v&nbsp; - mean(v)) / (length(v) - 1). Note: Julia does not
+ignore NaN values in the computation. For applications requiring the
+handling of missing data, the DataArray package is recommended.<br>
+      </td>
+      <td style="vertical-align: top;">var([1,2,3,4])<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1.6666666666666667 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">varm(v, m)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the sample variance of a
+vector v with known mean m. Note: Julia does not ignore NaN values in
+the computation.<br>
+      </td>
+      <td style="vertical-align: top;">varm([1,2,3,4], 4) </td>
+      <td style="vertical-align: top;">4.666666666666667<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">middle(x)</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">Compute the middle of a scalar
+value, which is equivalent to x itself, but of the type of
+middle(x,&nbsp; x) for consistency.<br>
+      </td>
+      <td style="vertical-align: top;">middle(2.1) </td>
+      <td style="vertical-align: top;">2.1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">middle(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the middle of two reals
+x and y, which is equivalent in both value and type to computing their
+mean ((x + y)&nbsp; / 2).<br>
+      </td>
+      <td style="vertical-align: top;">middle(2.0, 3.0) </td>
+      <td style="vertical-align: top;">2.5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">middle(range)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the middle of a range,
+which consists in computing the mean of its extrema. Since a range is
+sorted, the mean is performed with the first and last element.<br>
+      </td>
+      <td style="vertical-align: top;">middle(1.2) </td>
+      <td style="vertical-align: top;">1.2<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <dl class="function">
+        <dt><code class="descname"><span
+ style="font-family: sans-serif;">middle(array)</span></code><span
+ class="sig-paren"></span></dt>
+      </dl>
+      </td>
+      <td style="vertical-align: top;">配列(array)で与えたれた中央値を求める</td>
+      <td style="vertical-align: top;"> A=[1,2,5,6,7,3]<br>
+middle(A)</td>
+      <td style="vertical-align: top;">6-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;5<br>
+&nbsp;6<br>
+&nbsp;7<br>
+&nbsp;3<br>
+4.0</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">median(v[, region])<br>
+      </td>
+      <td style="vertical-align: top;">メジアンCompute the median of whole
+array v, or optionally along the dimensions in region. For even number
+of elements no exact median element exists, so the result is equivalent
+to calculating mean of two median elements. NaN is returned if the data
+contains any NaN values. For applications requiring the handling of
+missing data, the DataArrays package is recommended.<br>
+      </td>
+      <td style="vertical-align: top;">median([1,2,3,4]) </td>
+      <td style="vertical-align: top;">2.5<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">median!(v)<br>
+      </td>
+      <td style="vertical-align: top;">Like median, but may overwrite
+the input vector.<br>
+ベクトルのメジアン<br>
+      </td>
+      <td style="vertical-align: top;">median!([1,2,3,4]) </td>
+      <td style="vertical-align: top;">2.5<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hist(v[, n]) → e, counts<br>
+      </td>
+      <td style="vertical-align: top;">Compute the histogram of v,
+optionally using approximately n bins. The return values are a range e,
+which correspond to the edges of the bins, and counts containing the
+number of elements of v in each bin. Note: Julia does not ignore NaN
+values in the computation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hist(v, e) → e, counts<br>
+      </td>
+      <td style="vertical-align: top;">Compute the histogram of v using
+a vector/range e as the edges for the bins. The result will be a vector
+of length length(e) - 1, such that the element at location i satisfies
+sum(e[i]&nbsp; .&lt; v .&lt;= e[i+1]). Note: Julia does not ignore NaN
+values in the computation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hist!(counts, v, e) → e, counts<br>
+      </td>
+      <td style="vertical-align: top;">Compute the histogram of v,
+using a vector/range e as the edges for the bins. This function writes
+the resultant counts to a pre-allocated array counts.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hist2d(M, e1, e2)→ (edge1,
+edge2, counts)<br>
+      </td>
+      <td style="vertical-align: top;">Compute a “2d histogram” of a
+set of N points specified by N-by-2 matrix M. Arguments e1 and e2 are
+bins for each dimension, specified either as integer bin counts or
+vectors of bin edges. The result is a tuple of edge1 (the bin edges
+used in the first dimension), edge2 (the bin edges used in the second
+dimension), and counts, a histogram matrix of size (length(edge1)-1,
+length(edge2)-1). Note: Julia does not ignore NaN values in the
+computation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hist2d!(counts, M, e1, e2) →
+(e1, e2, counts)<br>
+      </td>
+      <td style="vertical-align: top;">Compute a “2d histogram” with
+respect to the bins delimited by the edges given in e1 and e2. This
+function writes the results to a pre-allocated array counts.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">histrange(v, n)<br>
+      </td>
+      <td style="vertical-align: top;">Compute nice bin ranges for the
+edges of a histogram of v, using approximately n bins. The resulting
+step sizes will be 1, 2 or 5 multiplied by a power of 10. Note: Julia
+does not ignore NaN values in the computation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">midpoints(e)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the midpoints of the
+bins with edges e. The result is a vector/range of length length(e) -
+1. Note: Julia does not ignore NaN values in the computation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">quantile(v, p; sorted=false)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the quantile(s) of a
+vector v at a specified
+probability or vector p. The keyword argument sorted indicates whether
+v can be assumed to be sorted.<br>
+&nbsp;&nbsp;&nbsp; The p should be on the interval [0,1], and v should
+not have any NaN values.<br>
+&nbsp;&nbsp;&nbsp; Quantiles are computed via linear interpolation
+between the points ((k-1)/(n-1), v[k]), for k = 1:n where n =
+length(v). This corresponds to Definition 7 of Hyndman and Fan (1996),
+and is the same as the R default.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Hyndman, R.J and Fan, Y.
+(1996) “Sample Quantiles in Statistical Packages”, The American
+Statistician, Vol. 50, No. 4, pp. 361-365<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">quantile!([q, ]v, p;
+sorted=false)<br>
+      </td>
+      <td style="vertical-align: top;">Compute the quantile(s) of a
+vector v at the
+probabilities p, with optional output into array q (if not provided, a
+new output array is created). The keyword argument sorted indicates
+whether v can be assumed to be sorted; if false (the default), then the
+elements of v may be partially sorted.<br>
+&nbsp;&nbsp;&nbsp; The elements of p should be on the interval [0,1],
+and v should not have any NaN values.<br>
+&nbsp;&nbsp;&nbsp; Quantiles are computed via linear interpolation
+between the points ((k-1)/(n-1), v[k]), for k = 1:n where n =
+length(v). This corresponds to Definition 7 of Hyndman and Fan (1996),
+and is the same as the R default.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Hyndman, R.J and Fan, Y.
+(1996) “Sample Quantiles in Statistical Packages”, The American
+Statistician, Vol. 50, No. 4, pp. 361-365<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cov(v1[, v2][, vardim=1,
+corrected=true, mean=nothing])<br>
+      </td>
+      <td style="vertical-align: top;">Compute the Pearson covariance
+between the vector(s)
+in v1 and v2. Here, v1 and v2 can be either vectors or matrices.<br>
+This function accepts three keyword arguments:<br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * vardim: the dimension of
+variables. When vardim = 1, variables are considered in columns while
+observations in rows; when vardim = 2, variables are in rows while
+observations in columns. By default, it is set to 1.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * corrected: whether to
+apply Bessel’s correction (divide by n-1 instead of n). By default, it
+is set to true.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * mean: allow users to
+supply mean values that are known. By default, it is set to nothing,
+which indicates that the mean(s) are unknown, and the function will
+compute the mean. Users can use mean=0 to indicate that the input data
+are centered, and hence there’s no need to subtract the mean.<br>
+The size of the result depends on the size of v1 and
+v2. When both v1 and v2 are vectors, it returns the covariance between
+them as a scalar. When either one is a matrix, it returns a covariance
+matrix of size (n1, n2), where n1 and n2 are the numbers of slices in
+v1 and v2, which depend on the setting of vardim.<br>
+Note: v2 can be omitted, which indicates v2 = v1.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cor(v1[, v2][, vardim=1,
+mean=nothing])<br>
+      </td>
+      <td style="vertical-align: top;">Compute the Pearson correlation
+between the
+vector(s) in v1 and v2.<br>
+Users can use the keyword argument vardim to specify
+the variable dimension, and mean to supply pre-computed mean values.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>ユニットと機能テスト</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Testing
+Base Julia<br>
+      <span style="font-weight: normal;">Julia is under rapid
+development and has an extensive test suite to verify functionality
+across multiple platforms. If you build Julia from source, you can run
+this test suite with make test. In a binary install, you can run the
+test suite using</span><code class="docutils literal"
+ style="font-weight: normal;"><span class="pre"> <span
+ style="font-family: sans-serif;">Base.runtests().</span></span></code>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base.runtests()<br>
+      </td>
+      <td style="vertical-align: top;">ものすごく時間がかかるテストなのでやるな<br>
+      </td>
+      <td style="vertical-align: top;">Base.runtests()<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">runtests([tests=["all"][,
+numcores=iceil(CPU_CORES/2)]]) </td>
+      <td style="vertical-align: top;">Run the Julia unit tests listed
+in tests, which can be either a
+string or an array of strings, using numcores processors. (not
+exported) </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Test Framework<br>
+The Test module contains macros and functions related to testing. A
+default handler is provided to run the tests, and a custom one can be
+provided by the user by using the registerhandler() function.<br>
+To use the default handler, the macro @test() can be used directly:<br>
+julia&gt; using Base.Test<br>
+julia&gt; @test 1 == 1<br>
+julia&gt; @test 1 == 0<br>
+ERROR: test failed: 1 == 0<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in default_handler at test.jl:19<br>
+&nbsp;in do_test at test.jl:39<br>
+<br>
+julia&gt; @test error("This is what happens when a test fails")<br>
+ERROR: test error during error("This is what happens when a test fails")<br>
+This is what happens when a test fails<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in anonymous at test.jl:62<br>
+&nbsp;in do_test at test.jl:37<br>
+As seen in the examples above, failures or errors will print the
+abstract syntax tree of the expression in question.<br>
+Another macro is provided to check if the given expression throws an
+exception of type extype, @test_throws():<br>
+julia&gt; @test_throws ErrorException error("An error")<br>
+ErrorException("An error")<br>
+julia&gt; @test_throws BoundsError error("An error")<br>
+ERROR: test failed: error("An error")<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in default_handler at test.jl:19<br>
+&nbsp;in do_test_throws at test.jl:55<br>
+<br>
+julia&gt; @test_throws DomainError throw(DomainError())<br>
+DomainError()<br>
+julia&gt; @test_throws DomainError throw(EOFError())<br>
+ERROR: test failed: throw(EOFError())<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in default_handler at test.jl:19<br>
+&nbsp;in do_test_throws at test.jl:55<br>
+As floating-point values can be imprecise, you can perform approximate
+equality checks using either @test a &#8776; b (where &#8776;, typed via tab
+completion of \approx, is the isapprox function) or use the macros
+@test_approx_eq macro (which differs from isapprox in that it treats
+NaN values as equal and has a smaller default tolerance) or
+@test_approx_eq_eps (which takes an extra argument indicating the
+relative tolerance):<br>
+<br>
+julia&gt; @test 1 &#8776; 0.999999999<br>
+<br>
+julia&gt; @test 1 &#8776; 0.999999<br>
+ERROR: test failed: 1 isapprox 0.999999<br>
+&nbsp;in expression: 1 &#8776; 0.999999<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in default_handler at test.jl:30<br>
+&nbsp;in do_test at test.jl:53<br>
+julia&gt; @test_approx_eq 1. 0.999999999<br>
+ERROR: assertion failed: |1.0 - 0.999999999| &lt; 2.220446049250313e-12<br>
+&nbsp; 1.0 = 1.0<br>
+&nbsp; 0.999999999 = 0.999999999<br>
+&nbsp;in test_approx_eq at test.jl:75<br>
+&nbsp;in test_approx_eq at test.jl:80<br>
+julia&gt; @test_approx_eq 1. 0.9999999999999<br>
+julia&gt; @test_approx_eq_eps 1. 0.999 1e-2<br>
+julia&gt; @test_approx_eq_eps 1. 0.999 1e-3<br>
+ERROR: assertion failed: |1.0 - 0.999| &lt;= 0.001<br>
+&nbsp; 1.0 = 1.0<br>
+&nbsp; 0.999 = 0.999<br>
+&nbsp; difference = 0.0010000000000000009 &gt; 0.001<br>
+&nbsp;in error at error.jl:22<br>
+&nbsp;in test_approx_eq at test.jl:68<br>
+Handlers<br>
+A handler is a function defined for three kinds of arguments: Success,
+Failure, Error:<br>
+# An example definition of a test handler<br>
+test_handler(r::Success) = nothing<br>
+test_handler(r::Failure) = error("test failed: $(r.expr)")<br>
+test_handler(r::Error)&nbsp;&nbsp; = rethrow(r)<br>
+A different handler can be used for a block (with with_handler()):<br>
+julia&gt; using Base.Test<br>
+julia&gt; custom_handler(r::Test.Success) = println("Success on
+$(r.expr)")<br>
+custom_handler (generic function with 1 method)<br>
+julia&gt; custom_handler(r::Test.Failure) = error("Error on custom
+handler: $(r.expr)")<br>
+custom_handler (generic function with 2 methods)<br>
+julia&gt; custom_handler(r::Test.Error) = rethrow(r)<br>
+custom_handler (generic function with 3 methods)<br>
+julia&gt; Test.with_handler(custom_handler) do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @test 1 == 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @test 1 != 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+Success on :((1==1))<br>
+ERROR: Error on custom handler: :((1!=1))<br>
+&nbsp;in error at error.jl:21<br>
+&nbsp;in custom_handler at none:1<br>
+&nbsp;in do_test at test.jl:39<br>
+&nbsp;in anonymous at no file:3<br>
+&nbsp;in task_local_storage at task.jl:28<br>
+&nbsp;in with_handler at test.jl:24<br>
+The Success and Failure types include an additonal field, resultexpr,
+which is a partially evaluated expression. For example, in a comparison
+it will contain an expression with the left and right sides evaluated.<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Macros</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@test(ex) </td>
+      <td style="vertical-align: top;">Test the expression ex and calls
+the current handler
+to handle the result. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@test_throws(extype, ex) </td>
+      <td style="vertical-align: top;">Test that the expression ex
+throws an exception of
+type extype and calls the current handler to handle the result.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@test_approx_eq(a, b) </td>
+      <td style="vertical-align: top;">Test two floating point numbers
+a and b for equality
+taking in account small numerical errors. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@test_approx_eq_eps(a, b, tol) </td>
+      <td style="vertical-align: top;">Test two floating point numbers
+a and b for equality
+taking in account a margin of tolerance given by tol. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Functions<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">with_handler(f, handler) </td>
+      <td style="vertical-align: top;">Run the function f using the
+handler as the handler.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+</body>
+</html>

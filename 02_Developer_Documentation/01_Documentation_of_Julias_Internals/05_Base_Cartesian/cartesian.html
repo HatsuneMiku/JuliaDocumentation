@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base.Cartesian — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="Talking to the compiler (the :meta mechanism)"
+ href="meta.html">
+  <link rel="prev" title="Memory layout of Julia Objects"
+ href="object.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="base-cartesian">
+<h1>Base.Cartesian<a class="headerlink" href="#base-cartesian"
+ title="Permalink to this headline">¶</a></h1>
+<p>The (non-exported) Cartesian module provides macros that facilitate
+writing multidimensional algorithms. It is hoped that Cartesian will
+not, in the long term, be necessary; however, at present it is one of
+the few ways to write compact and performant multidimensional code.</p>
+<div class="section" id="principles-of-usage">
+<h2>Principles of usage<a class="headerlink" href="#principles-of-usage"
+ title="Permalink to this headline">¶</a></h2>
+<p>A simple example of usage is:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">@</span><span class="n">nloops</span> <span
+ class="mi">3</span> <span class="n">i</span> <span class="n">A</span> <span
+ class="k">begin</span>
+    <span class="n">s</span> <span class="o">+=</span> <span
+ class="p">@</span><span class="n">nref</span> <span class="mi">3</span> <span
+ class="n">A</span> <span class="n">i</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>which generates the following code:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">for</span> <span class="n">i_3</span> <span
+ class="o">=</span> <span class="mi">1</span><span class="p">:</span><span
+ class="n">size</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span><span class="mi">3</span><span class="p">)</span>
+    <span
+ class="k">for</span> <span class="n">i_2</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">size</span><span
+ class="p">(</span><span class="n">A</span><span class="p">,</span><span
+ class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span
+ class="n">i_1</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">:</span><span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">)</span>
+            <span class="n">s</span> <span
+ class="o">+=</span> <span class="n">A</span><span class="p">[</span><span
+ class="n">i_1</span><span class="p">,</span><span class="n">i_2</span><span
+ class="p">,</span><span class="n">i_3</span><span class="p">]</span>
+        <span
+ class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>In general, Cartesian allows you to write generic code that contains
+repetitive elements, like the nested loops in this example. Other
+applications include repeated expressions (e.g., loop unwinding) or
+creating function calls with variable numbers of arguments without
+using
+the “splat” construct (<code class="docutils literal"><span class="pre">i...</span></code>).</p>
+</div>
+<div class="section" id="basic-syntax">
+<h2>Basic syntax<a class="headerlink" href="#basic-syntax"
+ title="Permalink to this headline">¶</a></h2>
+<p>The (basic) syntax of <code class="docutils literal"><span
+ class="pre">@nloops</span></code> is as follows:</p>
+<ul class="simple">
+  <li>The first argument must be an integer (<em>not</em> a variable)
+specifying
+the number of loops.</li>
+  <li>The second argument is the symbol-prefix used for the iterator
+variable. Here we used <code class="docutils literal"><span class="pre">i</span></code>,
+and variables <code class="docutils literal"><span class="pre">i_1,</span>
+    <span class="pre">i_2,</span> <span class="pre">i_3</span></code>
+were
+generated.</li>
+  <li>The third argument specifies the range for each iterator
+variable. If
+you use a variable (symbol) here, it’s taken as <code
+ class="docutils literal"><span class="pre">1:size(A,dim)</span></code>.
+More flexibly, you can use the anonymous-function expression syntax
+described below.</li>
+  <li>The last argument is the body of the loop. Here, that’s what
+appears
+between the <code class="docutils literal"><span class="pre">begin...end</span></code>.</li>
+</ul>
+<p>There are some additional features of <code class="docutils literal"><span
+ class="pre">@nloops</span></code> described in the
+<a class="reference internal" href="#devdoc-cartesian-reference"><span>reference
+section</span></a>.</p>
+<p><code class="docutils literal"><span class="pre">@nref</span></code>
+follows a similar pattern, generating <code class="docutils literal"><span
+ class="pre">A[i_1,i_2,i_3]</span></code> from
+<code class="docutils literal"><span class="pre">@nref</span> <span
+ class="pre">3</span> <span class="pre">A</span> <span class="pre">i</span></code>.
+The general practice is to read from left to right,
+which is why <code class="docutils literal"><span class="pre">@nloops</span></code>
+is <code class="docutils literal"><span class="pre">@nloops</span> <span
+ class="pre">3</span> <span class="pre">i</span> <span class="pre">A</span>
+<span class="pre">expr</span></code> (as in
+<code class="docutils literal"><span class="pre">for</span> <span
+ class="pre">i_2</span> <span class="pre">=</span> <span class="pre">1:size(A,2)</span></code>,
+where <code class="docutils literal"><span class="pre">i_2</span></code>
+is to the left and the range is
+to the right) whereas <code class="docutils literal"><span class="pre">@nref</span></code>
+is <code class="docutils literal"><span class="pre">@nref</span> <span
+ class="pre">3</span> <span class="pre">A</span> <span class="pre">i</span></code>
+(as in
+<code class="docutils literal"><span class="pre">A[i_1,i_2,i_3]</span></code>,
+where the array comes first).</p>
+<p>If you’re developing code with Cartesian, you may find that
+debugging is
+easier when you examine the generated code, using <code
+ class="docutils literal"><span class="pre">macroexpand</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">macroexpand</span><span class="p">(:(@</span><span class="n">nref</span> <span
+ class="mi">2</span> <span class="n">A</span> <span class="n">i</span><span
+ class="p">))</span>
+<span class="p">:(</span><span class="n">A</span><span class="p">[</span><span
+ class="n">i_1</span><span class="p">,</span><span class="n">i_2</span><span
+ class="p">])</span>
+</pre>
+</div>
+</div>
+<div class="section" id="supplying-the-number-of-expressions">
+<h3>Supplying the number of expressions<a class="headerlink"
+ href="#supplying-the-number-of-expressions"
+ title="Permalink to this headline">¶</a></h3>
+<p>The first argument to both of these macros is the number of
+expressions, which must be an integer. When you’re writing a function
+that you intend to work in multiple dimensions, this may not be
+something you want to hard-code. If you’re writing code that
+you need to work with older julia versions, currently you
+should use the <code class="docutils literal"><span class="pre">@ngenerate</span></code>
+macro described in <a class="reference external"
+ href="http://docs.julialang.org/en/release-0.3/devdocs/cartesian/#supplying-the-number-of-expressions">an
+older version of this documentation</a>.</p>
+<p>Starting in Julia 0.4-pre, the recommended approach is to use
+a <code class="docutils literal"><span class="pre">@generated</span> <span
+ class="pre">function</span></code>. Here’s an example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">@</span><span class="n">generated</span> <span
+ class="k">function</span><span class="nf"> mysum</span><span class="p">{</span><span
+ class="n">T</span><span class="p">,</span><span class="n">N</span><span
+ class="p">}(</span><span class="n">A</span><span class="p">::</span><span
+ class="n">Array</span><span class="p">{</span><span class="n">T</span><span
+ class="p">,</span><span class="n">N</span><span class="p">})</span>
+    <span
+ class="k">quote</span>
+        <span class="n">s</span> <span
+ class="o">=</span> <span class="n">zero</span><span class="p">(</span><span
+ class="n">T</span><span class="p">)</span>
+        <span class="p">@</span><span
+ class="n">nloops</span> <span class="o">$</span><span class="n">N</span> <span
+ class="n">i</span> <span class="n">A</span> <span class="k">begin</span>
+            <span
+ class="n">s</span> <span class="o">+=</span> <span class="p">@</span><span
+ class="n">nref</span> <span class="o">$</span><span class="n">N</span> <span
+ class="n">A</span> <span class="n">i</span>
+        <span class="k">end</span>
+        <span
+ class="n">s</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Naturally, you can also prepare expressions or perform calculations
+before the <code class="docutils literal"><span class="pre">quote</span></code>
+block.</p>
+</div>
+<div class="section"
+ id="anonymous-function-expressions-as-macro-arguments">
+<h3>Anonymous-function expressions as macro arguments<a
+ class="headerlink"
+ href="#anonymous-function-expressions-as-macro-arguments"
+ title="Permalink to this headline">¶</a></h3>
+<p>Perhaps the single most powerful feature in <code
+ class="docutils literal"><span class="pre">Cartesian</span></code> is
+the
+ability to supply anonymous-function expressions that get evaluated at
+parsing time. Let’s consider a simple example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">@</span><span class="n">nexprs</span> <span
+ class="mi">2</span> <span class="n">j</span><span class="o">-&gt;</span><span
+ class="p">(</span><span class="n">i_j</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">@nexprs</span></code>
+generates <code class="docutils literal"><span class="pre">n</span></code>
+expressions that follow a pattern. This
+code would generate the following statements:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">i_1</span> <span class="o">=</span> <span
+ class="mi">1</span>
+<span class="n">i_2</span> <span class="o">=</span> <span class="mi">1</span>
+</pre>
+</div>
+</div>
+<p>In each generated statement, an “isolated” <code
+ class="docutils literal"><span class="pre">j</span></code> (the
+variable of the
+anonymous function) gets replaced by values in the range <code
+ class="docutils literal"><span class="pre">1:2</span></code>.
+Generally speaking, Cartesian employs a LaTeX-like syntax. This
+allows you to do math on the index <code class="docutils literal"><span
+ class="pre">j</span></code>. Here’s an example computing
+the strides of an array:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">s_1</span> <span class="o">=</span> <span
+ class="mi">1</span>
+<span class="p">@</span><span class="n">nexprs</span> <span class="mi">3</span> <span
+ class="n">j</span><span class="o">-&gt;</span><span class="p">(</span><span
+ class="n">s_</span><span class="p">{</span><span class="n">j</span><span
+ class="o">+</span><span class="mi">1</span><span class="p">}</span> <span
+ class="o">=</span> <span class="n">s_j</span> <span class="o">*</span> <span
+ class="n">size</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span> <span class="n">j</span><span class="p">))</span>
+</pre>
+</div>
+</div>
+<p>would generate expressions</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">s_1</span> <span class="o">=</span> <span
+ class="mi">1</span>
+<span class="n">s_2</span> <span class="o">=</span> <span class="n">s_1</span> <span
+ class="o">*</span> <span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="mi">1</span><span
+ class="p">)</span>
+<span class="n">s_3</span> <span class="o">=</span> <span class="n">s_2</span> <span
+ class="o">*</span> <span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="mi">2</span><span
+ class="p">)</span>
+<span class="n">s_4</span> <span class="o">=</span> <span class="n">s_3</span> <span
+ class="o">*</span> <span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="mi">3</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Anonymous-function expressions have many uses in practice.</p>
+<div class="section" id="macro-reference">
+<h4>Macro reference<a class="headerlink" href="#macro-reference"
+ title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+  <dt><code class="descname">@nloops N itersym rangeexpr bodyexpr</code></dt>
+  <dt><code class="descname">@nloops N itersym rangeexpr preexpr
+bodyexpr</code></dt>
+  <dt><code class="descname">@nloops N itersym rangeexpr preexpr
+postexpr bodyexpr</code></dt>
+  <dd>
+    <p>Generate <code class="docutils literal"><span class="pre">N</span></code>
+nested loops, using <code class="docutils literal"><span class="pre">itersym</span></code>
+as the prefix for the iteration variables. <code
+ class="docutils literal"><span class="pre">rangeexpr</span></code> may
+be an anonymous-function expression, or a simple symbol <code
+ class="docutils literal"><span class="pre">var</span></code> in which
+case the range is <code class="docutils literal"><span class="pre">1:size(var,d)</span></code>
+for dimension <code class="docutils literal"><span class="pre">d</span></code>.</p>
+    <p>Optionally, you can provide “pre” and “post” expressions. These
+get executed first and last, respectively, in the body of each loop.
+For example, :</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="p">@</span><span class="n">nloops</span> <span
+ class="mi">2</span> <span class="n">i</span> <span class="n">A</span> <span
+ class="n">d</span><span class="o">-&gt;</span><span class="n">j_d</span><span
+ class="o">=</span><span class="n">min</span><span class="p">(</span><span
+ class="n">i_d</span><span class="p">,</span><span class="mi">5</span><span
+ class="p">)</span> <span class="k">begin</span>
+    <span class="n">s</span> <span
+ class="o">+=</span> <span class="p">@</span><span class="n">nref</span> <span
+ class="mi">2</span> <span class="n">A</span> <span class="n">j</span>
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+    <p>would generate :</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">for</span> <span class="n">i_2</span> <span
+ class="o">=</span> <span class="mi">1</span><span class="p">:</span><span
+ class="n">size</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span
+ class="n">j_2</span> <span class="o">=</span> <span class="n">min</span><span
+ class="p">(</span><span class="n">i_2</span><span class="p">,</span> <span
+ class="mi">5</span><span class="p">)</span>
+    <span class="k">for</span> <span
+ class="n">i_1</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">:</span><span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="mi">1</span><span
+ class="p">)</span>
+        <span class="n">j_1</span> <span class="o">=</span> <span
+ class="n">min</span><span class="p">(</span><span class="n">i_1</span><span
+ class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span
+ class="n">s</span> <span class="o">+=</span> <span class="n">A</span><span
+ class="p">[</span><span class="n">j_1</span><span class="p">,</span><span
+ class="n">j_2</span><span class="p">]</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+    <p>If you want just a post-expression, supply <code
+ class="docutils literal"><span class="pre">nothing</span></code> for
+the pre-expression. Using parenthesis and semicolons, you can supply
+multi-statement expressions.</p>
+  </dd>
+</dl>
+<dl class="function">
+  <dt><code class="descname">@nref N A indexexpr</code></dt>
+  <dd>
+    <p>Generate expressions like <code class="docutils literal"><span
+ class="pre">A[i_1,i_2,...]</span></code>. <code
+ class="docutils literal"><span class="pre">indexexpr</span></code> can
+either be an iteration-symbol prefix, or an anonymous-function
+expression.</p>
+  </dd>
+</dl>
+<dl class="function">
+  <dt><code class="descname">@nexprs N expr</code></dt>
+  <dd>
+    <p>Generate <code class="docutils literal"><span class="pre">N</span></code>
+expressions. <code class="docutils literal"><span class="pre">expr</span></code>
+should be an anonymous-function expression.</p>
+  </dd>
+</dl>
+<dl class="function">
+  <dt><code class="descname">@ntuple N expr</code></dt>
+  <dd>
+    <p>Generates an <code class="docutils literal"><span class="pre">N</span></code>-tuple.
+    <code class="docutils literal"><span class="pre">@ntuple</span> <span
+ class="pre">2</span> <span class="pre">i</span></code> would generate
+    <code class="docutils literal"><span class="pre">(i_1,</span> <span
+ class="pre">i_2)</span></code>, and <code class="docutils literal"><span
+ class="pre">@ntuple</span> <span class="pre">2</span> <span
+ class="pre">k-&gt;k+1</span></code> would generate <code
+ class="docutils literal"><span class="pre">(2,3)</span></code>.</p>
+  </dd>
+</dl>
+<dl class="function">
+  <dt><code class="descname">@nall N expr</code></dt>
+  <dd>
+    <p><code class="docutils literal"><span class="pre">@nall</span> <span
+ class="pre">3</span> <span class="pre">d-&gt;(i_d</span> <span
+ class="pre">&gt;</span> <span class="pre">1)</span></code> would
+generate the expression <code class="docutils literal"><span
+ class="pre">(i_1</span> <span class="pre">&gt;</span> <span
+ class="pre">1</span> <span class="pre">&amp;&amp;</span> <span
+ class="pre">i_2</span> <span class="pre">&gt;</span> <span
+ class="pre">1</span> <span class="pre">&amp;&amp;</span> <span
+ class="pre">i_3</span> <span class="pre">&gt;</span> <span
+ class="pre">1)</span></code>. This can be convenient for
+bounds-checking.</p>
+  </dd>
+</dl>
+<dl class="function">
+  <dt><code class="descname">@nif N conditionexpr expr</code></dt>
+  <dt><code class="descname">@nif N conditionexpr expr elseexpr</code></dt>
+  <dd>
+    <p>Generates a sequence of <code class="docutils literal"><span
+ class="pre">if</span> <span class="pre">...</span> <span class="pre">elseif</span>
+    <span class="pre">...</span> <span class="pre">else</span> <span
+ class="pre">...</span> <span class="pre">end</span></code>
+statements. For example:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="p">@</span><span class="n">nif</span> <span
+ class="mi">3</span> <span class="n">d</span><span class="o">-&gt;</span><span
+ class="p">(</span><span class="n">i_d</span> <span class="o">&gt;=</span> <span
+ class="n">size</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span><span class="n">d</span><span class="p">))</span> <span
+ class="n">d</span><span class="o">-&gt;</span><span class="p">(</span><span
+ class="nb">error</span><span class="p">(</span><span class="s">"Dimension "</span><span
+ class="p">,</span> <span class="n">d</span><span class="p">,</span> <span
+ class="s">" too big"</span><span class="p">))</span> <span class="n">d</span><span
+ class="o">-&gt;</span><span class="n">println</span><span class="p">(</span><span
+ class="s">"All OK"</span><span class="p">)</span>
+    </pre>
+    </div>
+    </div>
+    <p>would generate:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">if</span> <span class="n">i_1</span> <span
+ class="o">&gt;</span> <span class="n">size</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="mi">1</span><span
+ class="p">)</span>
+    <span class="nb">error</span><span class="p">(</span><span
+ class="s">"Dimension "</span><span class="p">,</span> <span class="mi">1</span><span
+ class="p">,</span> <span class="s">" too big"</span><span class="p">)</span>
+<span class="k">elseif</span> <span class="n">i_2</span> <span class="o">&gt;</span> <span
+ class="n">size</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span
+ class="nb">error</span><span class="p">(</span><span class="s">"Dimension "</span><span
+ class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span
+ class="s">" too big"</span><span class="p">)</span>
+<span class="k">else</span>
+    <span class="n">println</span><span
+ class="p">(</span><span class="s">"All OK"</span><span class="p">)</span>
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+  </dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="meta.html"
+ class="btn btn-neutral float-right"
+ title="Talking to the compiler (the :meta mechanism)">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="object.html"
+ class="btn btn-neutral" title="Memory layout of Julia Objects"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

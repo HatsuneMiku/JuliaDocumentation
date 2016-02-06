@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interacting With Julia — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Embedding Julia" href="embedding.html">
+  <link rel="prev" title="Calling C and Fortran Code"
+ href="calling-c-and-fortran-code.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="interacting-with-julia">
+<h1><span id="result_box" class="short_text" lang="ja"><span class="">Julia</span><span
+ class="">との対話</span></span><a class="headerlink"
+ href="#interacting-with-julia" title="Permalink to this headline"></a></h1>
+<p>Julia comes with a full-featured interactive command-line REPL
+(read-eval-print loop) built into the <code class="docutils literal"><span
+ class="pre">julia</span></code> executable. In addition to allowing
+quick and easy evaluation of Julia statements, it has a searchable
+history, tab-completion, many helpful keybindings, and dedicated help
+and shell modes. The REPL can be started by simply calling julia with
+no arguments or double-clicking on the executable:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>$ julia<br>               _<br>   _       _ _(_)_     |  A fresh approach to technical computing<br>  (_)     | (_) (_)    |  Documentation: http://docs.julialang.org<br>   _ _   _| |_  __ _   |  Type "help()" to list help topics<br>  | | | | | | |/ _` |  |<br>  | | |_| | | | (_| |  |  Version 0.3.0-prerelease+2834 (2014-04-30 03:13 UTC)<br> _/ |\__'_|_|_|\__'_|  |  Commit 64f437b (0 days old master)<br>|__/                   |  x86_64-apple-darwin13.1.0<br><br>julia&gt;<br></pre>
+</div>
+</div>
+<p>To exit the interactive session, type <code class="docutils literal"><span
+ class="pre">^D</span></code> — the control key together with the <code
+ class="docutils literal"><span class="pre">d</span></code> key on a
+blank line — or type <code class="docutils literal"><span class="pre">quit()</span></code>
+followed by the return or enter key. The REPL greets you with a banner
+and a <code class="docutils literal"><span class="pre">julia&gt;</span></code>
+prompt.</p>
+<div class="section" id="the-different-prompt-modes">
+<h2><span id="result_box" class="short_text" lang="ja"><span>異なる</span><span
+ class="">プロンプト</span><span class="">モード</span></span><a
+ class="headerlink" href="#the-different-prompt-modes"
+ title="Permalink to this headline"></a></h2>
+<div class="section" id="the-julian-mode">
+<h3>Juliaaのモード<a class="headerlink" href="#the-julian-mode"
+ title="Permalink to this headline"></a></h3>
+<p>The REPL has four main modes of operation. The first and most common
+is the Julian prompt. It is the default mode of operation; each new
+line initially starts with <code class="docutils literal"><span
+ class="pre">julia&gt;</span></code>. It is here that you can enter
+Julia expressions. Hitting return or enter after a complete expression
+has been entered will evaluate the entry and show the result of the
+last expression.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">string</span><span class="p">(</span><span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+<span class="s">"3"</span>
+</pre>
+</div>
+</div>
+<p>There are a number useful features unique to interactive work. In
+addition to showing the result, the REPL also binds the result to the
+variable <code class="docutils literal"><span class="pre">ans</span></code>.
+A trailing semicolon on the line can be used as a flag to suppress
+showing the result.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">string</span><span class="p">(</span><span class="mi">3</span> <span
+ class="o">*</span> <span class="mi">4</span><span class="p">);</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">ans</span>
+<span class="s">"12"</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="help-mode">
+<h3>ヘルプモード</h3>
+<p>When the cursor is at the beginning of the line, the prompt can be
+changed to a help mode by typing <code class="docutils literal"><span
+ class="pre">?</span></code>. Julia will attempt to print help or
+documentation for anything entered in help mode:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="o">?</span> <span class="c"># upon typing ?, the prompt changes (in place) to: help&gt;</span>
+
+<span class="n">help</span><span class="o">&gt;</span> <span class="n">string</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">string</span><span
+ class="p">(</span><span class="n">xs</span><span class="o">...</span><span
+ class="p">)</span>
+
+   <span class="n">Create</span> <span class="n">a</span> <span
+ class="n">string</span> <span class="n">from</span> <span class="n">any</span> <span
+ class="n">values</span> <span class="k">using</span> <span class="n">the</span> <span
+ class="s">"print"</span> <span class="n">function</span><span class="o">.</span>
+</pre>
+</div>
+</div>
+<p>In addition to function names, complete function calls may be
+entered to see which method is called for the given argument(s).
+Macros, types and variables can also be queried:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">help</span><span class="o">&gt;</span> <span
+ class="n">string</span><span class="p">(</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="n">string</span><span class="p">(</span><span class="n">x</span><span
+ class="p">::</span><span class="n">Union</span><span class="p">{</span><span
+ class="kt">Int16</span><span class="p">,</span><span class="n">Int128</span><span
+ class="p">,</span><span class="kt">Int8</span><span class="p">,</span><span
+ class="kt">Int32</span><span class="p">,</span><span class="kt">Int64</span><span
+ class="p">})</span> <span class="n">at</span> <span class="n">string</span><span
+ class="o">.</span><span class="n">jl</span><span class="p">:</span><span
+ class="mi">1553</span>
+
+<span class="n">help</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">printf</span>
+<span class="n">Base</span><span class="o">.</span><span class="p">@</span><span
+ class="n">printf</span><span class="p">([</span><span class="n">io</span><span
+ class="p">::</span><span class="n">IOStream</span><span class="p">],</span> <span
+ class="s">"%Fmt"</span><span class="p">,</span> <span class="n">args</span><span
+ class="o">...</span><span class="p">)</span>
+
+   <span class="n">Print</span> <span
+ class="n">arg</span><span class="p">(</span><span class="n">s</span><span
+ class="p">)</span> <span class="k">using</span> <span class="n">C</span> <span
+ class="s">"printf()"</span> <span class="n">style</span> <span
+ class="n">format</span> <span class="n">specification</span>
+   <span
+ class="n">string</span><span class="o">.</span> <span class="n">Optionally</span><span
+ class="p">,</span> <span class="n">an</span> <span class="n">IOStream</span> <span
+ class="n">may</span> <span class="n">be</span> <span class="n">passed</span> <span
+ class="n">as</span> <span class="n">the</span> <span class="n">first</span> <span
+ class="n">argument</span>
+   <span class="n">to</span> <span class="n">redirect</span> <span
+ class="n">output</span><span class="o">.</span>
+
+<span class="n">help</span><span class="o">&gt;</span> <span class="n">AbstractString</span>
+<span class="n">DataType</span>   <span class="p">:</span> <span
+ class="n">AbstractString</span>
+  <span class="n">supertype</span><span
+ class="p">:</span> <span class="kt">Any</span>
+  <span class="n">subtypes</span> <span
+ class="p">:</span> <span class="kt">Any</span><span class="p">[</span><span
+ class="n">DirectIndexString</span><span class="p">,</span><span
+ class="n">RepString</span><span class="p">,</span><span class="n">RevString</span><span
+ class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span
+ class="n">AbstractString</span><span class="p">},</span><span class="n">RopeString</span><span
+ class="p">,</span><span class="n">SubString</span><span class="p">{</span><span
+ class="n">T</span><span class="o">&lt;:</span><span class="n">AbstractString</span><span
+ class="p">},</span><span class="n">UTF16String</span><span class="p">,</span><span
+ class="n">UTF8String</span><span class="p">]</span>
+</pre>
+</div>
+</div>
+<p>Help mode can be exited by pressing backspace at the beginning of
+the line.</p>
+</div>
+<div class="section" id="shell-mode">
+<span id="man-shell-mode"></span>
+<h3>シェルモード</h3>
+<p>Just as help mode is useful for quick access to documentation,
+another common task is to use the system shell to execute system
+commands. Just as <code class="docutils literal"><span class="pre">?</span></code>
+entered help mode when at the beginning of the line, a semicolon (<code
+ class="docutils literal"><span class="pre">;</span></code>) will enter
+the shell mode. And it can be exited by pressing backspace at the
+beginning of the line.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">;</span> <span class="c"># upon typing ;, the prompt changes (in place) to: shell&gt;</span>
+
+<span class="n">shell</span><span class="o">&gt;</span> <span class="n">echo</span> <span
+ class="n">hello</span>
+<span class="n">hello</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="search-modes">
+<h3>サーチモード</h3>
+<p>In all of the above modes, the executed lines get saved to a history
+file, which can be searched. To initiate an incremental search through
+the previous history, type <code class="docutils literal"><span
+ class="pre">^R</span></code> — the control key together with the <code
+ class="docutils literal"><span class="pre">r</span></code> key. The
+prompt will change to <code class="docutils literal"><span class="pre">(reverse-i-search)`':</span></code>,
+and as you type the search query will appear in the quotes. The most
+recent result that matches the query will dynamically update to the
+right of the colon as more is typed. To find an older result using the
+same query, simply type <code class="docutils literal"><span
+ class="pre">^R</span></code> again.</p>
+<p>Just as <code class="docutils literal"><span class="pre">^R</span></code>
+is a reverse search, <code class="docutils literal"><span class="pre">^S</span></code>
+is a forward search, with the prompt <code class="docutils literal"><span
+ class="pre">(i-search)`':</span></code>. The two may be used in
+conjunction with each other to move through the previous or next
+matching results, respectively.</p>
+</div>
+</div>
+<div class="section" id="key-bindings">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">キー
+バインディング</span></span><a class="headerlink" href="#key-bindings"
+ title="Permalink to this headline"></a></h2>
+<p>The Julia REPL makes great use of key bindings. Several control-key
+bindings were already introduced above (<code class="docutils literal"><span
+ class="pre">^D</span></code> to exit, <code class="docutils literal"><span
+ class="pre">^R</span></code> and <code class="docutils literal"><span
+ class="pre">^S</span></code> for searching), but there are many more.
+In addition to the control-key, there are also meta-key bindings. These
+vary more by platform, but most terminals default to using alt- or
+option- held down with a key to send the meta-key (or can be configured
+to do so).</p>
+<table border="1" class="docutils">
+  <colgroup><col width="32%"><col width="68%"></colgroup> <tbody
+ valign="top">
+    <tr class="row-odd">
+      <td colspan="2"><strong>Program control</strong></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^D</span></code></td>
+      <td>Exit (when buffer is empty)</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">^C</span></code></td>
+      <td>Interrupt or cancel</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^L</span></code></td>
+      <td>Clear console screen</td>
+    </tr>
+    <tr class="row-odd">
+      <td>Return/Enter, <code class="docutils literal"><span
+ class="pre">^J</span></code></td>
+      <td>New line, executing if it is complete</td>
+    </tr>
+    <tr class="row-even">
+      <td>meta-Return/Enter</td>
+      <td>Insert new line without executing it</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">?</span></code>
+or <code class="docutils literal"><span class="pre">;</span></code></td>
+      <td>Enter help or shell mode (when at start of a line)</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^R</span></code>,
+      <code class="docutils literal"><span class="pre">^S</span></code></td>
+      <td>Incremental history search, described above</td>
+    </tr>
+    <tr class="row-odd">
+      <td colspan="2"><strong>Cursor movement</strong></td>
+    </tr>
+    <tr class="row-even">
+      <td>Right arrow, <code class="docutils literal"><span class="pre">^F</span></code></td>
+      <td>Move right one character</td>
+    </tr>
+    <tr class="row-odd">
+      <td>Left arrow, <code class="docutils literal"><span class="pre">^B</span></code></td>
+      <td>Move left one character</td>
+    </tr>
+    <tr class="row-even">
+      <td>Home, <code class="docutils literal"><span class="pre">^A</span></code></td>
+      <td>Move to beginning of line</td>
+    </tr>
+    <tr class="row-odd">
+      <td>End, <code class="docutils literal"><span class="pre">^E</span></code></td>
+      <td>Move to end of line</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^P</span></code></td>
+      <td>Change to the previous or next history entry</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">^N</span></code></td>
+      <td>Change to the next history entry</td>
+    </tr>
+    <tr class="row-even">
+      <td>Up arrow</td>
+      <td>Move up one line (or to the previous history entry)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>Down arrow</td>
+      <td>Move down one line (or to the next history entry)</td>
+    </tr>
+    <tr class="row-even">
+      <td>Page-up</td>
+      <td>Change to the previous history entry that matches
+the text before the cursor</td>
+    </tr>
+    <tr class="row-odd">
+      <td>Page-down</td>
+      <td>Change to the next history entry that matches the
+text before the cursor</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">meta-F</span></code></td>
+      <td>Move right one word</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">meta-B</span></code></td>
+      <td>Move left one word</td>
+    </tr>
+    <tr class="row-even">
+      <td colspan="2"><strong>Editing</strong></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Backspace, <code class="docutils literal"><span class="pre">^H</span></code></td>
+      <td>Delete the previous character</td>
+    </tr>
+    <tr class="row-even">
+      <td>Delete, <code class="docutils literal"><span class="pre">^D</span></code></td>
+      <td>Forward delete one character (when buffer has text)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>meta-Backspace</td>
+      <td>Delete the previous word</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">meta-D</span></code></td>
+      <td>Forward delete the next word</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">^W</span></code></td>
+      <td>Delete previous text up to the nearest whitespace</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^K</span></code></td>
+      <td>“Kill” to end of line, placing the text in a buffer</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">^Y</span></code></td>
+      <td>“Yank” insert the text from the kill buffer</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">^T</span></code></td>
+      <td>Transpose the characters about the cursor</td>
+    </tr>
+  </tbody>
+</table>
+<div class="section" id="customizing-keybindings">
+<h3><span id="result_box" class="short_text" lang="ja"><span>キーバインディング</span><span
+ class="">のカスタマイズ</span></span><a class="headerlink"
+ href="#customizing-keybindings" title="Permalink to this headline"></a></h3>
+<p>Julia’s REPL keybindings may be fully customized to a user’s
+preferences by passing a dictionary to <code class="docutils literal"><span
+ class="pre">REPL.setup_interface()</span></code>. The keys of this
+dictionary may be characters or strings. The key <code
+ class="docutils literal"><span class="pre">'*'</span></code> refers to
+the default action. Control plus character <code
+ class="docutils literal"><span class="pre">x</span></code> bindings
+are indicated with <code class="docutils literal"><span class="pre">"^x"</span></code>.
+Meta plus <code class="docutils literal"><span class="pre">x</span></code>
+can be written <code class="docutils literal"><span class="pre">"\\Mx"</span></code>.
+The values of the custom keymap must be <code class="docutils literal"><span
+ class="pre">nothing</span></code> (indicating that the input should be
+ignored) or functions that accept the signature <code
+ class="docutils literal"><span class="pre">(PromptState,</span> <span
+ class="pre">AbstractREPL,</span> <span class="pre">Char)</span></code>.
+The <code class="docutils literal"><span class="pre">REPL.setup_interface()</span></code>
+function must be called before the REPL is initialized, by registering
+the operation with <code class="docutils literal"><span class="pre">atreplinit()</span></code>.
+For example, to bind the up and down arrow keys to move through history
+without prefix search, one could put the following code in <code
+ class="docutils literal"><span class="pre">.juliarc.jl</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">import</span> <span class="n">Base</span><span
+ class="p">:</span> <span class="n">LineEdit</span><span class="p">,</span> <span
+ class="n">REPL</span>
+
+<span class="kd">const</span> <span class="n">mykeys</span> <span
+ class="o">=</span> <span class="n">Dict</span><span class="p">{</span><span
+ class="kt">Any</span><span class="p">,</span><span class="kt">Any</span><span
+ class="p">}(</span>
+  <span class="c"># Up Arrow</span>
+  <span
+ class="s">"\e[A"</span> <span class="o">=&gt;</span> <span class="p">(</span><span
+ class="n">s</span><span class="p">,</span><span class="n">o</span><span
+ class="o">...</span><span class="p">)</span><span class="o">-&gt;</span><span
+ class="p">(</span><span class="n">LineEdit</span><span class="o">.</span><span
+ class="n">edit_move_up</span><span class="p">(</span><span class="n">s</span><span
+ class="p">)</span> <span class="o">||</span> <span class="n">LineEdit</span><span
+ class="o">.</span><span class="n">history_prev</span><span class="p">(</span><span
+ class="n">s</span><span class="p">,</span> <span class="n">LineEdit</span><span
+ class="o">.</span><span class="n">mode</span><span class="p">(</span><span
+ class="n">s</span><span class="p">)</span><span class="o">.</span><span
+ class="n">hist</span><span class="p">)),</span>
+  <span class="c"># Down Arrow</span>
+  <span
+ class="s">"\e[B"</span> <span class="o">=&gt;</span> <span class="p">(</span><span
+ class="n">s</span><span class="p">,</span><span class="n">o</span><span
+ class="o">...</span><span class="p">)</span><span class="o">-&gt;</span><span
+ class="p">(</span><span class="n">LineEdit</span><span class="o">.</span><span
+ class="n">edit_move_up</span><span class="p">(</span><span class="n">s</span><span
+ class="p">)</span> <span class="o">||</span> <span class="n">LineEdit</span><span
+ class="o">.</span><span class="n">history_next</span><span class="p">(</span><span
+ class="n">s</span><span class="p">,</span> <span class="n">LineEdit</span><span
+ class="o">.</span><span class="n">mode</span><span class="p">(</span><span
+ class="n">s</span><span class="p">)</span><span class="o">.</span><span
+ class="n">hist</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="k">function</span><span class="nf"> customize_keys</span><span
+ class="p">(</span><span class="n">repl</span><span class="p">)</span>
+  <span
+ class="n">repl</span><span class="o">.</span><span class="n">interface</span> <span
+ class="o">=</span> <span class="n">REPL</span><span class="o">.</span><span
+ class="n">setup_interface</span><span class="p">(</span><span class="n">repl</span><span
+ class="p">;</span> <span class="n">extra_repl_keymap</span> <span
+ class="o">=</span> <span class="n">mykeys</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">atreplinit</span><span class="p">(</span><span class="n">customize_keys</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Users should refer to <code class="docutils literal"><span
+ class="pre">base/LineEdit.jl</span></code> to discover the available
+actions on key input.</p>
+</div>
+</div>
+<div class="section" id="tab-completion">
+<h2><span id="result_box" class="short_text" lang="ja"><span>タブ補完</span></span><a
+ class="headerlink" href="#tab-completion"
+ title="Permalink to this headline"></a></h2>
+<p>In both the Julian and help modes of the REPL, one can enter the
+first few characters of a function or type and then press the tab key
+to get a list all matches:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">stri</span>
+<span class="n">stride</span>     <span class="n">strides</span>     <span
+ class="n">string</span>      <span class="n">stringmime</span>  <span
+ class="n">strip</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Stri</span>
+<span class="n">StridedArray</span>    <span class="n">StridedVecOrMat</span>  <span
+ class="n">AbstractString</span>
+<span class="n">StridedMatrix</span>   <span class="n">StridedVector</span>
+</pre>
+</div>
+</div>
+<p>The tab key can also be used to substitute LaTeX math symbols with
+their Unicode equivalents,
+and get a list of LaTeX matches as well:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>julia&gt; \pi[TAB]<br>julia&gt; π<br>π = 3.1415926535897...<br><br>julia&gt; e\_1[TAB] = [1,0]<br>julia&gt; e₁ = [1,0]<br>2-element Array{Int64,1}:<br> 1<br> 0<br><br>julia&gt; e\^1[TAB] = [1 0]<br>julia&gt; e¹ = [1 0]<br>1x2 Array{Int64,2}:<br> 1  0<br><br>julia&gt; \sqrt[TAB]2     # √ is equivalent to the sqrt() function<br>julia&gt; √2<br>1.4142135623730951<br><br>julia&gt; \hbar[TAB](h) = h / 2\pi[TAB]<br>julia&gt; ħ(h) = h / 2π<br>ħ (generic function with 1 method)<br><br>julia&gt; \h[TAB]<br>\hat              \heartsuit         \hksearow          \hookleftarrow     \hslash<br>\hbar             \hermitconjmatrix  \hkswarow          \hookrightarrow    \hspace<br></pre>
+</div>
+</div>
+<p>A full list of tab-completions can be found in the <a
+ class="reference internal" href="unicode-input.html#man-unicode-input"><span>Unicode
+Input</span></a> section of the manual.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

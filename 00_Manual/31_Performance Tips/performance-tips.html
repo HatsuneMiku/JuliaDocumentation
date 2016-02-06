@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Tips — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Workflow Tips" href="workflow-tips.html">
+  <link rel="prev" title="Profiling" href="profile.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="performance-tips"><span
+ id="man-performance-tips"></span>
+<h1><span id="result_box" class="short_text" lang="ja"><span class="">パ
+フォーマンスのヒント</span></span><a class="headerlink" href="#performance-tips"
+ title="Permalink to this headline"></a></h1>
+<p>In the following sections, we briefly go through a few techniques
+that
+can help make your Julia code run as fast as possible.</p>
+<div class="section" id="avoid-global-variables">
+<h2><span id="result_box" class="short_text" lang="ja"><span>グローバル変数を</span><span
+ class="">避けてください</span></span><a class="headerlink"
+ href="#avoid-global-variables" title="Permalink to this headline"></a></h2>
+<p>A global variable might have its value, and therefore its type,
+change
+at any point. This makes it difficult for the compiler to optimize code
+using global variables. Variables should be local, or passed as
+arguments to functions, whenever possible.</p>
+<p>Any code that is performance critical or being benchmarked should be
+inside a function.</p>
+<p>We find that global names are frequently constants, and declaring
+them
+as such greatly improves performance:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="kd">const</span> <span class="n">DEFAULT_VAL</span> <span
+ class="o">=</span> <span class="mi">0</span>
+</pre>
+</div>
+</div>
+<p>Uses of non-constant globals can be optimized by annotating their
+types
+at the point of use:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="kd">global</span> <span class="n">x</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span
+ class="p">(</span><span class="n">x</span><span class="p">::</span><span
+ class="kt">Int</span> <span class="o">+</span> <span class="mi">1</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Writing functions is better style. It leads to more reusable code
+and
+clarifies what steps are being done, and what their inputs and outputs
+are.</p>
+<p><strong>NOTE:</strong> All code in the REPL is evaluated in global
+scope, so a variable
+defined and assigned at toplevel will be a <strong>global</strong>
+variable.</p>
+<p>In the following REPL session:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre>
+</div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="kd">global</span> <span class="n">x</span> <span class="o">=</span> <span
+ class="mf">1.0</span>
+</pre>
+</div>
+</div>
+<p>so all the performance issues discussed previously apply.</p>
+</div>
+<div class="section"
+ id="measure-performance-with-time-and-pay-attention-to-memory-allocation">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h3><span id="result_box" class="short_text" lang="ja"><span>@time</span><span>と</span><span>パ
+フォーマンスを測定</span><span>し、</span><span>メモリの割り当て</span><span>に注意を</span><span
+ class="">払います</span></span></h3>
+</div>
+</div>
+<h2><a class="headerlink"
+ href="#measure-performance-with-time-and-pay-attention-to-memory-allocation"
+ title="Permalink to this headline"></a></h2>
+<p>The most useful tool for measuring performance is the <a
+ class="reference internal" href="../stdlib/base.html#Base.@time"
+ title="Base.@time"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">@time</span></code></a> macro.
+The following example illustrates good working style:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="k">function</span><span class="nf"> f</span><span class="p">(</span><span
+ class="n">n</span><span class="p">)</span>
+           <span class="n">s</span> <span
+ class="o">=</span> <span class="mi">0</span>
+           <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+               <span
+ class="n">s</span> <span class="o">+=</span> <span class="n">i</span><span
+ class="o">/</span><span class="mi">2</span>
+           <span class="k">end</span>
+           <span
+ class="n">s</span>
+       <span class="k">end</span>
+<span class="n">f</span> <span class="p">(</span><span class="n">generic</span> <span
+ class="k">function</span><span class="nf"> with</span> <span class="mi">1</span> <span
+ class="n">method</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">time</span> <span class="n">f</span><span class="p">(</span><span
+ class="mi">1</span><span class="p">)</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">0.004710563</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">93504</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">0.5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">time</span> <span class="n">f</span><span class="p">(</span><span
+ class="mi">10</span><span class="o">^</span><span class="mi">6</span><span
+ class="p">)</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">0.04123202</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">32002136</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">2.5000025e11</span>
+</pre>
+</div>
+</div>
+<p>On the first call (<code class="docutils literal"><span class="pre">@time</span>
+<span class="pre">f(1)</span></code>), <code class="docutils literal"><span
+ class="pre">f</span></code> gets compiled. (If you’ve
+not yet used <a class="reference internal"
+ href="../stdlib/base.html#Base.@time" title="Base.@time"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@time</span></code></a>
+in this session, it will also compile functions
+needed for timing.) You should not take the results of this run
+seriously. For the second run, note that in addition to reporting the
+time, it also indicated that a large amount of memory was allocated.
+This is the single biggest advantage of <a class="reference internal"
+ href="../stdlib/base.html#Base.@time" title="Base.@time"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@time</span></code></a>
+vs. functions like
+<a class="reference internal" href="../stdlib/base.html#Base.tic"
+ title="Base.tic"><code class="xref jl jl-func docutils literal"><span
+ class="pre">tic()</span></code></a> and <a class="reference internal"
+ href="../stdlib/base.html#Base.toc" title="Base.toc"><code
+ class="xref jl jl-func docutils literal"><span class="pre">toc()</span></code></a>,
+which only report time.</p>
+<p>Unexpected memory allocation is almost always a sign of some problem
+with your code, usually a problem with type-stability. Consequently,
+in addition to the allocation itself, it’s very likely that the code
+generated for your function is far from optimal. Take such indications
+seriously and follow the advice below.</p>
+<p>As a teaser, note that an improved version of this function
+allocates
+no memory (except to pass back the result back to the REPL) and has
+an order of magnitude faster execution after the first call:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">@</span><span class="n">time</span> <span class="n">f_improved</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span
+ class="c"># first call</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">0.003702172</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">78944</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">0.5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">time</span> <span class="n">f_improved</span><span class="p">(</span><span
+ class="mi">10</span><span class="o">^</span><span class="mi">6</span><span
+ class="p">)</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">0.004313644</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">112</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">2.5000025e11</span>
+</pre>
+</div>
+</div>
+<p>Below you’ll learn how to spot the problem with <code
+ class="docutils literal"><span class="pre">f</span></code> and how to
+fix it.</p>
+<p>In some situations, your function may need to allocate memory as
+part
+of its operation, and this can complicate the simple picture above. In
+such cases, consider using one of the <a class="reference internal"
+ href="#man-performance-tools"><span>tools</span></a> below to diagnose
+problems, or write a
+version of your function that separates allocation from its
+algorithmic aspects (see <a class="reference internal"
+ href="#man-preallocation"><span>Pre-allocating outputs</span></a>).</p>
+</div>
+<div class="section" id="tools">
+<span id="man-performance-tools"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">ツー
+ル</span></span><a class="headerlink" href="#tools"
+ title="Permalink to this headline"></a></h2>
+<p>Julia and its package ecosystem includes tools that may help you
+diagnose problems and improve the performance of your code:</p>
+<ul class="simple">
+  <li><a class="reference internal"
+ href="../stdlib/profile.html#stdlib-profiling"><span>Profiling</span></a>
+allows you to measure the performance of
+your running code and identify lines that serve as bottlenecks. For
+complex projects, the <a class="reference external"
+ href="https://github.com/timholy/ProfileView.jl">ProfileView</a>
+package can help you
+visualize your profiling results.</li>
+  <li>Unexpectedly-large memory allocations—as reported by <a
+ class="reference internal" href="../stdlib/base.html#Base.@time"
+ title="Base.@time"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">@time</span></code></a>, <a class="reference internal"
+ href="../stdlib/base.html#Base.@allocated" title="Base.@allocated"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@allocated</span></code></a>,
+or the profiler (through calls to the
+garbage-collection routines)—hint that there might be issues with
+your code. If you don’t see another reason for the allocations,
+suspect a type problem. You can also start Julia with the <code
+ class="docutils literal"><span class="pre">--track-allocation=user</span></code>
+option and examine the resulting <code class="docutils literal"><span
+ class="pre">*.mem</span></code>
+files to see information about where those allocations
+occur. See <a class="reference internal"
+ href="profile.html#man-track-allocation"><span>Memory allocation
+analysis</span></a>.</li>
+  <li><code class="docutils literal"><span class="pre">@code_warntype</span></code>
+generates a representation of your code that can
+be helpful in finding expressions that result in type uncertainty.
+See <a class="reference internal" href="#man-code-warntype"><span>@code_warntype</span></a>
+below.</li>
+  <li>The <a class="reference external"
+ href="https://github.com/tonyhffong/Lint.jl">Lint</a> and <a
+ class="reference external"
+ href="https://github.com/astrieanna/TypeCheck.jl">TypeCheck</a>
+packages can also
+warn you of certain types of programming errors.</li>
+</ul>
+</div>
+<div class="section" id="avoid-containers-with-abstract-type-parameters">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">抽象
+型</span><span>の</span><span class="">パラメータを持つ</span><span>コンテナを</span><span>避
+けます</span></span><a class="headerlink"
+ href="#avoid-containers-with-abstract-type-parameters"
+ title="Permalink to this headline"></a></h2>
+<p>When working with parameterized types, including arrays, it is best
+to
+avoid parameterizing with abstract types where possible.</p>
+<p>Consider the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">a</span> <span class="o">=</span> <span class="n">Real</span><span
+ class="p">[]</span>    <span class="c"># typeof(a) = Array{Real,1}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">f</span> <span
+ class="o">=</span> <span class="n">rand</span><span class="p">())</span> <span
+ class="o">&lt;</span> <span class="o">.</span><span class="mi">8</span>
+    <span
+ class="n">push</span><span class="o">!</span><span class="p">(</span><span
+ class="n">a</span><span class="p">,</span> <span class="n">f</span><span
+ class="p">)</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Because <code class="docutils literal"><span class="pre">a</span></code>
+is a an array of abstract type <code
+ class="xref jl jl-class docutils literal"><span class="pre">Real</span></code>,
+it must be able
+to hold any Real value. Since <code
+ class="xref jl jl-class docutils literal"><span class="pre">Real</span></code>
+objects can be of arbitrary
+size and structure, <code class="docutils literal"><span class="pre">a</span></code>
+must be represented as an array of pointers to
+individually allocated <code class="xref jl jl-class docutils literal"><span
+ class="pre">Real</span></code> objects. Because <code
+ class="docutils literal"><span class="pre">f</span></code> will always
+be
+a <a class="reference internal"
+ href="../stdlib/numbers.html#Base.Float64" title="Base.Float64"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Float64</span></code></a>,
+we should instead, use:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">a</span> <span class="o">=</span> <span class="kt">Float64</span><span
+ class="p">[]</span> <span class="c"># typeof(a) = Array{Float64,1}</span>
+</pre>
+</div>
+</div>
+<p>which will create a contiguous block of 64-bit floating-point values
+that can be manipulated efficiently.</p>
+<p>See also the discussion under <a class="reference internal"
+ href="types.html#man-parametric-types"><span>Parametric Types</span></a>.</p>
+</div>
+<div class="section" id="type-declarations">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">型宣
+言</span></span></h2>
+</div>
+</div>
+<h2><a class="headerlink" href="#type-declarations"
+ title="Permalink to this headline"></a></h2>
+<p>In many languages with optional type declarations, adding
+declarations
+is the principal way to make code run faster. This is <em>not</em> the
+case
+in Julia. In Julia, the compiler generally knows the types of all
+function
+arguments, local variables, and expressions.
+However, there are a few specific instances where declarations are
+helpful.</p>
+<div class="section"
+ id="declare-specific-types-for-fields-of-composite-types">
+<h3><span id="result_box" class="short_text" lang="ja"><span>複合型の</span><span
+ class="">フィールドの</span><span>特定のタイプ</span><span class="">を宣言します</span></span><a
+ class="headerlink"
+ href="#declare-specific-types-for-fields-of-composite-types"
+ title="Permalink to this headline"></a></h3>
+<p>Given a user-defined type like the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">type</span><span class="nc"> Foo</span>
+    <span
+ class="n">field</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>the compiler will not generally know the type of <code
+ class="docutils literal"><span class="pre">foo.field</span></code>,
+since it
+might be modified at any time to refer to a value of a different type.
+It will help to declare the most specific type possible, such as
+<code class="docutils literal"><span class="pre">field::Float64</span></code>
+or <code class="docutils literal"><span class="pre">field::Array{Int64,1}</span></code>.</p>
+</div>
+<div class="section" id="annotate-values-taken-from-untyped-locations">
+<h3><span id="result_box" class="short_text" lang="ja"><span>型指定されていない</span><span>場
+所から</span><span>撮影した</span><span>値</span><span class="">に注釈を付けます</span></span><a
+ class="headerlink" href="#annotate-values-taken-from-untyped-locations"
+ title="Permalink to this headline"></a></h3>
+<p>It is often convenient to work with data structures that may contain
+values of any type, such as the original <code class="docutils literal"><span
+ class="pre">Foo</span></code> type above, or cell
+arrays (arrays of type <code class="docutils literal"><span class="pre">Array{Any}</span></code>).
+But, if you’re using one of
+these structures and happen to know the type of an element, it helps to
+share this knowledge with the compiler:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">a</span><span class="p">::</span><span
+ class="n">Array</span><span class="p">{</span><span class="kt">Any</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">})</span>
+    <span
+ class="n">x</span> <span class="o">=</span> <span class="n">a</span><span
+ class="p">[</span><span class="mi">1</span><span class="p">]::</span><span
+ class="kt">Int32</span>
+    <span class="n">b</span> <span class="o">=</span> <span
+ class="n">x</span><span class="o">+</span><span class="mi">1</span>
+    <span
+ class="o">...</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Here, we happened to know that the first element of <code
+ class="docutils literal"><span class="pre">a</span></code> would be an
+<code class="xref jl jl-class docutils literal"><span class="pre">Int32</span></code>.
+Making an annotation like this has the added benefit that it
+will raise a run-time error if the value is not of the expected type,
+potentially catching certain bugs earlier.</p>
+</div>
+<div class="section" id="declare-types-of-keyword-arguments">
+<h3><span id="result_box" class="short_text" lang="ja"><span>キーワード引数</span><span>の</span><span
+ class="">型を宣言</span></span><a class="headerlink"
+ href="#declare-types-of-keyword-arguments"
+ title="Permalink to this headline"></a></h3>
+<p>Keyword arguments can have declared types:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> with_keyword</span><span
+ class="p">(</span><span class="n">x</span><span class="p">;</span> <span
+ class="n">name</span><span class="p">::</span><span class="kt">Int</span> <span
+ class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span
+ class="o">...</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Functions are specialized on the types of keyword arguments, so
+these
+declarations will not affect performance of code inside the function.
+However, they will reduce the overhead of calls to the function that
+include keyword arguments.</p>
+<p>Functions with keyword arguments have near-zero overhead for call
+sites
+that pass only positional arguments.</p>
+<p>Passing dynamic lists of keyword arguments, as in <code
+ class="docutils literal"><span class="pre">f(x;</span> <span
+ class="pre">keywords...)</span></code>,
+can be slow and should be avoided in performance-sensitive code.</p>
+</div>
+</div>
+<div class="section" id="break-functions-into-multiple-definitions">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">複数
+の定義</span><span class="">に</span><span class="">画分</span><span class="">を
+破ります</span></span><a class="headerlink"
+ href="#break-functions-into-multiple-definitions"
+ title="Permalink to this headline"></a></h2>
+<p>Writing a function as many small definitions allows the compiler to
+directly call the most applicable code, or even inline it.</p>
+<p>Here is an example of a “compound function” that should really be
+written as multiple definitions:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> norm</span><span
+ class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span
+ class="k">if</span> <span class="nb">isa</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span> <span class="n">Vector</span><span
+ class="p">)</span>
+        <span class="k">return</span> <span
+ class="n">sqrt</span><span class="p">(</span><span class="n">real</span><span
+ class="p">(</span><span class="n">dot</span><span class="p">(</span><span
+ class="n">A</span><span class="p">,</span><span class="n">A</span><span
+ class="p">)))</span>
+    <span class="k">elseif</span> <span
+ class="nb">isa</span><span class="p">(</span><span class="n">A</span><span
+ class="p">,</span> <span class="n">Matrix</span><span class="p">)</span>
+        <span
+ class="k">return</span> <span class="n">max</span><span class="p">(</span><span
+ class="n">svd</span><span class="p">(</span><span class="n">A</span><span
+ class="p">)[</span><span class="mi">2</span><span class="p">])</span>
+    <span
+ class="k">else</span>
+        <span class="nb">error</span><span
+ class="p">(</span><span class="s">"norm: invalid argument"</span><span
+ class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>This can be written more concisely and efficiently as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span
+ class="p">::</span><span class="n">Vector</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span
+ class="n">real</span><span class="p">(</span><span class="n">dot</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span><span
+ class="n">x</span><span class="p">)))</span>
+<span class="n">norm</span><span class="p">(</span><span class="n">A</span><span
+ class="p">::</span><span class="n">Matrix</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">max</span><span class="p">(</span><span
+ class="n">svd</span><span class="p">(</span><span class="n">A</span><span
+ class="p">)[</span><span class="mi">2</span><span class="p">])</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="write-type-stable-functions">
+<h2><span id="result_box" class="short_text" lang="ja"><span>「</span><span>タ
+イプ</span><span class="atn">-</span><span>stable "関数</span><span class="">を
+書きます</span></span><a class="headerlink"
+ href="#write-type-stable-functions" title="Permalink to this headline"></a></h2>
+<p>When possible, it helps to ensure that a function always returns a
+value
+of the same type. Consider the following definition:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">pos</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">&lt;</span> <span class="mi">0</span> <span class="o">?</span> <span
+ class="mi">0</span> <span class="p">:</span> <span class="n">x</span>
+</pre>
+</div>
+</div>
+<p>Although this seems innocent enough, the problem is that <code
+ class="docutils literal"><span class="pre">0</span></code> is an
+integer (of type <code class="xref jl jl-class docutils literal"><span
+ class="pre">Int</span></code>) and <code class="docutils literal"><span
+ class="pre">x</span></code> might be of any type. Thus,
+depending on the value of <code class="docutils literal"><span
+ class="pre">x</span></code>, this function might return a value of
+either of two types. This behavior is allowed, and may be desirable in
+some cases. But it can easily be fixed as follows:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">pos</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">&lt;</span> <span class="mi">0</span> <span class="o">?</span> <span
+ class="n">zero</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="p">:</span> <span class="n">x</span>
+</pre>
+</div>
+</div>
+<p>There is also a <a class="reference internal"
+ href="../stdlib/numbers.html#Base.one" title="Base.one"><code
+ class="xref jl jl-func docutils literal"><span class="pre">one()</span></code></a>
+function, and a more general <a class="reference internal"
+ href="../stdlib/base.html#Base.oftype" title="Base.oftype"><code
+ class="xref jl jl-func docutils literal"><span class="pre">oftype(x,y)</span></code></a>
+function, which returns <code class="docutils literal"><span
+ class="pre">y</span></code> converted to the type of <code
+ class="docutils literal"><span class="pre">x</span></code>.</p>
+</div>
+<div class="section" id="avoid-changing-the-type-of-a-variable">
+<h2><span id="result_box" class="short_text" lang="ja"><span>変数の型</span><span
+ class="">を変更することは避けてください</span></span><a class="headerlink"
+ href="#avoid-changing-the-type-of-a-variable"
+ title="Permalink to this headline"></a></h2>
+<p>An analogous “type-stability” problem exists for variables used
+repeatedly within a function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span
+ class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span
+ class="o">=</span> <span class="mi">1</span><span class="p">:</span><span
+ class="mi">10</span>
+        <span class="n">x</span> <span class="o">=</span> <span
+ class="n">x</span><span class="o">/</span><span class="n">bar</span><span
+ class="p">()</span>
+    <span class="k">end</span>
+    <span
+ class="k">return</span> <span class="n">x</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Local variable <code class="docutils literal"><span class="pre">x</span></code>
+starts as an integer, and after one loop iteration
+becomes a floating-point number (the result of <a
+ class="reference internal" href="../stdlib/math.html#Base./"
+ title="Base./"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">/</span></code></a> operator). This
+makes it more difficult for the compiler to optimize the body of the
+loop. There are several possible fixes:</p>
+<ul class="simple">
+  <li>Initialize <code class="docutils literal"><span class="pre">x</span></code>
+with <code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">=</span> <span class="pre">1.0</span></code></li>
+  <li>Declare the type of <code class="docutils literal"><span
+ class="pre">x</span></code>: <code class="docutils literal"><span
+ class="pre">x::Float64</span> <span class="pre">=</span> <span
+ class="pre">1</span></code></li>
+  <li>Use an explicit conversion: <code class="docutils literal"><span
+ class="pre">x</span> <span class="pre">=</span> <span class="pre">one(T)</span></code></li>
+</ul>
+</div>
+<div class="section" id="separate-kernel-functions">
+<h2><span id="result_box" class="short_text" lang="ja"><span>別々の</span><span
+ class="">カーネル関数</span></span><a class="headerlink"
+ href="#separate-kernel-functions" title="Permalink to this headline"></a></h2>
+<p>Many functions follow a pattern of performing some set-up work, and
+then
+running many iterations to perform a core computation. Where possible,
+it is a good idea to put these core computations in separate functions.
+For example, the following contrived function returns an array of a
+randomly-chosen type:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> strange_twos</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span
+ class="n">a</span> <span class="o">=</span> <span class="n">Array</span><span
+ class="p">(</span><span class="n">rand</span><span class="p">(</span><span
+ class="kt">Bool</span><span class="p">)</span> <span class="o">?</span> <span
+ class="kt">Int64</span> <span class="p">:</span> <span class="kt">Float64</span><span
+ class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+        <span
+ class="n">a</span><span class="p">[</span><span class="n">i</span><span
+ class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span
+ class="k">end</span>
+    <span class="k">return</span> <span class="n">a</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>This should be written as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> fill_twos</span><span
+ class="o">!</span><span class="p">(</span><span class="n">a</span><span
+ class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span
+ class="o">=</span><span class="mi">1</span><span class="p">:</span><span
+ class="n">length</span><span class="p">(</span><span class="n">a</span><span
+ class="p">)</span>
+        <span class="n">a</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span> <span class="o">=</span> <span
+ class="mi">2</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> strange_twos</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span
+ class="n">a</span> <span class="o">=</span> <span class="n">Array</span><span
+ class="p">(</span><span class="n">rand</span><span class="p">(</span><span
+ class="kt">Bool</span><span class="p">)</span> <span class="o">?</span> <span
+ class="kt">Int64</span> <span class="p">:</span> <span class="kt">Float64</span><span
+ class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span
+ class="n">fill_twos</span><span class="o">!</span><span class="p">(</span><span
+ class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span
+ class="n">a</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Julia’s compiler specializes code for argument types at function
+boundaries, so in the original implementation it does not know the type
+of <code class="docutils literal"><span class="pre">a</span></code>
+during the loop (since it is chosen randomly). Therefore the
+second version is generally faster since the inner loop can be
+recompiled as part of <code class="docutils literal"><span class="pre">fill_twos!</span></code>
+for different types of <code class="docutils literal"><span class="pre">a</span></code>.</p>
+<p>The second form is also often better style and can lead to more code
+reuse.</p>
+<p>This pattern is used in several places in the standard library. For
+example, see <code class="docutils literal"><span class="pre">hvcat_fill</span></code>
+in
+<a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/base/abstractarray.jl">abstractarray.jl</a>,
+or the <code class="docutils literal"><span class="pre">fill!</span></code>
+function, which we could have used instead of writing
+our own <code class="docutils literal"><span class="pre">fill_twos!</span></code>.</p>
+<p>Functions like <code class="docutils literal"><span class="pre">strange_twos</span></code>
+occur when dealing with data of
+uncertain type, for example data loaded from an input file that might
+contain either integers, floats, strings, or something else.</p>
+</div>
+<div class="section" id="access-arrays-in-memory-order-along-columns">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">アク
+セス</span><span>アレイ</span><span>メモリ</span><span>ためには、</span><span>列</span><span>に
+沿って</span></span><a class="headerlink"
+ href="#access-arrays-in-memory-order-along-columns"
+ title="Permalink to this headline"></a></h2>
+<p>Multidimensional arrays in Julia are stored in column-major order.
+This
+means that arrays are stacked one column at a time. This can be
+verified
+using the <code class="docutils literal"><span class="pre">vec</span></code>
+function or the syntax <code class="docutils literal"><span class="pre">[:]</span></code>
+as shown below (notice
+that the array is ordered <code class="docutils literal"><span
+ class="pre">[1</span> <span class="pre">3</span> <span class="pre">2</span>
+<span class="pre">4]</span></code>, not <code class="docutils literal"><span
+ class="pre">[1</span> <span class="pre">2</span> <span class="pre">3</span>
+<span class="pre">4]</span></code>):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="p">[</span><span
+ class="mi">1</span> <span class="mi">2</span><span class="p">;</span> <span
+ class="mi">3</span> <span class="mi">4</span><span class="p">]</span>
+<span class="mi">2</span><span class="n">x2</span> <span class="n">Array</span><span
+ class="p">{</span><span class="kt">Int64</span><span class="p">,</span><span
+ class="mi">2</span><span class="p">}:</span>
+ <span class="mi">1</span>  <span
+ class="mi">2</span>
+ <span class="mi">3</span>  <span class="mi">4</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span><span
+ class="p">[:]</span>
+<span class="mi">4</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="kt">Int64</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="mi">1</span>
+ <span class="mi">3</span>
+ <span class="mi">2</span>
+ <span
+ class="mi">4</span>
+</pre>
+</div>
+</div>
+<p>This convention for ordering arrays is common in many languages like
+Fortran, Matlab, and R (to name a few). The alternative to column-major
+ordering is row-major ordering, which is the convention adopted by C
+and
+Python (<code class="docutils literal"><span class="pre">numpy</span></code>)
+among other languages. Remembering the ordering of
+arrays can have significant performance effects when looping over
+arrays. A rule of thumb to keep in mind is that with column-major
+arrays, the first index changes most rapidly. Essentially this means
+that looping will be faster if the inner-most loop index is the first
+to
+appear in a slice expression.</p>
+<p>Consider the following contrived example. Imagine we wanted to write
+a
+function that accepts a <code class="xref jl jl-obj docutils literal"><span
+ class="pre">Vector</span></code> and returns a square <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Matrix</span></code>
+with either the rows or the columns filled with copies of the input
+vector. Assume that it is not important whether rows or columns are
+filled with these copies (perhaps the rest of the code can be easily
+adapted accordingly). We could conceivably do this in at least four
+ways
+(in addition to the recommended call to the built-in <a
+ class="reference internal" href="../stdlib/linalg.html#Base.repmat"
+ title="Base.repmat"><code class="xref jl jl-func docutils literal"><span
+ class="pre">repmat()</span></code></a>):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> copy_cols</span><span
+ class="p">{</span><span class="n">T</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">Vector</span><span
+ class="p">{</span><span class="n">T</span><span class="p">})</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">size</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="n">out</span> <span
+ class="o">=</span> <span class="n">Array</span><span class="p">(</span><span
+ class="n">eltype</span><span class="p">(</span><span class="n">x</span><span
+ class="p">),</span> <span class="n">n</span><span class="p">,</span> <span
+ class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span
+ class="n">i</span><span class="o">=</span><span class="mi">1</span><span
+ class="p">:</span><span class="n">n</span>
+        <span class="n">out</span><span
+ class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">x</span>
+    <span class="k">end</span>
+    <span
+ class="n">out</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> copy_rows</span><span
+ class="p">{</span><span class="n">T</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">Vector</span><span
+ class="p">{</span><span class="n">T</span><span class="p">})</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">size</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="n">out</span> <span
+ class="o">=</span> <span class="n">Array</span><span class="p">(</span><span
+ class="n">eltype</span><span class="p">(</span><span class="n">x</span><span
+ class="p">),</span> <span class="n">n</span><span class="p">,</span> <span
+ class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span
+ class="n">i</span><span class="o">=</span><span class="mi">1</span><span
+ class="p">:</span><span class="n">n</span>
+        <span class="n">out</span><span
+ class="p">[</span><span class="n">i</span><span class="p">,</span> <span
+ class="p">:]</span> <span class="o">=</span> <span class="n">x</span>
+    <span
+ class="k">end</span>
+    <span class="n">out</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> copy_col_row</span><span
+ class="p">{</span><span class="n">T</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">Vector</span><span
+ class="p">{</span><span class="n">T</span><span class="p">})</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">size</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="n">out</span> <span
+ class="o">=</span> <span class="n">Array</span><span class="p">(</span><span
+ class="n">T</span><span class="p">,</span> <span class="n">n</span><span
+ class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span
+ class="k">for</span> <span class="n">col</span><span class="o">=</span><span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span><span
+ class="p">,</span> <span class="n">row</span><span class="o">=</span><span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+        <span
+ class="n">out</span><span class="p">[</span><span class="n">row</span><span
+ class="p">,</span> <span class="n">col</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">x</span><span class="p">[</span><span
+ class="n">row</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span
+ class="n">out</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> copy_row_col</span><span
+ class="p">{</span><span class="n">T</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">Vector</span><span
+ class="p">{</span><span class="n">T</span><span class="p">})</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">size</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="n">out</span> <span
+ class="o">=</span> <span class="n">Array</span><span class="p">(</span><span
+ class="n">T</span><span class="p">,</span> <span class="n">n</span><span
+ class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span
+ class="k">for</span> <span class="n">row</span><span class="o">=</span><span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span><span
+ class="p">,</span> <span class="n">col</span><span class="o">=</span><span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+        <span
+ class="n">out</span><span class="p">[</span><span class="n">row</span><span
+ class="p">,</span> <span class="n">col</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">x</span><span class="p">[</span><span
+ class="n">col</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span
+ class="n">out</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Now we will time each of these functions using the same random <code
+ class="docutils literal"><span class="pre">10000</span></code>
+by <code class="docutils literal"><span class="pre">1</span></code>
+input vector:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="n">randn</span><span
+ class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">fmt</span><span
+ class="p">(</span><span class="n">f</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">println</span><span class="p">(</span><span
+ class="n">rpad</span><span class="p">(</span><span class="n">string</span><span
+ class="p">(</span><span class="n">f</span><span class="p">)</span><span
+ class="o">*</span><span class="s">": "</span><span class="p">,</span> <span
+ class="mi">14</span><span class="p">,</span> <span class="sc">' '</span><span
+ class="p">),</span> <span class="p">@</span><span class="n">elapsed</span> <span
+ class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">))</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">map</span><span
+ class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span
+ class="kt">Any</span><span class="p">[</span><span class="n">copy_cols</span><span
+ class="p">,</span> <span class="n">copy_rows</span><span class="p">,</span> <span
+ class="n">copy_col_row</span><span class="p">,</span> <span class="n">copy_row_col</span><span
+ class="p">]);</span>
+<span class="n">copy_cols</span><span class="p">:</span>    <span
+ class="mf">0.331706323</span>
+<span class="n">copy_rows</span><span class="p">:</span>    <span
+ class="mf">1.799009911</span>
+<span class="n">copy_col_row</span><span class="p">:</span> <span
+ class="mf">0.415630047</span>
+<span class="n">copy_row_col</span><span class="p">:</span> <span
+ class="mf">1.721531501</span>
+</pre>
+</div>
+</div>
+<p>Notice that <code class="docutils literal"><span class="pre">copy_cols</span></code>
+is much faster than <code class="docutils literal"><span class="pre">copy_rows</span></code>.
+This is
+expected because <code class="docutils literal"><span class="pre">copy_cols</span></code>
+respects the column-based memory layout
+of the <code class="xref jl jl-obj docutils literal"><span class="pre">Matrix</span></code>
+and fills it one column at a time. Additionally,
+<code class="docutils literal"><span class="pre">copy_col_row</span></code>
+is much faster than <code class="docutils literal"><span class="pre">copy_row_col</span></code>
+because it follows
+our rule of thumb that the first element to appear in a slice
+expression
+should be coupled with the inner-most loop.</p>
+</div>
+<div class="section" id="pre-allocating-outputs">
+<span id="man-preallocation"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span>事前</span><span>割
+当</span><span class="">出力</span></span><a class="headerlink"
+ href="#pre-allocating-outputs" title="Permalink to this headline"></a></h2>
+<p>If your function returns an Array or some other complex
+type, it may have to allocate memory. Unfortunately, oftentimes
+allocation and its converse, garbage collection, are substantial
+bottlenecks.</p>
+<p>Sometimes you can circumvent the need to allocate memory on each
+function call by preallocating the output. As a
+trivial example, compare</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> xinc</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span
+ class="k">return</span> <span class="p">[</span><span class="n">x</span><span
+ class="p">,</span> <span class="n">x</span><span class="o">+</span><span
+ class="mi">1</span><span class="p">,</span> <span class="n">x</span><span
+ class="o">+</span><span class="mi">2</span><span class="p">]</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> loopinc</span><span
+ class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span
+ class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span
+ class="o">=</span> <span class="mi">1</span><span class="p">:</span><span
+ class="mi">10</span><span class="o">^</span><span class="mi">7</span>
+        <span
+ class="n">ret</span> <span class="o">=</span> <span class="n">xinc</span><span
+ class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span
+ class="n">y</span> <span class="o">+=</span> <span class="n">ret</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span
+ class="k">end</span>
+    <span class="n">y</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>with</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> xinc</span><span
+ class="o">!</span><span class="p">{</span><span class="n">T</span><span
+ class="p">}(</span><span class="n">ret</span><span class="p">::</span><span
+ class="n">AbstractVector</span><span class="p">{</span><span class="n">T</span><span
+ class="p">},</span> <span class="n">x</span><span class="p">::</span><span
+ class="n">T</span><span class="p">)</span>
+    <span class="n">ret</span><span
+ class="p">[</span><span class="mi">1</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">x</span>
+    <span class="n">ret</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">x</span><span class="o">+</span><span
+ class="mi">1</span>
+    <span class="n">ret</span><span class="p">[</span><span
+ class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span
+ class="n">x</span><span class="o">+</span><span class="mi">2</span>
+    <span
+ class="n">nothing</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> loopinc_prealloc</span><span
+ class="p">()</span>
+    <span class="n">ret</span> <span class="o">=</span> <span
+ class="n">Array</span><span class="p">(</span><span class="kt">Int</span><span
+ class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span
+ class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+    <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="mi">10</span><span
+ class="o">^</span><span class="mi">7</span>
+        <span class="n">xinc</span><span
+ class="o">!</span><span class="p">(</span><span class="n">ret</span><span
+ class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span
+ class="n">y</span> <span class="o">+=</span> <span class="n">ret</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span
+ class="k">end</span>
+    <span class="n">y</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Timing results:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">@</span><span class="n">time</span> <span class="n">loopinc</span><span
+ class="p">()</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">1.955026528</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">1279975584</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mi">50000015000000</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">time</span> <span class="n">loopinc_prealloc</span><span
+ class="p">()</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">0.078639163</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">144</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mi">50000015000000</span>
+</pre>
+</div>
+</div>
+<p>Preallocation has other advantages, for example by allowing the
+caller to control the “output” type from an algorithm. In the example
+above, we could have passed a <code
+ class="xref jl jl-class docutils literal"><span class="pre">SubArray</span></code>
+rather than an <a class="reference internal"
+ href="../stdlib/arrays.html#Base.Array" title="Base.Array"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Array</span></code></a>,
+had we so desired.</p>
+<p>Taken to its extreme, pre-allocation can make your code uglier, so
+performance measurements and some judgment may be required.</p>
+</div>
+<div class="section" id="avoid-string-interpolation-for-i-o">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span>文字列</span><span>補
+間を</span><span class="">避ける入出力</span><span class="hps"></span></span></h2>
+</div>
+</div>
+<h2><a class="headerlink" href="#avoid-string-interpolation-for-i-o"
+ title="Permalink to this headline"></a></h2>
+<p>When writing data to a file (or other I/O device), forming extra
+intermediate strings is a source of overhead. Instead of:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">println</span><span class="p">(</span><span
+ class="n">file</span><span class="p">,</span> <span class="s">"</span><span
+ class="si">$</span><span class="s">a </span><span class="si">$</span><span
+ class="s">b"</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>use:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">println</span><span class="p">(</span><span
+ class="n">file</span><span class="p">,</span> <span class="n">a</span><span
+ class="p">,</span> <span class="s">" "</span><span class="p">,</span> <span
+ class="n">b</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>The first version of the code forms a string, then writes it
+to the file, while the second version writes values directly
+to the file. Also notice that in some cases string interpolation can
+be harder to read. Consider:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">println</span><span class="p">(</span><span
+ class="n">file</span><span class="p">,</span> <span class="s">"</span><span
+ class="si">$</span><span class="s">(f(a))</span><span class="si">$</span><span
+ class="s">(f(b))"</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>versus:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">println</span><span class="p">(</span><span
+ class="n">file</span><span class="p">,</span> <span class="n">f</span><span
+ class="p">(</span><span class="n">a</span><span class="p">),</span> <span
+ class="n">f</span><span class="p">(</span><span class="n">b</span><span
+ class="p">))</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="optimize-network-i-o-during-parallel-execution">
+<h2><span id="result_box" class="short_text" lang="ja"><span>並列</span><span>実
+行中に</span><span>ネットワーク入出力</span><span class="">の最適化</span></span><a
+ class="headerlink"
+ href="#optimize-network-i-o-during-parallel-execution"
+ title="Permalink to this headline"></a></h2>
+<p>When executing a remote function in parallel:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">responses</span> <span class="o">=</span> <span
+ class="n">cell</span><span class="p">(</span><span class="n">nworkers</span><span
+ class="p">())</span>
+<span class="p">@</span><span class="n">sync</span> <span class="k">begin</span>
+    <span
+ class="k">for</span> <span class="p">(</span><span class="n">idx</span><span
+ class="p">,</span> <span class="n">pid</span><span class="p">)</span> <span
+ class="k">in</span> <span class="n">enumerate</span><span class="p">(</span><span
+ class="n">workers</span><span class="p">())</span>
+        <span
+ class="p">@</span><span class="n">async</span> <span class="n">responses</span><span
+ class="p">[</span><span class="n">idx</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">remotecall_fetch</span><span
+ class="p">(</span><span class="n">pid</span><span class="p">,</span> <span
+ class="n">foo</span><span class="p">,</span> <span class="n">args</span><span
+ class="o">...</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>is faster than:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">refs</span> <span class="o">=</span> <span
+ class="n">cell</span><span class="p">(</span><span class="n">nworkers</span><span
+ class="p">())</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span
+ class="p">,</span> <span class="n">pid</span><span class="p">)</span> <span
+ class="k">in</span> <span class="n">enumerate</span><span class="p">(</span><span
+ class="n">workers</span><span class="p">())</span>
+    <span class="n">refs</span><span
+ class="p">[</span><span class="n">idx</span><span class="p">]</span> <span
+ class="o">=</span> <span class="p">@</span><span class="n">spawnat</span> <span
+ class="n">pid</span> <span class="n">foo</span><span class="p">(</span><span
+ class="n">args</span><span class="o">...</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="n">responses</span> <span class="o">=</span> <span
+ class="p">[</span><span class="n">fetch</span><span class="p">(</span><span
+ class="n">r</span><span class="p">)</span> <span class="k">for</span> <span
+ class="n">r</span> <span class="k">in</span> <span class="n">refs</span><span
+ class="p">]</span>
+</pre>
+</div>
+</div>
+<p>The former results in a single network round-trip to every worker,
+while the
+latter results in two network calls - first by the <code
+ class="docutils literal"><span class="pre">@spawnat</span></code> and
+the
+second due to the <code class="docutils literal"><span class="pre">fetch</span></code>
+(or even a <code class="docutils literal"><span class="pre">wait</span></code>).
+The <code class="docutils literal"><span class="pre">fetch</span></code>/<code
+ class="docutils literal"><span class="pre">wait</span></code>
+is also being executed serially resulting in an overall poorer
+performance.</p>
+</div>
+<div class="section" id="fix-deprecation-warnings">
+<h2><span id="result_box" class="short_text" lang="ja"><span>非推奨の警告</span><span
+ class="">を修正しました。</span></span><a class="headerlink"
+ href="#fix-deprecation-warnings" title="Permalink to this headline"></a></h2>
+<p>A deprecated function internally performs a lookup in order to
+print a relevant warning only once. This extra lookup can cause a
+significant slowdown, so all uses of deprecated functions should be
+modified as suggested by the warnings.</p>
+</div>
+<div class="section" id="tweaks">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">微調
+整</span></span></h3>
+</div>
+</div>
+<h2><a class="headerlink" href="#tweaks"
+ title="Permalink to this headline"></a></h2>
+<p>These are some minor points that might help in tight inner loops.</p>
+<ul class="simple">
+  <li>Avoid unnecessary arrays. For example, instead of <a
+ class="reference internal" href="../stdlib/collections.html#Base.sum"
+ title="Base.sum"><code class="xref jl jl-func docutils literal"><span
+ class="pre">sum([x,y,z])</span></code></a>
+use <code class="docutils literal"><span class="pre">x+y+z</span></code>.</li>
+  <li>Use <a class="reference internal"
+ href="../stdlib/math.html#Base.abs2" title="Base.abs2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs2(z)</span></code></a>
+instead of <a class="reference internal"
+ href="../stdlib/math.html#Base.abs" title="Base.abs"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs(z)^2</span></code></a>
+for complex <code class="docutils literal"><span class="pre">z</span></code>.
+In general,
+try to rewrite code to use <a class="reference internal"
+ href="../stdlib/math.html#Base.abs2" title="Base.abs2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs2()</span></code></a>
+instead of <a class="reference internal"
+ href="../stdlib/math.html#Base.abs" title="Base.abs"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs()</span></code></a>
+for complex arguments.</li>
+  <li>Use <a class="reference internal"
+ href="../stdlib/math.html#Base.div" title="Base.div"><code
+ class="xref jl jl-func docutils literal"><span class="pre">div(x,y)</span></code></a>
+for truncating division of integers instead of <a
+ class="reference internal" href="../stdlib/math.html#Base.trunc"
+ title="Base.trunc"><code class="xref jl jl-func docutils literal"><span
+ class="pre">trunc(x/y)</span></code></a>, <a
+ class="reference internal" href="../stdlib/math.html#Base.fld"
+ title="Base.fld"><code class="xref jl jl-func docutils literal"><span
+ class="pre">fld(x,y)</span></code></a> instead of <a
+ class="reference internal" href="../stdlib/math.html#Base.floor"
+ title="Base.floor"><code class="xref jl jl-func docutils literal"><span
+ class="pre">floor(x/y)</span></code></a>, and <a
+ class="reference internal" href="../stdlib/math.html#Base.cld"
+ title="Base.cld"><code class="xref jl jl-func docutils literal"><span
+ class="pre">cld(x,y)</span></code></a> instead of <a
+ class="reference internal" href="../stdlib/math.html#Base.ceil"
+ title="Base.ceil"><code class="xref jl jl-func docutils literal"><span
+ class="pre">ceil(x/y)</span></code></a>.</li>
+</ul>
+</div>
+<div class="section" id="performance-annotations">
+<h2><span id="result_box" class="short_text" lang="ja"><span>パフォーマンスの</span><span
+ class="">注釈</span></span><a class="headerlink"
+ href="#performance-annotations" title="Permalink to this headline"></a></h2>
+<p>Sometimes you can enable better optimization by promising certain
+program
+properties.</p>
+<ul class="simple">
+  <li>Use <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@inbounds</span></code> to eliminate array bounds checking
+within expressions.
+Be certain before doing this. If the subscripts are ever out of bounds,
+you may suffer crashes or silent corruption.</li>
+  <li>Use <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@fastmath</span></code> to allow floating point
+optimizations that are
+correct for real numbers, but lead to differences for IEEE numbers.
+Be careful when doing this, as this may change numerical results.
+This corresponds to the <code class="docutils literal"><span
+ class="pre">-ffast-math</span></code> option of clang.</li>
+  <li>Write <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@simd</span></code> in front of <code
+ class="docutils literal"><span class="pre">for</span></code> loops
+that are amenable to vectorization. <strong>This feature is
+experimental</strong> and could change or
+disappear in future
+versions of Julia.</li>
+</ul>
+<p>Note: While <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@simd</span></code> needs to be placed directly in front
+of a
+loop, both <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@inbounds</span></code> and <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@fastmath</span></code>
+can be applied to
+several statements at once, e.g. using <code class="docutils literal"><span
+ class="pre">begin</span></code> ... <code class="docutils literal"><span
+ class="pre">end</span></code>, or even
+to a whole function.</p>
+<p>Here is an example with both <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@inbounds</span></code>
+and <code class="xref jl jl-obj docutils literal"><span class="pre">@simd</span></code>
+markup:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> inner</span><span
+ class="p">(</span> <span class="n">x</span><span class="p">,</span> <span
+ class="n">y</span> <span class="p">)</span>
+    <span class="n">s</span> <span
+ class="o">=</span> <span class="n">zero</span><span class="p">(</span><span
+ class="n">eltype</span><span class="p">(</span><span class="n">x</span><span
+ class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span
+ class="o">=</span><span class="mi">1</span><span class="p">:</span><span
+ class="n">length</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span>
+        <span class="p">@</span><span class="n">inbounds</span> <span
+ class="n">s</span> <span class="o">+=</span> <span class="n">x</span><span
+ class="p">[</span><span class="n">i</span><span class="p">]</span><span
+ class="o">*</span><span class="n">y</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span
+ class="n">s</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> innersimd</span><span
+ class="p">(</span> <span class="n">x</span><span class="p">,</span> <span
+ class="n">y</span> <span class="p">)</span>
+    <span class="n">s</span> <span
+ class="o">=</span> <span class="n">zero</span><span class="p">(</span><span
+ class="n">eltype</span><span class="p">(</span><span class="n">x</span><span
+ class="p">))</span>
+    <span class="p">@</span><span class="n">simd</span> <span
+ class="k">for</span> <span class="n">i</span><span class="o">=</span><span
+ class="mi">1</span><span class="p">:</span><span class="n">length</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span
+ class="p">@</span><span class="n">inbounds</span> <span class="n">s</span> <span
+ class="o">+=</span> <span class="n">x</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span><span class="o">*</span><span
+ class="n">y</span><span class="p">[</span><span class="n">i</span><span
+ class="p">]</span>
+    <span class="k">end</span>
+    <span class="n">s</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> timeit</span><span
+ class="p">(</span> <span class="n">n</span><span class="p">,</span> <span
+ class="n">reps</span> <span class="p">)</span>
+    <span class="n">x</span> <span
+ class="o">=</span> <span class="n">rand</span><span class="p">(</span><span
+ class="kt">Float32</span><span class="p">,</span><span class="n">n</span><span
+ class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span
+ class="n">rand</span><span class="p">(</span><span class="kt">Float32</span><span
+ class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span
+ class="n">s</span> <span class="o">=</span> <span class="n">zero</span><span
+ class="p">(</span><span class="kt">Float64</span><span class="p">)</span>
+    <span
+ class="n">time</span> <span class="o">=</span> <span class="p">@</span><span
+ class="n">elapsed</span> <span class="k">for</span> <span class="n">j</span> <span
+ class="k">in</span> <span class="mi">1</span><span class="p">:</span><span
+ class="n">reps</span>
+        <span class="n">s</span><span class="o">+=</span><span
+ class="n">inner</span><span class="p">(</span><span class="n">x</span><span
+ class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span
+ class="k">end</span>
+    <span class="n">println</span><span class="p">(</span><span
+ class="s">"GFlop        = "</span><span class="p">,</span><span
+ class="mf">2.0</span><span class="o">*</span><span class="n">n</span><span
+ class="o">*</span><span class="n">reps</span><span class="o">/</span><span
+ class="n">time</span><span class="o">*</span><span class="mf">1E-9</span><span
+ class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span
+ class="p">@</span><span class="n">elapsed</span> <span class="k">for</span> <span
+ class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span
+ class="p">:</span><span class="n">reps</span>
+        <span class="n">s</span><span
+ class="o">+=</span><span class="n">innersimd</span><span class="p">(</span><span
+ class="n">x</span><span class="p">,</span><span class="n">y</span><span
+ class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">println</span><span
+ class="p">(</span><span class="s">"GFlop (SIMD) = "</span><span
+ class="p">,</span><span class="mf">2.0</span><span class="o">*</span><span
+ class="n">n</span><span class="o">*</span><span class="n">reps</span><span
+ class="o">/</span><span class="n">time</span><span class="o">*</span><span
+ class="mf">1E-9</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">timeit</span><span class="p">(</span><span class="mi">1000</span><span
+ class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>On a computer with a 2.4GHz Intel Core i5 processor, this produces:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">GFlop</span>        <span class="o">=</span> <span
+ class="mf">1.9467069505224963</span>
+<span class="n">GFlop</span> <span class="p">(</span><span class="n">SIMD</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mf">17.578554163920018</span>
+</pre>
+</div>
+</div>
+<p>The range for a <code class="docutils literal"><span class="pre">@simd</span>
+<span class="pre">for</span></code> loop should be a one-dimensional
+range.
+A variable used for accumulating, such as <code
+ class="docutils literal"><span class="pre">s</span></code> in the
+example, is called
+a <em>reduction variable</em>. By using <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@simd</span></code>,
+you are asserting several
+properties of the loop:</p>
+<ul class="simple">
+  <li>It is safe to execute iterations in arbitrary or overlapping
+order,
+with special consideration for reduction variables.</li>
+  <li>Floating-point operations on reduction variables can be
+reordered,
+possibly causing different results than without <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@simd</span></code>.</li>
+  <li>No iteration ever waits on another iteration to make forward
+progress.</li>
+</ul>
+<p>A loop containing <code class="docutils literal"><span class="pre">break</span></code>,
+<code class="docutils literal"><span class="pre">continue</span></code>,
+or <code class="xref jl jl-obj docutils literal"><span class="pre">@goto</span></code>
+will cause a
+compile-time error.</p>
+<p>Using <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@simd</span></code> merely gives the compiler license to
+vectorize. Whether
+it actually does so depends on the compiler. To actually benefit from
+the
+current implementation, your loop should have the following additional
+properties:</p>
+<ul class="simple">
+  <li>The loop must be an innermost loop.</li>
+  <li>The loop body must be straight-line code. This is why <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@inbounds</span></code>
+is
+currently needed for all array accesses. The compiler can sometimes
+turn
+short <code class="docutils literal"><span class="pre">&amp;&amp;</span></code>,
+    <code class="docutils literal"><span class="pre">||</span></code>,
+and <code class="docutils literal"><span class="pre">?:</span></code>
+expressions into straight-line code,
+if it is safe to evaluate all operands unconditionally. Consider using <a
+ class="reference internal" href="../stdlib/base.html#Base.ifelse"
+ title="Base.ifelse"><code class="xref jl jl-func docutils literal"><span
+ class="pre">ifelse()</span></code></a> instead of <code
+ class="docutils literal"><span class="pre">?:</span></code> in the
+loop if it is safe to do so.</li>
+  <li>Accesses must have a stride pattern and cannot be “gathers”
+(random-index reads)
+or “scatters” (random-index writes).</li>
+  <li>The stride should be unit stride.</li>
+  <li>In some simple cases, for example with 2-3 arrays accessed in a
+loop, the
+LLVM auto-vectorization may kick in automatically, leading to no
+further
+speedup with <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@simd</span></code>.</li>
+</ul>
+<p>Here is an example with all three kinds of markup. This program
+first
+calculates the finite difference of a one-dimensional array, and then
+evaluates the L2-norm of the result:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> init</span><span
+ class="o">!</span><span class="p">(</span><span class="n">u</span><span
+ class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span
+ class="n">length</span><span class="p">(</span><span class="n">u</span><span
+ class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span
+ class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span
+ class="n">n</span><span class="o">-</span><span class="mi">1</span><span
+ class="p">)</span>
+    <span class="p">@</span><span class="n">fastmath</span> <span
+ class="p">@</span><span class="n">inbounds</span> <span class="p">@</span><span
+ class="n">simd</span> <span class="k">for</span> <span class="n">i</span> <span
+ class="k">in</span> <span class="mi">1</span><span class="p">:</span><span
+ class="n">n</span>
+        <span class="n">u</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span> <span class="o">=</span> <span
+ class="n">sin</span><span class="p">(</span><span class="mi">2</span><span
+ class="nb">pi</span><span class="o">*</span><span class="n">dx</span><span
+ class="o">*</span><span class="n">i</span><span class="p">)</span>
+    <span
+ class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> deriv</span><span
+ class="o">!</span><span class="p">(</span><span class="n">u</span><span
+ class="p">,</span> <span class="n">du</span><span class="p">)</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">length</span><span
+ class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span
+ class="n">dx</span> <span class="o">=</span> <span class="mf">1.0</span> <span
+ class="o">/</span> <span class="p">(</span><span class="n">n</span><span
+ class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span
+ class="p">@</span><span class="n">fastmath</span> <span class="p">@</span><span
+ class="n">inbounds</span> <span class="n">du</span><span class="p">[</span><span
+ class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span
+ class="p">(</span><span class="n">u</span><span class="p">[</span><span
+ class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span
+ class="n">u</span><span class="p">[</span><span class="mi">1</span><span
+ class="p">])</span> <span class="o">/</span> <span class="n">dx</span>
+    <span
+ class="p">@</span><span class="n">fastmath</span> <span class="p">@</span><span
+ class="n">inbounds</span> <span class="p">@</span><span class="n">simd</span> <span
+ class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span
+ class="mi">2</span><span class="p">:</span><span class="n">n</span><span
+ class="o">-</span><span class="mi">1</span>
+        <span class="n">du</span><span
+ class="p">[</span><span class="n">i</span><span class="p">]</span> <span
+ class="o">=</span> <span class="p">(</span><span class="n">u</span><span
+ class="p">[</span><span class="n">i</span><span class="o">+</span><span
+ class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span
+ class="n">u</span><span class="p">[</span><span class="n">i</span><span
+ class="o">-</span><span class="mi">1</span><span class="p">])</span> <span
+ class="o">/</span> <span class="p">(</span><span class="mi">2</span><span
+ class="o">*</span><span class="n">dx</span><span class="p">)</span>
+    <span
+ class="k">end</span>
+    <span class="p">@</span><span class="n">fastmath</span> <span
+ class="p">@</span><span class="n">inbounds</span> <span class="n">du</span><span
+ class="p">[</span><span class="n">n</span><span class="p">]</span> <span
+ class="o">=</span> <span class="p">(</span><span class="n">u</span><span
+ class="p">[</span><span class="n">n</span><span class="p">]</span> <span
+ class="o">-</span> <span class="n">u</span><span class="p">[</span><span
+ class="n">n</span><span class="o">-</span><span class="mi">1</span><span
+ class="p">])</span> <span class="o">/</span> <span class="n">dx</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> norm</span><span
+ class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span
+ class="n">n</span> <span class="o">=</span> <span class="n">length</span><span
+ class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span
+ class="n">T</span> <span class="o">=</span> <span class="n">eltype</span><span
+ class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span
+ class="n">s</span> <span class="o">=</span> <span class="n">zero</span><span
+ class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span
+ class="p">@</span><span class="n">fastmath</span> <span class="p">@</span><span
+ class="n">inbounds</span> <span class="p">@</span><span class="n">simd</span> <span
+ class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+        <span
+ class="n">s</span> <span class="o">+=</span> <span class="n">u</span><span
+ class="p">[</span><span class="n">i</span><span class="p">]</span><span
+ class="o">^</span><span class="mi">2</span>
+    <span class="k">end</span>
+    <span
+ class="p">@</span><span class="n">fastmath</span> <span class="p">@</span><span
+ class="n">inbounds</span> <span class="k">return</span> <span class="n">sqrt</span><span
+ class="p">(</span><span class="n">s</span><span class="o">/</span><span
+ class="n">n</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> main</span><span
+ class="p">()</span>
+    <span class="n">n</span> <span class="o">=</span> <span
+ class="mi">2000</span>
+    <span class="n">u</span> <span class="o">=</span> <span
+ class="n">Array</span><span class="p">(</span><span class="kt">Float64</span><span
+ class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span
+ class="n">init</span><span class="o">!</span><span class="p">(</span><span
+ class="n">u</span><span class="p">)</span>
+    <span class="n">du</span> <span
+ class="o">=</span> <span class="n">similar</span><span class="p">(</span><span
+ class="n">u</span><span class="p">)</span>
+
+    <span class="n">deriv</span><span
+ class="o">!</span><span class="p">(</span><span class="n">u</span><span
+ class="p">,</span> <span class="n">du</span><span class="p">)</span>
+    <span
+ class="n">nu</span> <span class="o">=</span> <span class="n">norm</span><span
+ class="p">(</span><span class="n">du</span><span class="p">)</span>
+
+    <span
+ class="p">@</span><span class="n">time</span> <span class="k">for</span> <span
+ class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span
+ class="p">:</span><span class="mi">10</span><span class="o">^</span><span
+ class="mi">6</span>
+        <span class="n">deriv</span><span
+ class="o">!</span><span class="p">(</span><span class="n">u</span><span
+ class="p">,</span> <span class="n">du</span><span class="p">)</span>
+        <span
+ class="n">nu</span> <span class="o">=</span> <span class="n">norm</span><span
+ class="p">(</span><span class="n">du</span><span class="p">)</span>
+    <span
+ class="k">end</span>
+
+    <span class="n">println</span><span
+ class="p">(</span><span class="n">nu</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">main</span><span class="p">()</span>
+</pre>
+</div>
+</div>
+<p>On a computer with a 2.7 GHz Intel Core i7 processor, this produces:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">julia</span> <span
+ class="n">wave</span><span class="o">.</span><span class="n">jl</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">1.207814709</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">0</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">4.443986180758243</span>
+
+<span class="o">$</span> <span class="n">julia</span> <span class="o">--</span><span
+ class="n">math</span><span class="o">-</span><span class="n">mode</span><span
+ class="o">=</span><span class="n">ieee</span> <span class="n">wave</span><span
+ class="o">.</span><span class="n">jl</span>
+<span class="n">elapsed</span> <span class="n">time</span><span
+ class="p">:</span> <span class="mf">4.487083643</span> <span class="n">seconds</span> <span
+ class="p">(</span><span class="mi">0</span> <span class="n">bytes</span> <span
+ class="n">allocated</span><span class="p">)</span>
+<span class="mf">4.443986180758243</span>
+</pre>
+</div>
+</div>
+<p>Here, the option <code class="docutils literal"><span class="pre">--math-mode=ieee</span></code>
+disables the <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@fastmath</span></code>
+macro, so that we can compare results.</p>
+<p>In this case, the speedup due to <code
+ class="xref jl jl-obj docutils literal"><span class="pre">@fastmath</span></code>
+is a factor of about
+3.7. This is unusually large – in general, the speedup will be
+smaller. (In this particular example, the working set of the benchmark
+is small enough to fit into the L1 cache of the processor, so that
+memory access latency does not play a role, and computing time is
+dominated by CPU usage. In many real world programs this is not the
+case.) Also, in this case this optimization does not change the result
+– in general, the result will be slightly different. In some cases,
+especially for numerically unstable algorithms, the result can be very
+different.</p>
+<p>The annotation <code class="xref jl jl-obj docutils literal"><span
+ class="pre">@fastmath</span></code> re-arranges floating point
+expressions, e.g. changing the order of evaluation, or assuming that
+certain special cases (inf, nan) cannot occur. In this case (and on
+this particular computer), the main difference is that the expression
+<code class="docutils literal"><span class="pre">1</span> <span
+ class="pre">/</span> <span class="pre">(2*dx)</span></code> in the
+function <code class="docutils literal"><span class="pre">deriv</span></code>
+is hoisted out of the loop
+(i.e. calculated outside the loop), as if one had written <code
+ class="docutils literal"><span class="pre">idx</span> <span
+ class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span>
+<span class="pre">(2*dx)</span></code>. In the loop, the expression <code
+ class="docutils literal"><span class="pre">...</span> <span
+ class="pre">/</span> <span class="pre">(2*dx)</span></code> then
+becomes
+<code class="docutils literal"><span class="pre">...</span> <span
+ class="pre">*</span> <span class="pre">idx</span></code>, which is
+much faster to evaluate. Of course, both the
+actual optimization that is applied by the compiler as well as the
+resulting speedup depend very much on the hardware. You can examine
+the change in generated code by using Julia’s <a
+ class="reference internal" href="../stdlib/base.html#Base.code_native"
+ title="Base.code_native"><code class="xref jl jl-func docutils literal"><span
+ class="pre">code_native()</span></code></a>
+function.</p>
+</div>
+<div class="section" id="treat-subnormal-numbers-as-zeros">
+<h2><span id="result_box" class="short_text" lang="ja"><span>ゼロとして</span><span>非
+正規数</span><span>を</span><span class="">扱います</span></span><a
+ class="headerlink" href="#treat-subnormal-numbers-as-zeros"
+ title="Permalink to this headline"></a></h2>
+<p>Subnormal numbers, formerly called <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Denormal_number">denormal numbers</a>,
+are useful in many contexts, but incur a performance penalty on some
+hardware.
+A call <a class="reference internal"
+ href="../stdlib/numbers.html#Base.set_zero_subnormals"
+ title="Base.set_zero_subnormals"><code
+ class="xref jl jl-func docutils literal"><span class="pre">set_zero_subnormals(true)</span></code></a>
+grants permission for floating-point operations to treat subnormal
+inputs or outputs as zeros, which may improve performance on some
+hardware.
+A call <a class="reference internal"
+ href="../stdlib/numbers.html#Base.set_zero_subnormals"
+ title="Base.set_zero_subnormals"><code
+ class="xref jl jl-func docutils literal"><span class="pre">set_zero_subnormals(false)</span></code></a>
+enforces strict IEEE behavior for subnormal numbers.</p>
+<p>Below is an example where subnormals noticeably impact performance
+on some hardware:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>function timestep{T}( b::Vector{T}, a::Vector{T}, Δt::T )<br>    @assert length(a)==length(b)<br>    n = length(b)<br>    b[1] = 1                            # Boundary condition<br>    for i=2:n-1<br>        b[i] = a[i] + (a[i-1] - T(2)*a[i] + a[i+1]) * Δt<br>    end<br>    b[n] = 0                            # Boundary condition<br>end<br><br>function heatflow{T}( a::Vector{T}, nstep::Integer )<br>    b = similar(a)<br>    for t=1:div(nstep,2)                # Assume nstep is even<br>        timestep(b,a,T(0.1))<br>        timestep(a,b,T(0.1))<br>    end<br>end<br><br>heatflow(zeros(Float32,10),2)           # Force compilation<br>for trial=1:6<br>    a = zeros(Float32,1000)<br>    set_zero_subnormals(iseven(trial))  # Odd trials use strict IEEE arithmetic<br>    @time heatflow(a,1000)<br>end<br></pre>
+</div>
+</div>
+<p>This example generates many subnormal numbers because the values in <code
+ class="docutils literal"><span class="pre">a</span></code> become
+an exponentially decreasing curve, which slowly flattens out over time.</p>
+<p>Treating subnormals as zeros should be used with caution, because
+doing so
+breaks some identities, such as <code class="docutils literal"><span
+ class="pre">x-y==0</span></code> implies <code
+ class="docutils literal"><span class="pre">x==y</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span><span class="o">=</span><span class="mf">3f-38</span><span
+ class="p">;</span> <span class="n">y</span><span class="o">=</span><span
+ class="mf">2f-38</span><span class="p">;</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">set_zero_subnormals</span><span
+ class="p">(</span><span class="n">false</span><span class="p">);</span> <span
+ class="p">(</span><span class="n">x</span><span class="o">-</span><span
+ class="n">y</span><span class="p">,</span><span class="n">x</span><span
+ class="o">==</span><span class="n">y</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">1.0000001f-38</span><span
+ class="p">,</span><span class="n">false</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">set_zero_subnormals</span><span
+ class="p">(</span><span class="n">true</span><span class="p">);</span> <span
+ class="p">(</span><span class="n">x</span><span class="o">-</span><span
+ class="n">y</span><span class="p">,</span><span class="n">x</span><span
+ class="o">==</span><span class="n">y</span><span class="p">)</span>
+<span class="p">(</span><span class="mf">0.0f0</span><span class="p">,</span><span
+ class="n">false</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>In some applications, an alternative to zeroing subnormal numbers is
+to inject a tiny bit of noise. For example, instead of
+initializing <code class="docutils literal"><span class="pre">a</span></code>
+with zeros, initialize it with:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">a</span> <span class="o">=</span> <span class="n">rand</span><span
+ class="p">(</span><span class="kt">Float32</span><span class="p">,</span><span
+ class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span
+ class="mf">1.f-9</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="code-warntype">
+<span id="man-code-warntype"></span>
+<h2><a class="reference internal"
+ href="../stdlib/base.html#Base.@code_warntype"
+ title="Base.@code_warntype"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_warntype</span></code></a><a
+ class="headerlink" href="#code-warntype"
+ title="Permalink to this headline">¶</a></h2>
+<p>The macro <a class="reference internal"
+ href="../stdlib/base.html#Base.@code_warntype"
+ title="Base.@code_warntype"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_warntype</span></code></a>
+(or its function variant <a class="reference internal"
+ href="../stdlib/base.html#Base.code_warntype"
+ title="Base.code_warntype"><code
+ class="xref jl jl-func docutils literal"><span class="pre">code_warntype()</span></code></a>)
+can sometimes be helpful in diagnosing type-related problems. Here’s an
+example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">pos</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">&lt;</span> <span class="mi">0</span> <span class="o">?</span> <span
+ class="mi">0</span> <span class="p">:</span> <span class="n">x</span>
+
+<span class="k">function</span><span class="nf"> f</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span>
+    <span class="n">y</span> <span
+ class="o">=</span> <span class="n">pos</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span>
+    <span class="n">sin</span><span
+ class="p">(</span><span class="n">y</span><span class="o">*</span><span
+ class="n">x</span><span class="o">+</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">@</span><span
+ class="n">code_warntype</span> <span class="n">f</span><span class="p">(</span><span
+ class="mf">3.2</span><span class="p">)</span>
+<span class="n">Variables</span><span class="p">:</span>
+  <span
+ class="n">x</span><span class="p">::</span><span class="kt">Float64</span>
+  <span
+ class="n">y</span><span class="p">::</span><span class="n">UNION</span><span
+ class="p">(</span><span class="n">INT64</span><span class="p">,</span><span
+ class="n">FLOAT64</span><span class="p">)</span>
+  <span class="n">_var0</span><span
+ class="p">::</span><span class="kt">Float64</span>
+  <span class="n">_var3</span><span
+ class="p">::</span><span class="n">Tuple</span><span class="p">{</span><span
+ class="kt">Int64</span><span class="p">}</span>
+  <span class="n">_var4</span><span
+ class="p">::</span><span class="n">UNION</span><span class="p">(</span><span
+ class="n">INT64</span><span class="p">,</span><span class="n">FLOAT64</span><span
+ class="p">)</span>
+  <span class="n">_var1</span><span class="p">::</span><span
+ class="kt">Float64</span>
+  <span class="n">_var2</span><span
+ class="p">::</span><span class="kt">Float64</span>
+
+<span class="n">Body</span><span class="p">:</span>
+  <span class="k">begin</span>  <span
+ class="c"># none, line 2:</span>
+      <span class="n">_var0</span> <span
+ class="o">=</span> <span class="p">(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">box</span><span class="p">))(</span><span
+ class="kt">Float64</span><span class="p">,(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">sitofp</span><span class="p">))(</span><span
+ class="kt">Float64</span><span class="p">,</span><span class="mi">0</span><span
+ class="p">))</span>
+      <span class="n">unless</span> <span
+ class="p">(</span><span class="n">top</span><span class="p">(</span><span
+ class="n">box</span><span class="p">))(</span><span class="kt">Bool</span><span
+ class="p">,(</span><span class="n">top</span><span class="p">(</span><span
+ class="n">or_int</span><span class="p">))((</span><span class="n">top</span><span
+ class="p">(</span><span class="n">lt_float</span><span class="p">))(</span><span
+ class="n">x</span><span class="p">::</span><span class="kt">Float64</span><span
+ class="p">,</span><span class="n">_var0</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">)::</span><span class="kt">Bool</span><span
+ class="p">,(</span><span class="n">top</span><span class="p">(</span><span
+ class="n">box</span><span class="p">))(</span><span class="kt">Bool</span><span
+ class="p">,(</span><span class="n">top</span><span class="p">(</span><span
+ class="n">and_int</span><span class="p">))((</span><span class="n">top</span><span
+ class="p">(</span><span class="n">box</span><span class="p">))(</span><span
+ class="kt">Bool</span><span class="p">,(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">and_int</span><span class="p">))((</span><span
+ class="n">top</span><span class="p">(</span><span class="n">eq_float</span><span
+ class="p">))(</span><span class="n">x</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">,</span><span class="n">_var0</span><span
+ class="p">::</span><span class="kt">Float64</span><span class="p">)::</span><span
+ class="kt">Bool</span><span class="p">,(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">lt_float</span><span class="p">))(</span><span
+ class="n">_var0</span><span class="p">::</span><span class="kt">Float64</span><span
+ class="p">,</span><span class="mf">9.223372036854776e18</span><span
+ class="p">)::</span><span class="kt">Bool</span><span class="p">)),(</span><span
+ class="n">top</span><span class="p">(</span><span class="n">slt_int</span><span
+ class="p">))((</span><span class="n">top</span><span class="p">(</span><span
+ class="n">box</span><span class="p">))(</span><span class="kt">Int64</span><span
+ class="p">,(</span><span class="n">top</span><span class="p">(</span><span
+ class="n">fptosi</span><span class="p">))(</span><span class="kt">Int64</span><span
+ class="p">,</span><span class="n">_var0</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">)),</span><span class="mi">0</span><span
+ class="p">)::</span><span class="kt">Bool</span><span class="p">))))</span> <span
+ class="n">goto</span> <span class="mi">1</span>
+      <span class="n">_var4</span> <span
+ class="o">=</span> <span class="mi">0</span>
+      <span class="n">goto</span> <span
+ class="mi">2</span>
+      <span class="mi">1</span><span class="p">:</span>
+      <span
+ class="n">_var4</span> <span class="o">=</span> <span class="n">x</span><span
+ class="p">::</span><span class="kt">Float64</span>
+      <span
+ class="mi">2</span><span class="p">:</span>
+      <span class="n">y</span> <span
+ class="o">=</span> <span class="n">_var4</span><span class="p">::</span><span
+ class="n">UNION</span><span class="p">(</span><span class="n">INT64</span><span
+ class="p">,</span><span class="n">FLOAT64</span><span class="p">)</span> <span
+ class="c"># line 3:</span>
+      <span class="n">_var1</span> <span
+ class="o">=</span> <span class="n">y</span><span class="p">::</span><span
+ class="n">UNION</span><span class="p">(</span><span class="n">INT64</span><span
+ class="p">,</span><span class="n">FLOAT64</span><span class="p">)</span> <span
+ class="o">*</span> <span class="n">x</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">::</span><span class="kt">Float64</span>
+      <span
+ class="n">_var2</span> <span class="o">=</span> <span class="p">(</span><span
+ class="n">top</span><span class="p">(</span><span class="n">box</span><span
+ class="p">))(</span><span class="kt">Float64</span><span class="p">,(</span><span
+ class="n">top</span><span class="p">(</span><span class="n">add_float</span><span
+ class="p">))(</span><span class="n">_var1</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">,(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">box</span><span class="p">))(</span><span
+ class="kt">Float64</span><span class="p">,(</span><span class="n">top</span><span
+ class="p">(</span><span class="n">sitofp</span><span class="p">))(</span><span
+ class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">))))</span>
+      <span class="k">return</span> <span
+ class="p">(</span><span class="n">GlobalRef</span><span class="p">(</span><span
+ class="n">Base</span><span class="o">.</span><span class="n">Math</span><span
+ class="p">,:</span><span class="n">nan_dom_err</span><span class="p">))((</span><span
+ class="n">top</span><span class="p">(</span><span class="k">ccall</span><span
+ class="p">))(</span><span class="o">$</span><span class="p">(</span><span
+ class="n">Expr</span><span class="p">(:</span><span class="n">call1</span><span
+ class="p">,</span> <span class="p">:(</span><span class="n">top</span><span
+ class="p">(</span><span class="nb">tuple</span><span class="p">)),</span> <span
+ class="s">"sin"</span><span class="p">,</span> <span class="n">GlobalRef</span><span
+ class="p">(</span><span class="n">Base</span><span class="o">.</span><span
+ class="n">Math</span><span class="p">,:</span><span class="n">libm</span><span
+ class="p">))),</span><span class="kt">Float64</span><span class="p">,</span><span
+ class="o">$</span><span class="p">(</span><span class="n">Expr</span><span
+ class="p">(:</span><span class="n">call1</span><span class="p">,</span> <span
+ class="p">:(</span><span class="n">top</span><span class="p">(</span><span
+ class="nb">tuple</span><span class="p">)),</span> <span class="p">:</span><span
+ class="kt">Float64</span><span class="p">)),</span><span class="n">_var2</span><span
+ class="p">::</span><span class="kt">Float64</span><span class="p">,</span><span
+ class="mi">0</span><span class="p">)::</span><span class="kt">Float64</span><span
+ class="p">,</span><span class="n">_var2</span><span class="p">::</span><span
+ class="kt">Float64</span><span class="p">)::</span><span class="kt">Float64</span>
+  <span
+ class="k">end</span><span class="p">::</span><span class="kt">Float64</span>
+</pre>
+</div>
+</div>
+<p>Interpreting the output of <a class="reference internal"
+ href="../stdlib/base.html#Base.@code_warntype"
+ title="Base.@code_warntype"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_warntype</span></code></a>,
+like that of its cousins
+<a class="reference internal"
+ href="../stdlib/base.html#Base.@code_lowered"
+ title="Base.@code_lowered"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_lowered</span></code></a>,
+<a class="reference internal"
+ href="../stdlib/base.html#Base.@code_typed" title="Base.@code_typed"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_typed</span></code></a>,
+<a class="reference internal" href="../stdlib/base.html#Base.@code_llvm"
+ title="Base.@code_llvm"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">@code_llvm</span></code></a>, and
+<a class="reference internal"
+ href="../stdlib/base.html#Base.@code_native" title="Base.@code_native"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_native</span></code></a>,
+takes a little practice. Your
+code is being presented in form that has been partially digested on
+its way to generating compiled machine code. Most of the expressions
+are annotated by a type, indicated by the <code
+ class="docutils literal"><span class="pre">::T</span></code> (where <code
+ class="docutils literal"><span class="pre">T</span></code> might
+be <a class="reference internal"
+ href="../stdlib/numbers.html#Base.Float64" title="Base.Float64"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">Float64</span></code></a>,
+for example). The most important characteristic of
+<a class="reference internal"
+ href="../stdlib/base.html#Base.@code_warntype"
+ title="Base.@code_warntype"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">@code_warntype</span></code></a>
+is that non-concrete types are displayed in red; in
+the above example, such output is shown in all-caps.</p>
+<p>The top part of the output summarizes the type information for the
+different
+variables internal to the function. You can see that <code
+ class="docutils literal"><span class="pre">y</span></code>, one of the
+variables you created, is a <code class="docutils literal"><span
+ class="pre">Union{Int64,Float64}</span></code>, due to the
+type-instability of <code class="docutils literal"><span class="pre">pos</span></code>.
+There is another variable, <code class="docutils literal"><span
+ class="pre">_var4</span></code>, which you
+can see also has the same type.</p>
+<p>The next lines represent the body of <code class="docutils literal"><span
+ class="pre">f</span></code>. The lines starting with a
+number followed by a colon (<code class="docutils literal"><span
+ class="pre">1:</span></code>, <code class="docutils literal"><span
+ class="pre">2:</span></code>) are labels, and represent
+targets for jumps (via <code class="docutils literal"><span class="pre">goto</span></code>)
+in your code. Looking at the body,
+you can see that <code class="docutils literal"><span class="pre">pos</span></code>
+has been <em>inlined</em> into <code class="docutils literal"><span
+ class="pre">f</span></code>—everything
+before <code class="docutils literal"><span class="pre">2:</span></code>
+comes from code defined in <code class="docutils literal"><span
+ class="pre">pos</span></code>.</p>
+<p>Starting at <code class="docutils literal"><span class="pre">2:</span></code>,
+the variable <code class="docutils literal"><span class="pre">y</span></code>
+is defined, and again annotated
+as a <code class="xref jl jl-obj docutils literal"><span class="pre">Union</span></code>
+type. Next, we see that the compiler created the
+temporary variable <code class="docutils literal"><span class="pre">_var1</span></code>
+to hold the result of <code class="docutils literal"><span class="pre">y*x</span></code>.
+Because
+a <a class="reference internal"
+ href="../stdlib/numbers.html#Base.Float64" title="Base.Float64"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">Float64</span></code></a>
+times <em>either</em> an <code class="xref jl jl-obj docutils literal"><span
+ class="pre">Int64</span></code> or <a class="reference internal"
+ href="../stdlib/numbers.html#Base.Float64" title="Base.Float64"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">Float64</span></code></a>
+yields a
+<a class="reference internal" href="../stdlib/numbers.html#Base.Float64"
+ title="Base.Float64"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">Float64</span></code></a>, all type-instability ends here.
+The net result is that
+<code class="docutils literal"><span class="pre">f(x::Float64)</span></code>
+will not be type-unstable in its output, even if some of the
+intermediate computations are type-unstable.</p>
+<p>How you use this information is up to you. Obviously, it would be
+far
+and away best to fix <code class="docutils literal"><span class="pre">pos</span></code>
+to be type-stable: if you did so, all of
+the variables in <code class="docutils literal"><span class="pre">f</span></code>
+would be concrete, and its performance would be
+optimal. However, there are circumstances where this kind of
+<em>ephemeral</em> type instability might not matter too much: for
+example,
+if <code class="docutils literal"><span class="pre">pos</span></code>
+is never used in isolation, the fact that <code
+ class="docutils literal"><span class="pre">f</span></code>‘s output
+is type-stable (for <a class="reference internal"
+ href="../stdlib/numbers.html#Base.Float64" title="Base.Float64"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">Float64</span></code></a>
+inputs) will shield later code from
+the propagating effects of type instability. This is particularly
+relevant in cases where fixing the type instability is difficult or
+impossible: for example, currently it’s not possible to infer the
+return type of an anonymous function. In such cases, the tips above
+(e.g., adding type annotations and/or breaking up functions) are your
+best tools to contain the “damage” from type instability.</p>
+<p>The following examples may help you interpret expressions marked as
+containing non-leaf types:</p>
+<ul class="simple">
+  <li>Function body ending in <code class="docutils literal"><span
+ class="pre">end::Union{T1,T2})</span></code>
+    <ul>
+      <li>Interpretation: function with unstable return type</li>
+      <li>Suggestion: make the return value type-stable, even if you
+have to annotate it</li>
+    </ul>
+  </li>
+  <li><code class="docutils literal"><span class="pre">f(x::T)::Union{T1,T2}</span></code>
+    <ul>
+      <li>Interpretation: call to a type-unstable function</li>
+      <li>Suggestion: fix the function, or if necessary annotate the
+return value</li>
+    </ul>
+  </li>
+  <li><code class="docutils literal"><span class="pre">(top(arrayref))(A::Array{Any,1},1)::Any</span></code>
+    <ul>
+      <li>Interpretation: accessing elements of poorly-typed arrays</li>
+      <li>Suggestion: use arrays with better-defined types, or if
+necessary annotate the type of individual element accesses</li>
+    </ul>
+  </li>
+  <li><code class="docutils literal"><span class="pre">(top(getfield))(A::ArrayContainer{Float64},:data)::Array{Float64,N}</span></code>
+    <ul>
+      <li>Interpretation: getting a field that is of non-leaf type. In
+this case, <code class="docutils literal"><span class="pre">ArrayContainer</span></code>
+had a field <code class="docutils literal"><span class="pre">data::Array{T}</span></code>.
+But <code class="docutils literal"><span class="pre">Array</span></code>
+needs the dimension <code class="docutils literal"><span class="pre">N</span></code>,
+too, to be a concrete type.</li>
+      <li>Suggestion: use concrete types like <code
+ class="docutils literal"><span class="pre">Array{T,3}</span></code> or
+        <code class="docutils literal"><span class="pre">Array{T,N}</span></code>,
+where <code class="docutils literal"><span class="pre">N</span></code>
+is now a parameter of <code class="docutils literal"><span class="pre">ArrayContainer</span></code></li>
+    </ul>
+  </li>
+</ul>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

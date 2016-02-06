@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Image Building — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="Working with LLVM" href="llvm.html">
+  <link rel="prev" title="SubArrays" href="subarrays.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content"><br>
+<div role="main" class="document">
+<div class="section" id="system-image-building">
+<h1>System Image Building<a class="headerlink"
+ href="#system-image-building" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="building-the-julia-system-image">
+<span id="dev-sysimg"></span>
+<h2>Building the Julia system image<a class="headerlink"
+ href="#building-the-julia-system-image"
+ title="Permalink to this headline">¶</a></h2>
+<p>Julia ships with a preparsed system image containing the contents of
+the <code class="docutils literal"><span class="pre">Base</span></code>
+module, named <code class="docutils literal"><span class="pre">sys.ji</span></code>.
+This file is also precompiled into a shared library called <code
+ class="docutils literal"><span class="pre">sys.{so,dll,dylib}</span></code>
+on as many platforms as possible, so as to give vastly improved startup
+times. On systems that do not ship with a precompiled system image
+file, one can be generated from the source files shipped in Julia’s <code
+ class="docutils literal"><span class="pre">DATAROOTDIR/julia/base</span></code>
+folder.</p>
+<p>This operation is useful for multiple reasons. A user may:</p>
+<ul class="simple">
+  <li>Build a precompiled shared library system image on a platform
+that did not ship with one, thereby improving startup times.</li>
+  <li>Modify <code class="docutils literal"><span class="pre">Base</span></code>,
+rebuild the system image and use the new <code class="docutils literal"><span
+ class="pre">Base</span></code> next time Julia is started.</li>
+  <li>Include a <code class="docutils literal"><span class="pre">userimg.jl</span></code>
+file that includes packages into the system image, thereby creating a
+system image that has packages embedded into the startup environment.</li>
+</ul>
+<p>Julia now ships with a script that automates the tasks of building
+the system image, wittingly named <code class="docutils literal"><span
+ class="pre">build_sysimg.jl</span></code> that lives in <code
+ class="docutils literal"><span class="pre">DATAROOTDIR/julia/</span></code>.
+That is, to include it into a current Julia session, type:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">include</span><span class="p">(</span><span
+ class="n">joinpath</span><span class="p">(</span><span class="n">JULIA_HOME</span><span
+ class="p">,</span> <span class="n">Base</span><span class="o">.</span><span
+ class="n">DATAROOTDIR</span><span class="p">,</span> <span class="s">"julia"</span><span
+ class="p">,</span> <span class="s">"build_sysimg.jl"</span><span
+ class="p">))</span>
+</pre>
+</div>
+</div>
+<p>This will include a <code class="docutils literal"><span class="pre">build_sysimg()</span></code>
+function:</p>
+<dl class="function">
+  <dt id="build_sysimg"><code class="descname">build_sysimg</code><span
+ class="sig-paren">(</span><em>sysimg_path=default_sysimg_path</em>, <em>cpu_target="native"</em>,
+    <em>userimg_path=nothing; force=false</em><span class="sig-paren">)</span><a
+ class="headerlink" href="#build_sysimg"
+ title="Permalink to this definition">¶</a></dt>
+  <dd>
+    <p>Rebuild the system image. Store it in <code
+ class="docutils literal"><span class="pre">sysimg_path</span></code>,
+which defaults to a file named <code class="docutils literal"><span
+ class="pre">sys.ji</span></code> that sits in the same folder as <code
+ class="docutils literal"><span class="pre">libjulia.{so,dylib}</span></code>,
+except on Windows where it defaults to <code class="docutils literal"><span
+ class="pre">JULIA_HOME/../lib/julia/sys.ji</span></code>.
+Use the cpu instruction set given by <code class="docutils literal"><span
+ class="pre">cpu_target</span></code>. Valid CPU targets are the same
+as for the <code class="docutils literal"><span class="pre">-C</span></code>
+option to <code class="docutils literal"><span class="pre">julia</span></code>,
+or the <code class="docutils literal"><span class="pre">-march</span></code>
+option to <code class="docutils literal"><span class="pre">gcc</span></code>.
+Defaults to <code class="docutils literal"><span class="pre">native</span></code>,
+which means to use all CPU instructions available on the current
+processor.
+Include the user image file given by <code class="docutils literal"><span
+ class="pre">userimg_path</span></code>, which should contain
+directives such as <code class="docutils literal"><span class="pre">using</span>
+    <span class="pre">MyPackage</span></code> to include that package
+in the new system image.
+New system image will not replace an older image unless <code
+ class="docutils literal"><span class="pre">force</span></code> is set
+to true.</p>
+  </dd>
+</dl>
+<p>Note that this file can also be run as a script itself, with command
+line arguments taking the place of arguments passed to the <code
+ class="docutils literal"><span class="pre">build_sysimg</span></code>
+function. For example, to build a system image in <code
+ class="docutils literal"><span class="pre">/tmp/sys.{so,dll,dylib}</span></code>,
+with the <code class="docutils literal"><span class="pre">core2</span></code>
+CPU instruction set, a user image of <code class="docutils literal"><span
+ class="pre">~/userimg.jl</span></code> and <code
+ class="docutils literal"><span class="pre">force</span></code> set to <code
+ class="docutils literal"><span class="pre">true</span></code>, one
+would execute:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span> <span class="n">build_sysimg</span><span
+ class="o">.</span><span class="n">jl</span> <span class="o">/</span><span
+ class="n">tmp</span><span class="o">/</span><span class="n">sys</span> <span
+ class="n">core2</span> <span class="o">~/</span><span class="n">userimg</span><span
+ class="o">.</span><span class="n">jl</span> <span class="o">--</span><span
+ class="n">force</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="llvm.html"
+ class="btn btn-neutral float-right" title="Working with LLVM">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="subarrays.html"
+ class="btn btn-neutral" title="SubArrays"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

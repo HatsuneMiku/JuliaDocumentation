@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory layout of Julia Objects — Julia Language 0.4.3
+documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="Base.Cartesian" href="cartesian.html">
+  <link rel="prev" title="More about types" href="types.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content"><br>
+<div role="main" class="document">
+<div class="section" id="memory-layout-of-julia-objects">
+<h1>Memory layout of Julia Objects<a class="headerlink"
+ href="#memory-layout-of-julia-objects"
+ title="Permalink to this headline">¶</a></h1>
+<div class="section" id="object-layout-jl-value-t">
+<h2>Object layout (jl_value_t)<a class="headerlink"
+ href="#object-layout-jl-value-t" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref c c-type docutils literal"><span class="pre">jl_value_t</span></code>
+struct is the name for a block of memory owned by the Julia Garbage
+Collector,
+representing the data associated with a Julia object in memory.
+Absent any type information, it is simply an opaque pointer:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">typedef</span> <span class="k">struct</span> <span
+ class="kt">jl_value_t</span><span class="o">*</span> <span class="kt">jl_pvalue_t</span><span
+ class="p">;</span>
+</pre>
+</div>
+</div>
+<p>Each <code class="xref c c-type docutils literal"><span class="pre">jl_value_t</span></code>
+struct is contained in a <code class="xref c c-type docutils literal"><span
+ class="pre">jl_typetag_t</span></code> struct that contains metadata
+information
+about the Julia object, such as its type and garbage collector (gc)
+reachability:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">typedef</span> <span class="k">struct</span> <span
+ class="p">{</span>
+    <span class="n">opaque</span> <span class="n">metadata</span><span
+ class="p">;</span>
+    <span class="kt">jl_value_t</span> <span
+ class="n">value</span><span class="p">;</span>
+<span class="p">}</span> <span class="kt">jl_typetag_t</span><span
+ class="p">;</span>
+</pre>
+</div>
+</div>
+<p>The type of any Julia object is an instance of a leaf <code
+ class="xref c c-type docutils literal"><span class="pre">jl_datatype_t</span></code>
+object.
+The <code class="xref c c-func docutils literal"><span class="pre">jl_typeof()</span></code>
+function can be used to query for it:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_typeof</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">v</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>The layout of the object depends on its type.
+Reflection methods can be used to inspect that layout.
+A field can be accessed by calling one of the get-field methods:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_get_nth_field_checked</span><span class="p">(</span><span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">v</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">i</span><span
+ class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_get_field</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">o</span><span class="p">,</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">fld</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>If the field types are known, a priori, to be all pointers,
+the values can also be extracted directly as an array access:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">v</span> <span class="o">=</span> <span class="n">value</span><span
+ class="o">-&gt;</span><span class="n">fieldptr</span><span class="p">[</span><span
+ class="n">n</span><span class="p">];</span>
+</pre>
+</div>
+</div>
+<p>As an example, a “boxed” <code
+ class="xref c c-type docutils literal"><span class="pre">uint16_t</span></code>
+is stored as follows:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">struct</span> <span class="p">{</span>
+    <span
+ class="n">oqaque</span> <span class="n">metadata</span><span class="p">;</span>
+    <span
+ class="k">struct</span> <span class="p">{</span>
+      <span
+ class="kt">uint16_t</span> <span class="n">data</span><span class="p">;</span>            <span
+ class="o">--</span> <span class="mi">2</span> <span class="n">bytes</span>
+    <span
+ class="p">}</span> <span class="kt">jl_value_t</span><span class="p">;</span>
+<span class="p">};</span>
+</pre>
+</div>
+</div>
+<p>This object is created by <code
+ class="xref c c-func docutils literal"><span class="pre">jl_box_uint16()</span></code>.
+Note that the <code class="xref c c-type docutils literal"><span
+ class="pre">jl_value_t</span></code> pointer references the data
+portion,
+not the metadata at the top of the struct.</p>
+<p>A value may be stored “unboxed” in many circumstances
+(just the data, without the metadata, and possibly not even stored but
+just kept in registers),
+so it is unsafe to assume that the address of a box is a unique
+identifier.
+The “egal” test (corresponding to the <a class="reference internal"
+ href="../stdlib/base.html#Base.is" title="Base.is"><code
+ class="xref jl jl-func docutils literal"><span class="pre">is()</span></code></a>
+function in Julia),
+should instead be used to compare two unknown objects for equivalence:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">int</span> <span class="nf">jl_egal</span><span
+ class="p">(</span><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">a</span><span class="p">,</span> <span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">b</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>This optimization should be relatively transparent to the API,
+since the object will be “boxed” on-demand, whenever a <code
+ class="xref c c-type docutils literal"><span class="pre">jl_value_t</span></code>
+pointer is needed.</p>
+<p>Note that modification of a <code
+ class="xref c c-type docutils literal"><span class="pre">jl_value_t</span></code>
+pointer in memory is permitted only if the object is mutable.
+Otherwise, modification of the value may corrupt the program and the
+result will be undefined.
+The mutability property of a value can be queried for with:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">int</span> <span class="nf">jl_is_mutable</span><span
+ class="p">(</span><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">v</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>If the object being stored is a <code
+ class="xref c c-type docutils literal"><span class="pre">jl_value_t</span></code>,
+the Julia garbage collector must be notified also:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">void</span> <span class="nf">jl_gc_wb</span><span
+ class="p">(</span><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">parent</span><span class="p">,</span> <span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>However, the <a class="reference internal"
+ href="../manual/embedding.html#man-embedding"><span>Embedding Julia</span></a>
+section of the manual is also required reading at this point,</p>
+<p>for covering other details of boxing and unboxing various types,
+and understanding the gc interactions.</p>
+<p>Mirror structs for some of the built-in types are <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/julia.h">defined
+in julia.h</a>.
+The corresponding global <code class="xref c c-type docutils literal"><span
+ class="pre">jl_datatype_t</span></code> objects are created by <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/jltypes.c">jl_init_types
+in jltypes.c</a>.</p>
+</div>
+<div class="section" id="garbage-collector-mark-bits">
+<h2>Garbage collector mark bits<a class="headerlink"
+ href="#garbage-collector-mark-bits" title="Permalink to this headline">¶</a></h2>
+<p>The garbage collector uses several bits from the metadata portion of
+the <code class="xref c c-type docutils literal"><span class="pre">jl_typetag_t</span></code>
+to track each object in the system.
+Further details about this algorithm can be found in the comments of
+the <a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/gc.c">garbage
+collector implementation in gc.c</a>.</p>
+</div>
+<div class="section" id="object-allocation">
+<h2>Object allocation<a class="headerlink" href="#object-allocation"
+ title="Permalink to this headline">¶</a></h2>
+<p>Most new objects are allocated by <code
+ class="xref c c-func docutils literal"><span class="pre">jl_new_structv()</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_new_struct</span><span class="p">(</span><span class="kt">jl_datatype_t</span> <span
+ class="o">*</span><span class="n">type</span><span class="p">,</span> <span
+ class="p">...);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_new_structv</span><span class="p">(</span><span
+ class="kt">jl_datatype_t</span> <span class="o">*</span><span class="n">type</span><span
+ class="p">,</span> <span class="kt">jl_value_t</span> <span class="o">**</span><span
+ class="n">args</span><span class="p">,</span> <span class="kt">uint32_t</span> <span
+ class="n">na</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Although, <a class="reference internal"
+ href="../stdlib/base.html#Base.isbits" title="Base.isbits"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">isbits</span></code></a>
+objects can be also constructed directly from memory:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">jl_new_bits</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">bt</span><span class="p">,</span> <span
+ class="kt">void</span> <span class="o">*</span><span class="n">data</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>And some objects have special constructors that must be used instead
+of the above functions:</p>
+<p>Types:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_datatype_t</span> <span class="o">*</span><span
+ class="nf">jl_apply_type</span><span class="p">(</span><span class="kt">jl_datatype_t</span> <span
+ class="o">*</span><span class="n">tc</span><span class="p">,</span> <span
+ class="kt">jl_tuple_t</span> <span class="o">*</span><span class="n">params</span><span
+ class="p">);</span>
+<span class="kt">jl_datatype_t</span> <span class="o">*</span><span
+ class="nf">jl_apply_array_type</span><span class="p">(</span><span
+ class="kt">jl_datatype_t</span> <span class="o">*</span><span class="n">type</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">dim</span><span
+ class="p">);</span>
+<span class="kt">jl_uniontype_t</span> <span class="o">*</span><span
+ class="nf">jl_new_uniontype</span><span class="p">(</span><span
+ class="kt">jl_tuple_t</span> <span class="o">*</span><span class="n">types</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>While these are the most commonly used options, there are more
+low-level constructors too,
+which you can find declared in <a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/julia.h">julia.h</a>.
+These are used in <code class="xref c c-func docutils literal"><span
+ class="pre">jl_init_types()</span></code> to create the initial types
+needed to bootstrap the creation of the Julia system image.</p>
+<p>Tuples:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_tuple_t</span> <span class="o">*</span><span
+ class="nf">jl_tuple</span><span class="p">(</span><span class="kt">size_t</span> <span
+ class="n">n</span><span class="p">,</span> <span class="p">...);</span>
+<span class="kt">jl_tuple_t</span> <span class="o">*</span><span
+ class="nf">jl_tuplev</span><span class="p">(</span><span class="kt">size_t</span> <span
+ class="n">n</span><span class="p">,</span> <span class="kt">jl_value_t</span> <span
+ class="o">**</span><span class="n">v</span><span class="p">);</span>
+<span class="kt">jl_tuple_t</span> <span class="o">*</span><span
+ class="nf">jl_alloc_tuple</span><span class="p">(</span><span
+ class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>The representation of tuples is highly unique in the Julia object
+representation ecosystem.
+In some cases, a <a class="reference internal"
+ href="../stdlib/base.html#Base.tuple" title="Base.tuple"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Base.tuple()</span></code></a>
+object may be an array of pointers to the
+objects contained by the tuple equivalent to:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">typedef</span> <span class="k">struct</span> <span
+ class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">length</span><span
+ class="p">;</span>
+    <span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">data</span><span class="p">[</span><span
+ class="n">length</span><span class="p">];</span>
+<span class="p">}</span> <span class="kt">jl_tuple_t</span><span
+ class="p">;</span>
+</pre>
+</div>
+</div>
+<p>However, in other cases, the tuple may be converted to an anonymous <a
+ class="reference internal" href="../stdlib/base.html#Base.isbits"
+ title="Base.isbits"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">isbits</span></code></a> type
+and stored unboxed, or it may not stored at all (if it is not being
+used in a generic context as a <code class="code docutils literal"><span
+ class="pre">jl_value_t*</span></code>).</p>
+<p>Symbols:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_sym_t</span> <span class="o">*</span><span
+ class="nf">jl_symbol</span><span class="p">(</span><span class="k">const</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">str</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Functions and LambdaStaticData:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_function_t</span> <span class="o">*</span><span
+ class="nf">jl_new_generic_function</span><span class="p">(</span><span
+ class="kt">jl_sym_t</span> <span class="o">*</span><span class="n">name</span><span
+ class="p">);</span>
+<span class="kt">jl_lambda_info_t</span> <span class="o">*</span><span
+ class="nf">jl_new_lambda_info</span><span class="p">(</span><span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">ast</span><span
+ class="p">,</span> <span class="kt">jl_tuple_t</span> <span class="o">*</span><span
+ class="n">sparams</span><span class="p">);</span>
+<span class="kt">jl_function_t</span> <span class="o">*</span><span
+ class="nf">jl_new_closure</span><span class="p">(</span><span
+ class="kt">jl_fptr_t</span> <span class="n">proc</span><span class="p">,</span> <span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">env</span><span
+ class="p">,</span> <span class="kt">jl_lambda_info_t</span> <span
+ class="o">*</span><span class="n">li</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Arrays:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_new_array</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">atype</span><span class="p">,</span> <span
+ class="kt">jl_tuple_t</span> <span class="o">*</span><span class="n">dims</span><span
+ class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_new_arrayv</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">atype</span><span class="p">,</span> <span
+ class="p">...);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_alloc_array_1d</span><span class="p">(</span><span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">atype</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">nr</span><span
+ class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_alloc_array_2d</span><span class="p">(</span><span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">atype</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">nr</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">nc</span><span
+ class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_alloc_array_3d</span><span class="p">(</span><span
+ class="kt">jl_value_t</span> <span class="o">*</span><span class="n">atype</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">nr</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">nc</span><span
+ class="p">,</span> <span class="kt">size_t</span> <span class="n">z</span><span
+ class="p">);</span>
+<span class="kt">jl_array_t</span> <span class="o">*</span><span
+ class="nf">jl_alloc_cell_1d</span><span class="p">(</span><span
+ class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Note that many of these have alternative allocation functions for
+various special-purposes.
+The list here reflects the more common usages, but a more complete list
+can be found by reading the <a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/julia.h">julia.h
+header file</a>.</p>
+<p>Internal to Julia, storage is typically allocated by <code
+ class="xref c c-func docutils literal"><span class="pre">newstruct()</span></code>
+(or <code class="xref jl jl-func docutils literal"><span class="pre">newobj()</span></code>
+for the special types):</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">newstruct</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">type</span><span class="p">);</span>
+<span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">newobj</span><span class="p">(</span><span class="kt">jl_value_t</span> <span
+ class="o">*</span><span class="n">type</span><span class="p">,</span> <span
+ class="kt">size_t</span> <span class="n">nfields</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>And at the lowest level, memory is getting allocated by a call to
+the garbage collector (in <code class="docutils literal"><span
+ class="pre">gc.c</span></code>),
+then tagged with its type:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="nf">jl_gc_allocobj</span><span class="p">(</span><span
+ class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">jl_set_typeof</span><span
+ class="p">(</span><span class="kt">jl_value_t</span> <span class="o">*</span><span
+ class="n">v</span><span class="p">,</span> <span class="kt">jl_datatype_t</span> <span
+ class="o">*</span><span class="n">type</span><span class="p">);</span>
+</pre>
+</div>
+</div>
+<p>Note that all objects are allocated in multiples of 4 bytes and
+aligned to the platform pointer size.
+Memory is allocated from a pool for smaller objects, or directly with <code
+ class="xref c c-func docutils literal"><span class="pre">malloc()</span></code>
+for large objects.</p>
+<div class="sidebar">
+<p class="first sidebar-title"><a class="reference internal"
+ href="../manual/types.html#man-singleton-types"><span>Singleton Types</span></a></p>
+<p>Singleton types have only one instance and no data fields.
+Singleton instances have a size of 0 bytes,
+and consist only of their metadata.
+e.g. <code class="xref jl jl-data docutils literal"><span class="pre">nothing::Void</span></code>.</p>
+<p class="last">See <a class="reference internal"
+ href="../manual/types.html#man-singleton-types"><span>Singleton Types</span></a>
+and <a class="reference internal" href="../manual/faq.html#man-nothing"><span>Nothingness
+and missing values</span></a></p>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="cartesian.html"
+ class="btn btn-neutral float-right" title="Base.Cartesian">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="types.html"
+ class="btn btn-neutral" title="More about types"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

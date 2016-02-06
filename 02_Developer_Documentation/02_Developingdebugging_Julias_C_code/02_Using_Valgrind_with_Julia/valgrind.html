@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Valgrind with Julia — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Developing/debugging Julia’s C code"
+ href="C.html">
+  <link rel="prev" title="gdb debugging tips" href="debuggingtips.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content"><br>
+<div role="main" class="document">
+<div class="section" id="using-valgrind-with-julia">
+<h1>Using Valgrind with Julia<a class="headerlink"
+ href="#using-valgrind-with-julia" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://valgrind.org/">Valgrind</a>
+is a tool for memory debugging, memory leak detection, and profiling.
+This section describes things to keep in mind when using Valgrind to
+debug memory issues with Julia.</p>
+<div class="section" id="general-considerations">
+<h2>General considerations<a class="headerlink"
+ href="#general-considerations" title="Permalink to this headline">¶</a></h2>
+<p>By default, Valgrind assumes that there is no self modifying code in
+the programs it runs. This assumption works fine in most instances but
+fails miserably for a just-in-time compiler like <code
+ class="docutils literal"><span class="pre">julia</span></code>. For
+this reason it is crucial to pass <code class="docutils literal"><span
+ class="pre">--smc-check=all-non-file</span></code> to <code
+ class="docutils literal"><span class="pre">valgrind</span></code>,
+else code may crash or behave unexpectedly (often in subtle ways).</p>
+<p>In some cases, to better detect memory errors using Valgrind it can
+help to compile <code class="docutils literal"><span class="pre">julia</span></code>
+with memory pools disabled. The compile-time flag <code
+ class="docutils literal"><span class="pre">MEMDEBUG</span></code>
+disables memory pools in Julia, and <code class="docutils literal"><span
+ class="pre">MEMDEBUG2</span></code> disables memory pools in
+FemtoLisp. To build <code class="docutils literal"><span class="pre">julia</span></code>
+with both flags, add the following line to <code
+ class="docutils literal"><span class="pre">Make.user</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">CFLAGS</span> <span class="o">=</span> <span
+ class="o">-</span><span class="n">DMEMDEBUG</span> <span class="o">-</span><span
+ class="n">DMEMDEBUG2</span>
+</pre>
+</div>
+</div>
+<p>Another thing to note: if your program uses multiple workers
+processes, it is likely that you want all such worker processes to run
+under Valgrind, not just the parent process. To do this, pass <code
+ class="docutils literal"><span class="pre">--trace-children=yes</span></code>
+to <code class="docutils literal"><span class="pre">valgrind</span></code>.</p>
+</div>
+<div class="section" id="suppressions">
+<h2>Suppressions<a class="headerlink" href="#suppressions"
+ title="Permalink to this headline">¶</a></h2>
+<p>Valgrind will typically display spurious warnings as it runs. To
+reduce the number of such warnings, it helps to provide a <a
+ class="reference external"
+ href="http://valgrind.org/docs/manual/manual-core.html#manual-core.suppress">suppressions
+file</a> to Valgrind. A sample suppressions file is included in the
+Julia source distribution at <code class="docutils literal"><span
+ class="pre">contrib/valgrind-julia.supp</span></code>.</p>
+<p>The suppressions file can be used from the <code
+ class="docutils literal"><span class="pre">julia/</span></code> source
+directory as follows:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">valgrind</span> <span
+ class="o">--</span><span class="n">smc</span><span class="o">-</span><span
+ class="n">check</span><span class="o">=</span><span class="n">all</span><span
+ class="o">-</span><span class="n">non</span><span class="o">-</span><span
+ class="n">file</span> <span class="o">--</span><span class="n">suppressions</span><span
+ class="o">=</span><span class="n">contrib</span><span class="o">/</span><span
+ class="n">valgrind</span><span class="o">-</span><span class="n">julia</span><span
+ class="o">.</span><span class="n">supp</span> <span class="o">./</span><span
+ class="n">julia</span> <span class="n">progname</span><span class="o">.</span><span
+ class="n">jl</span>
+</pre>
+</div>
+</div>
+<p>Any memory errors that are displayed should either be reported as
+bugs or contributed as additional suppressions. Note that some versions
+of Valgrind are <a class="reference external"
+ href="https://github.com/JuliaLang/julia/issues/8314#issuecomment-55766210">shipped
+with insufficient default suppressions</a>, so that may be one thing to
+consider before submitting any bugs.</p>
+</div>
+<div class="section" id="running-the-julia-test-suite-under-valgrind">
+<h2>Running the Julia test suite under Valgrind<a class="headerlink"
+ href="#running-the-julia-test-suite-under-valgrind"
+ title="Permalink to this headline">¶</a></h2>
+<p>It is possible to run the entire Julia test suite under Valgrind,
+but it does take quite some time (typically several hours). To do so,
+run the following command from the <code class="docutils literal"><span
+ class="pre">julia/test/</span></code> directory:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">valgrind</span> <span class="o">--</span><span
+ class="n">smc</span><span class="o">-</span><span class="n">check</span><span
+ class="o">=</span><span class="n">all</span><span class="o">-</span><span
+ class="n">non</span><span class="o">-</span><span class="n">file</span> <span
+ class="o">--</span><span class="n">trace</span><span class="o">-</span><span
+ class="n">children</span><span class="o">=</span><span class="n">yes</span> <span
+ class="o">--</span><span class="n">suppressions</span><span class="o">=$</span><span
+ class="n">PWD</span><span class="o">/../</span><span class="n">contrib</span><span
+ class="o">/</span><span class="n">valgrind</span><span class="o">-</span><span
+ class="n">julia</span><span class="o">.</span><span class="n">supp</span> <span
+ class="o">../</span><span class="n">julia</span> <span class="n">runtests</span><span
+ class="o">.</span><span class="n">jl</span> <span class="n">all</span>
+</pre>
+</div>
+</div>
+<p>If you would like to see a report of “definite” memory leaks, pass
+the flags <code class="docutils literal"><span class="pre">--leak-check=full</span>
+<span class="pre">--show-leak-kinds=definite</span></code> to <code
+ class="docutils literal"><span class="pre">valgrind</span></code> as
+well.</p>
+</div>
+<div class="section" id="caveats">
+<h2>Caveats<a class="headerlink" href="#caveats"
+ title="Permalink to this headline">¶</a></h2>
+<p>Valgrind currently <a class="reference external"
+ href="https://bugs.kde.org/show_bug.cgi?id=136779">does not support
+multiple rounding modes</a>, so code that adjusts the rounding mode
+will behave differently when run under Valgrind.</p>
+<p>In general, if after setting <code class="docutils literal"><span
+ class="pre">--smc-check=all-non-file</span></code> you find that your
+program behaves differently when run under Valgrind, it may help to
+pass <code class="docutils literal"><span class="pre">--tool=none</span></code>
+to <code class="docutils literal"><span class="pre">valgrind</span></code>
+as you investigate further. This will enable the minimal Valgrind
+machinery but will also run much faster than when the full memory
+checker is enabled.</p>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="debuggingtips.html"
+ class="btn btn-neutral" title="gdb debugging tips"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

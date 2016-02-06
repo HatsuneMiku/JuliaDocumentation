@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working with LLVM — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="printf() and stdio in the Julia runtime"
+ href="stdio.html">
+  <link rel="prev" title="System Image Building" href="sysimg.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content"><br>
+<div role="main" class="document">
+<div class="section" id="working-with-llvm"><span id="devdocs-llvm"></span>
+<h1>Working with LLVM<a class="headerlink" href="#working-with-llvm"
+ title="Permalink to this headline">¶</a></h1>
+<p>This is not a replacement for the LLVM documentation, but a
+collection
+of tips for working on LLVM for Julia.</p>
+<div class="section" id="overview-of-julia-to-llvm-interface">
+<h2>Overview of Julia to LLVM Interface<a class="headerlink"
+ href="#overview-of-julia-to-llvm-interface"
+ title="Permalink to this headline">¶</a></h2>
+<p>Julia statically links in LLVM by default.
+Build with <code class="docutils literal"><span class="pre">USE_LLVM_SHLIB=1</span></code>
+to link dynamically.</p>
+<p>The code for lowering Julia AST to LLVM IR or interpreting it
+directly is in
+directory <code class="docutils literal"><span class="pre">src/</span></code>.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="26%"><col width="74%"></colgroup>
+  <tbody valign="top">
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">builtins.c</span></code></td>
+      <td>Builtin functions</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">ccall.cpp</span></code></td>
+      <td>Lowering <code class="docutils literal"><span class="pre">ccall</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">cgutils.cpp</span></code></td>
+      <td>Lowering utilities, notably for array and tuple accesses</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">codegen.cpp</span></code></td>
+      <td>Top-level of code generation, pass list, lowering builtins</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">debuginfo.cpp</span></code></td>
+      <td>Tracks debug information for JIT code</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">disasm.cpp</span></code></td>
+      <td>Handles native object file and JIT code diassembly</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">gf.c</span></code></td>
+      <td>Generic functions</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">intrinsics.cpp</span></code></td>
+      <td>Lowering intrinsics</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">llvm-simdloop.cpp</span></code></td>
+      <td>Custom LLVM pass for <code class="docutils literal"><span
+ class="pre">@simd</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">sys.c</span></code></td>
+      <td>I/O and operating system utility functions</td>
+    </tr>
+  </tbody>
+</table>
+<p>Some of the <code class="docutils literal"><span class="pre">.cpp</span></code>
+files form a group that compile to a single object.</p>
+<p>The difference between an intrinsic and a builtin is that a builtin
+is a first class
+function that can be used like any other Julia function. An intrinsic
+can operate
+only on unboxed data, and therefore its arguments must be statically
+typed.</p>
+<div class="section" id="alias-analysis">
+<h3>Alias Analysis<a class="headerlink" href="#alias-analysis"
+ title="Permalink to this headline">¶</a></h3>
+<p>Julia currently uses LLVM’s <a class="reference external"
+ href="http://llvm.org/docs/LangRef.html#tbaa-metadata">Type Based
+Alias Analysis</a>.
+To find the comments that document the inclusion relationships, look
+for <code class="docutils literal"><span class="pre">static</span> <span
+ class="pre">MDNode*</span></code>
+in <code class="docutils literal"><span class="pre">src/codegen.cpp</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">-O</span></code>
+option enables LLVM’s <a class="reference external"
+ href="http://llvm.org/docs/AliasAnalysis.html#the-basicaa-pass">Basic
+Alias Analysis</a>.</p>
+</div>
+</div>
+<div class="section"
+ id="building-julia-with-a-different-version-of-llvm">
+<h2>Building Julia with a different version of LLVM<a class="headerlink"
+ href="#building-julia-with-a-different-version-of-llvm"
+ title="Permalink to this headline">¶</a></h2>
+<p>The default version of LLVM is specified in <code
+ class="docutils literal"><span class="pre">deps/Versions.make</span></code>.
+You can override it by creating a file called <code
+ class="docutils literal"><span class="pre">Make.user</span></code> in
+the top-level directory and adding a line to it such as:</p>
+<p><code class="docutils literal"><span class="pre">`make</span>
+<span class="pre">LLVM_VER</span> <span class="pre">=</span> <span
+ class="pre">3.5.0</span>
+<span class="pre">`</span></code></p>
+<p>Besides the LLVM release numerals, you can
+also use <code class="docutils literal"><span class="pre">LLVM_VER</span>
+<span class="pre">=</span> <span class="pre">svn</span></code> to
+bulid against the latest development version
+of LLVM.</p>
+</div>
+<div class="section" id="passing-options-to-llvm">
+<h2>Passing options to LLVM<a class="headerlink"
+ href="#passing-options-to-llvm" title="Permalink to this headline">¶</a></h2>
+<p>You can pass options to LLVM using <em>debug</em> builds of Julia.
+To create a debug
+build, run <code class="docutils literal"><span class="pre">make</span>
+<span class="pre">debug</span></code>. The resulting executable is <code
+ class="docutils literal"><span class="pre">usr/bin/julia-debug</span></code>.
+You can pass LLVM options to this executable via the environment
+variable <code class="docutils literal"><span class="pre">JULIA_LLVM_ARGS</span></code>.
+Here are example settings using <code class="docutils literal"><span
+ class="pre">bash</span></code> syntax:</p>
+<ul class="simple">
+  <li><code class="docutils literal"><span class="pre">export</span> <span
+ class="pre">JULIA_LLVM_ARGS</span> <span class="pre">=</span> <span
+ class="pre">-print-after-all</span></code> dumps IR after each pass.</li>
+  <li><code class="docutils literal"><span class="pre">export</span> <span
+ class="pre">JULIA_LLVM_ARGS</span> <span class="pre">=</span> <span
+ class="pre">-debug-only=loop-vectorize</span></code> dumps LLVM <code
+ class="docutils literal"><span class="pre">DEBUG(...)</span></code>
+diagnostics for loop vectorizer <em>if</em> you built Julia with <code
+ class="docutils literal"><span class="pre">LLVM_ASSERTIONS=1</span></code>.
+Otherwise you will get warnings about “Unknown command line argument”.
+Counter-intuitively, building Julia with <code class="docutils literal"><span
+ class="pre">LLVM_DEBUG=1</span></code> is <em>not</em> enough to
+dump <code class="docutils literal"><span class="pre">DEBUG</span></code>
+diagnostics from a pass.</li>
+</ul>
+</div>
+<div class="section" id="improving-llvm-optimizations-for-julia">
+<h2>Improving LLVM optimizations for Julia<a class="headerlink"
+ href="#improving-llvm-optimizations-for-julia"
+ title="Permalink to this headline">¶</a></h2>
+<p>Improving LLVM code generation usually involves either changing
+Julia lowering
+to be more friendly to LLVM’s passes, or improving a pass.</p>
+<p>If you are planning to improve a pass, be sure to read the
+<a class="reference external"
+ href="http://llvm.org/docs/DeveloperPolicy.html">LLVM developer policy</a>.
+The best strategy is to create a code example in a form where you can
+use LLVM’s
+<code class="docutils literal"><span class="pre">opt</span></code> tool
+to study it and the pass of interest in isolation.</p>
+<ol class="arabic simple">
+  <li>Create an example Julia code of interest.</li>
+  <li>Use <code class="docutils literal"><span class="pre">JULIA_LLVM_ARGS</span>
+    <span class="pre">=</span> <span class="pre">-print-after-all</span></code>
+to dump the IR.</li>
+  <li>Pick out the IR at the point just before the pass of interest
+runs.</li>
+  <li>Strip the debug metadata and fix up the TBAA metadata by hand.</li>
+</ol>
+<p>The last step is labor intensive. Suggestions on a better way would
+be appreciated.</p>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="stdio.html"
+ class="btn btn-neutral float-right"
+ title="printf() and stdio in the Julia runtime">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="sysimg.html"
+ class="btn btn-neutral" title="System Image Building"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

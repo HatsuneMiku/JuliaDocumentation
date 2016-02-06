@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running External Programs — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Calling C and Fortran Code"
+ href="calling-c-and-fortran-code.html">
+  <link rel="prev" title="Date and DateTime" href="dates.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="running-external-programs"><span
+ id="man-running-external-programs"></span>
+<h1>外部プログラムの実行<a class="headerlink" href="#running-external-programs"
+ title="Permalink to this headline"></a></h1>
+<p>Julia borrows backtick notation for commands from the shell, Perl,
+and
+Ruby. However, in Julia, writing</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="sb">`echo hello`</span>
+<span class="sb">`echo hello`</span>
+</pre>
+</div>
+</div>
+<p>differs in several aspects from the behavior in various shells,
+Perl,
+or Ruby:</p>
+<ul class="simple">
+  <li>Instead of immediately running the command, backticks create a <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Cmd</span></code>
+object to represent the command. You can use this object to
+connect the command to others via pipes, run it, and read or write to
+it.</li>
+  <li>When the command is run, Julia does not capture its output unless
+you
+specifically arrange for it to. Instead, the output of the command by
+default goes to <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-const docutils literal"><span class="pre">STDOUT</span></code></a>
+as it would using <code class="docutils literal"><span class="pre">libc</span></code>‘s
+    <code class="docutils literal"><span class="pre">system</span></code>
+call.</li>
+  <li>The command is never run with a shell. Instead, Julia parses the
+command syntax directly, appropriately interpolating variables and
+splitting on words as the shell would, respecting shell quoting
+syntax. The command is run as <code class="docutils literal"><span
+ class="pre">julia</span></code>‘s immediate child process,
+using <code class="docutils literal"><span class="pre">fork</span></code>
+and <code class="docutils literal"><span class="pre">exec</span></code>
+calls.</li>
+</ul>
+<p>Here’s a simple example of running an external program:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="sb">`echo hello`</span><span
+ class="p">)</span>
+<span class="n">hello</span>
+</pre>
+</div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">hello</span></code>
+is the output of the <code class="docutils literal"><span class="pre">echo</span></code>
+command, sent to <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-const docutils literal"><span class="pre">STDOUT</span></code></a>.
+The run method itself returns <code class="docutils literal"><span
+ class="pre">nothing</span></code>, and throws an <a
+ class="reference internal"
+ href="../stdlib/base.html#Base.ErrorException"
+ title="Base.ErrorException"><code
+ class="xref jl jl-exc docutils literal"><span class="pre">ErrorException</span></code></a>
+if the external command fails to run successfully.</p>
+<p>If you want to read the output of the external command, <a
+ class="reference internal"
+ href="../stdlib/io-network.html#Base.readall" title="Base.readall"><code
+ class="xref jl jl-func docutils literal"><span class="pre">readall()</span></code></a>
+can be used instead:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">a</span><span class="o">=</span><span class="n">readall</span><span
+ class="p">(</span><span class="sb">`echo hello`</span><span class="p">)</span>
+<span class="s">"hello</span><span class="se">\n</span><span class="s">"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="n">chomp</span><span class="p">(</span><span class="n">a</span><span
+ class="p">))</span> <span class="o">==</span> <span class="s">"hello"</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+<p>More generally, you can use <a class="reference internal"
+ href="../stdlib/io-network.html#Base.open" title="Base.open"><code
+ class="xref jl jl-func docutils literal"><span class="pre">open()</span></code></a>
+to read from or write to an external
+command.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">open</span><span class="p">(</span><span class="sb">`less`</span><span
+ class="p">,</span> <span class="s">"w"</span><span class="p">,</span> <span
+ class="n">STDOUT</span><span class="p">)</span> <span class="k">do</span> <span
+ class="n">io</span>
+           <span class="k">for</span> <span
+ class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">:</span><span class="mi">3</span>
+               <span
+ class="n">println</span><span class="p">(</span><span class="n">io</span><span
+ class="p">,</span> <span class="n">i</span><span class="p">)</span>
+           <span
+ class="k">end</span>
+       <span class="k">end</span>
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="mi">3</span>
+</pre>
+</div>
+</div>
+<div class="section" id="interpolation">
+<span id="man-command-interpolation"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span class="hps">補
+間</span></span><a class="headerlink" href="#interpolation"
+ title="Permalink to this headline"></a></h2>
+<p>Suppose you want to do something a bit more complicated and use the
+name
+of a file in the variable <code class="docutils literal"><span
+ class="pre">file</span></code> as an argument to a command. You can
+use <code class="docutils literal"><span class="pre">$</span></code>
+for interpolation much as you would in a string literal (see
+<a class="reference internal" href="strings.html#man-strings"><span>Strings</span></a>):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">file</span> <span class="o">=</span> <span class="s">"/etc/passwd"</span>
+<span class="s">"/etc/passwd"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`sort $file`</span>
+<span class="sb">`sort /etc/passwd`</span>
+</pre>
+</div>
+</div>
+<p>A common pitfall when running external programs via a shell is that
+if a
+file name contains characters that are special to the shell, they may
+cause undesirable behavior. Suppose, for example, rather than
+<code class="docutils literal"><span class="pre">/etc/passwd</span></code>,
+we wanted to sort the contents of the file
+<code class="docutils literal"><span class="pre">/Volumes/External</span>
+<span class="pre">HD/data.csv</span></code>. Let’s try it:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">file</span> <span class="o">=</span> <span class="s">"/Volumes/External HD/data.csv"</span>
+<span class="s">"/Volumes/External HD/data.csv"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`sort $file`</span>
+<span class="sb">`sort '/Volumes/External HD/data.csv'`</span>
+</pre>
+</div>
+</div>
+<p>How did the file name get quoted? Julia knows that <code
+ class="docutils literal"><span class="pre">file</span></code> is meant
+to
+be interpolated as a single argument, so it quotes the word for you.
+Actually, that is not quite accurate: the value of <code
+ class="docutils literal"><span class="pre">file</span></code> is never
+interpreted by a shell, so there’s no need for actual quoting; the
+quotes are inserted only for presentation to the user. This will even
+work if you interpolate a value as part of a shell word:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">path</span> <span class="o">=</span> <span class="s">"/Volumes/External HD"</span>
+<span class="s">"/Volumes/External HD"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">name</span> <span
+ class="o">=</span> <span class="s">"data"</span>
+<span class="s">"data"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">ext</span> <span
+ class="o">=</span> <span class="s">"csv"</span>
+<span class="s">"csv"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`sort $path/$name.$ext`</span>
+<span class="sb">`sort '/Volumes/External HD/data.csv'`</span>
+</pre>
+</div>
+</div>
+<p>As you can see, the space in the <code class="docutils literal"><span
+ class="pre">path</span></code> variable is appropriately
+escaped. But what if you <em>want</em> to interpolate multiple words?
+In that
+case, just use an array (or any other iterable container):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">files</span> <span class="o">=</span> <span class="p">[</span><span
+ class="s">"/etc/passwd"</span><span class="p">,</span><span class="s">"/Volumes/External HD/data.csv"</span><span
+ class="p">]</span>
+<span class="mi">2</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">ASCIIString</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="s">"/etc/passwd"</span>
+ <span class="s">"/Volumes/External HD/data.csv"</span>
+
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`grep foo $files`</span>
+<span class="sb">`grep foo /etc/passwd '/Volumes/External HD/data.csv'`</span>
+</pre>
+</div>
+</div>
+<p>If you interpolate an array as part of a shell word, Julia emulates
+the
+shell’s <code class="docutils literal"><span class="pre">{a,b,c}</span></code>
+argument generation:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">names</span> <span class="o">=</span> <span class="p">[</span><span
+ class="s">"foo"</span><span class="p">,</span><span class="s">"bar"</span><span
+ class="p">,</span><span class="s">"baz"</span><span class="p">]</span>
+<span class="mi">3</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">ASCIIString</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="s">"foo"</span>
+ <span class="s">"bar"</span>
+ <span class="s">"baz"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`grep xylophone $names.txt`</span>
+<span class="sb">`grep xylophone foo.txt bar.txt baz.txt`</span>
+</pre>
+</div>
+</div>
+<p>Moreover, if you interpolate multiple arrays into the same word, the
+shell’s Cartesian product generation behavior is emulated:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">names</span> <span class="o">=</span> <span class="p">[</span><span
+ class="s">"foo"</span><span class="p">,</span><span class="s">"bar"</span><span
+ class="p">,</span><span class="s">"baz"</span><span class="p">]</span>
+<span class="mi">3</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">ASCIIString</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="s">"foo"</span>
+ <span class="s">"bar"</span>
+ <span class="s">"baz"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">exts</span> <span
+ class="o">=</span> <span class="p">[</span><span class="s">"aux"</span><span
+ class="p">,</span><span class="s">"log"</span><span class="p">]</span>
+<span class="mi">2</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">ASCIIString</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+ <span
+ class="s">"aux"</span>
+ <span class="s">"log"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`rm -f $names.$exts`</span>
+<span class="sb">`rm -f foo.aux foo.log bar.aux bar.log baz.aux baz.log`</span>
+</pre>
+</div>
+</div>
+<p>Since you can interpolate literal arrays, you can use this
+generative
+functionality without needing to create temporary array objects first:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="sb">`rm -rf $["foo","bar","baz","qux"].$["aux","log","pdf"]`</span>
+<span class="sb">`rm -rf foo.aux foo.log foo.pdf bar.aux bar.log bar.pdf baz.aux baz.log baz.pdf qux.aux qux.log qux.pdf`</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="quoting">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">クォー
+ト</span></span><a class="headerlink" href="#quoting"
+ title="Permalink to this headline"></a></h2>
+<p>Inevitably, one wants to write commands that aren’t quite so simple,
+and
+it becomes necessary to use quotes. Here’s a simple example of a Perl
+one-liner at a shell prompt:</p>
+<div class="highlight-sh">
+<div class="highlight">
+<pre>sh<span class="nv">$ </span>perl -le <span class="s1">'$|=1; for (0..3) { print }'</span>
+0
+1
+2
+3
+</pre>
+</div>
+</div>
+<p>The Perl expression needs to be in single quotes for two reasons: so
+that spaces don’t break the expression into multiple shell words, and
+so
+that uses of Perl variables like <code class="docutils literal"><span
+ class="pre">$|</span></code> (yes, that’s the name of a
+variable in Perl), don’t cause interpolation. In other instances, you
+may want to use double quotes so that interpolation <em>does</em>
+occur:</p>
+<div class="highlight-sh">
+<div class="highlight">
+<pre>sh<span class="nv">$ first</span><span class="o">=</span><span
+ class="s2">"A"</span>
+sh<span class="nv">$ second</span><span
+ class="o">=</span><span class="s2">"B"</span>
+sh<span class="nv">$ </span>perl -le <span
+ class="s1">'$|=1; print for @ARGV'</span> <span class="s2">"1: </span><span
+ class="nv">$first</span><span class="s2">"</span> <span class="s2">"2: </span><span
+ class="nv">$second</span><span class="s2">"</span>
+1: A
+2: B
+</pre>
+</div>
+</div>
+<p>In general, the Julia backtick syntax is carefully designed so that
+you
+can just cut-and-paste shell commands as is into backticks and they
+will
+work: the escaping, quoting, and interpolation behaviors are the same
+as
+the shell’s. The only difference is that the interpolation is
+integrated
+and aware of Julia’s notion of what is a single string value, and what
+is a container for multiple values. Let’s try the above two examples in
+Julia:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="sb">`perl -le '$|=1; for (0..3) { print }'`</span>
+<span class="sb">`perl -le '$|=1; for (0..3) { print }'`</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">run</span><span
+ class="p">(</span><span class="n">ans</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">first</span> <span
+ class="o">=</span> <span class="s">"A"</span><span class="p">;</span> <span
+ class="n">second</span> <span class="o">=</span> <span class="s">"B"</span><span
+ class="p">;</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="sb">`perl -le 'print for @ARGV' "1: $first" "2: $second"`</span>
+<span class="sb">`perl -le 'print for @ARGV' '1: A' '2: B'`</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">run</span><span
+ class="p">(</span><span class="n">ans</span><span class="p">)</span>
+<span class="mi">1</span><span class="p">:</span> <span class="n">A</span>
+<span class="mi">2</span><span class="p">:</span> <span class="n">B</span>
+</pre>
+</div>
+</div>
+<p>The results are identical, and Julia’s interpolation behavior mimics
+the
+shell’s with some improvements due to the fact that Julia supports
+first-class iterable objects while most shells use strings split on
+spaces for this, which introduces ambiguities. When trying to port
+shell
+commands to Julia, try cut and pasting first. Since Julia shows
+commands
+to you before running them, you can easily and safely just examine its
+interpretation without doing any damage.</p>
+</div>
+<div class="section" id="pipelines">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">パイ
+プライン</span></span><a class="headerlink" href="#pipelines"
+ title="Permalink to this headline"></a></h2>
+<p>Shell metacharacters, such as <code class="docutils literal"><span
+ class="pre">|</span></code>, <code class="docutils literal"><span
+ class="pre">&amp;</span></code>, and <code class="docutils literal"><span
+ class="pre">&gt;</span></code>, are not special
+inside of Julia’s backticks: unlike in the shell, inside of Julia’s
+backticks, a pipe is always just a pipe:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="sb">`echo hello | sort`</span><span
+ class="p">)</span>
+<span class="n">hello</span> <span class="o">|</span> <span class="n">sort</span>
+</pre>
+</div>
+</div>
+<p>This expression invokes the <code class="docutils literal"><span
+ class="pre">echo</span></code> command with three words as
+arguments: “hello”, “|”, and “sort”. The result is that a single line
+is printed: “hello | sort”. Inside of backticks, a “|” is just a
+literal pipe character. How, then, does one construct a pipeline?
+Instead of using “|” inside of backticks, one uses <a
+ class="reference internal" href="../stdlib/base.html#Base.pipeline"
+ title="Base.pipeline"><code class="xref jl jl-func docutils literal"><span
+ class="pre">pipeline()</span></code></a>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="n">pipeline</span><span
+ class="p">(</span><span class="sb">`echo hello`</span><span class="p">,</span> <span
+ class="sb">`sort`</span><span class="p">))</span>
+<span class="n">hello</span>
+</pre>
+</div>
+</div>
+<p>This pipes the output of the <code class="docutils literal"><span
+ class="pre">echo</span></code> command to the <code
+ class="docutils literal"><span class="pre">sort</span></code> command.
+Of course, this isn’t terribly interesting since there’s only one line
+to sort, but we can certainly do much more interesting things:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="n">pipeline</span><span
+ class="p">(</span><span class="sb">`cut -d: -f3 /etc/passwd`</span><span
+ class="p">,</span> <span class="sb">`sort -n`</span><span class="p">,</span> <span
+ class="sb">`tail -n5`</span><span class="p">))</span>
+<span class="mi">210</span>
+<span class="mi">211</span>
+<span class="mi">212</span>
+<span class="mi">213</span>
+<span class="mi">214</span>
+</pre>
+</div>
+</div>
+<p>This prints the highest five user IDs on a UNIX system. The <code
+ class="docutils literal"><span class="pre">cut</span></code>,
+<code class="docutils literal"><span class="pre">sort</span></code> and
+<code class="docutils literal"><span class="pre">tail</span></code>
+commands are all spawned as immediate children of
+the current <code class="docutils literal"><span class="pre">julia</span></code>
+process, with no intervening shell process. Julia
+itself does the work to setup pipes and connect file descriptors that
+is
+normally done by the shell. Since Julia does this itself, it retains
+better control and can do some things that shells cannot.</p>
+<p>Julia can run multiple commands in parallel:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="sb">`echo hello`</span> <span
+ class="o">&amp;</span> <span class="sb">`echo world`</span><span
+ class="p">)</span>
+<span class="n">world</span>
+<span class="n">hello</span>
+</pre>
+</div>
+</div>
+<p>The order of the output here is non-deterministic because the two
+<code class="docutils literal"><span class="pre">echo</span></code>
+processes are started nearly simultaneously, and race to make
+the first write to the <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-const docutils literal"><span class="pre">STDOUT</span></code></a>
+descriptor they share with each other
+and the <code class="docutils literal"><span class="pre">julia</span></code>
+parent process. Julia lets you pipe the output from
+both of these processes to another program:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="n">pipeline</span><span
+ class="p">(</span><span class="sb">`echo world`</span> <span class="o">&amp;</span> <span
+ class="sb">`echo hello`</span><span class="p">,</span> <span class="sb">`sort`</span><span
+ class="p">))</span>
+<span class="n">hello</span>
+<span class="n">world</span>
+</pre>
+</div>
+</div>
+<p>In terms of UNIX plumbing, what’s happening here is that a single
+UNIX
+pipe object is created and written to by both <code
+ class="docutils literal"><span class="pre">echo</span></code>
+processes, and
+the other end of the pipe is read from by the <code
+ class="docutils literal"><span class="pre">sort</span></code> command.</p>
+<p>IO redirection can be accomplished by passing keyword arguments
+stdin,
+stdout, and stderr to the <code class="docutils literal"><span
+ class="pre">pipeline</span></code> function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">pipeline</span><span class="p">(</span><span
+ class="sb">`do_work`</span><span class="p">,</span> <span class="n">stdout</span><span
+ class="o">=</span><span class="n">pipeline</span><span class="p">(</span><span
+ class="sb">`sort`</span><span class="p">,</span> <span class="s">"out.txt"</span><span
+ class="p">),</span> <span class="n">stderr</span><span class="o">=</span><span
+ class="s">"errs.txt"</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<div class="section" id="avoiding-deadlock-in-pipelines">
+<h3><span id="result_box" class="short_text" lang="ja"><span>パイプライン</span><span>に</span><span
+ class="">デッドロック</span><span class="">の回避</span></span><a
+ class="headerlink" href="#avoiding-deadlock-in-pipelines"
+ title="Permalink to this headline"></a></h3>
+<p>When reading and writing to both ends of a pipeline from a single
+process,
+it is important to avoid forcing the kernel to buffer all of the data.</p>
+<p>For example, when reading all of the output from a command,
+call <code class="docutils literal"><span class="pre">readall(out)</span></code>,
+not <code class="docutils literal"><span class="pre">wait(process)</span></code>,
+since the former
+will actively consume all of the data written by the process,
+whereas the latter will attempt to store the data in the kernel’s
+buffers while waiting for a reader to be connected.</p>
+<p>Another common solution is to separate the reader and writer
+of the pipeline into separate Tasks:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">writer</span> <span class="o">=</span> <span
+ class="p">@</span><span class="n">async</span> <span class="n">writeall</span><span
+ class="p">(</span><span class="n">process</span><span class="p">,</span> <span
+ class="s">"data"</span><span class="p">)</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="p">@</span><span
+ class="n">async</span> <span class="n">do_compute</span><span class="p">(</span><span
+ class="n">readall</span><span class="p">(</span><span class="n">process</span><span
+ class="p">))</span>
+<span class="n">wait</span><span class="p">(</span><span class="n">process</span><span
+ class="p">)</span>
+<span class="n">fetch</span><span class="p">(</span><span class="n">reader</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="complex-example">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">複雑
+な例</span></span><a class="headerlink" href="#complex-example"
+ title="Permalink to this headline"></a></h3>
+<p>The combination of a high-level programming language, a first-class
+command abstraction, and automatic setup of pipes between processes is
+a
+powerful one. To give some sense of the complex pipelines that can be
+created easily, here are some more sophisticated examples, with
+apologies for the excessive use of Perl one-liners:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">prefixer</span><span class="p">(</span><span class="n">prefix</span><span
+ class="p">,</span> <span class="n">sleep</span><span class="p">)</span> <span
+ class="o">=</span> <span class="sb">`perl -nle '$|=1; print "'$prefix' ", $_; sleep '$sleep';'`</span><span
+ class="p">;</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">run</span><span
+ class="p">(</span><span class="n">pipeline</span><span class="p">(</span><span
+ class="sb">`perl -le '$|=1; for(0..9){ print; sleep 1 }'`</span><span
+ class="p">,</span> <span class="n">prefixer</span><span class="p">(</span><span
+ class="s">"A"</span><span class="p">,</span><span class="mi">2</span><span
+ class="p">)</span> <span class="o">&amp;</span> <span class="n">prefixer</span><span
+ class="p">(</span><span class="s">"B"</span><span class="p">,</span><span
+ class="mi">2</span><span class="p">)))</span>
+<span class="n">A</span> <span class="mi">0</span>
+<span class="n">B</span> <span class="mi">1</span>
+<span class="n">A</span> <span class="mi">2</span>
+<span class="n">B</span> <span class="mi">3</span>
+<span class="n">A</span> <span class="mi">4</span>
+<span class="n">B</span> <span class="mi">5</span>
+<span class="n">A</span> <span class="mi">6</span>
+<span class="n">B</span> <span class="mi">7</span>
+<span class="n">A</span> <span class="mi">8</span>
+<span class="n">B</span> <span class="mi">9</span>
+</pre>
+</div>
+</div>
+<p>This is a classic example of a single producer feeding two
+concurrent
+consumers: one <code class="docutils literal"><span class="pre">perl</span></code>
+process generates lines with the numbers 0
+through 9 on them, while two parallel processes consume that output,
+one
+prefixing lines with the letter “A”, the other with the letter “B”.
+Which consumer gets the first line is non-deterministic, but once that
+race has been won, the lines are consumed alternately by one process
+and
+then the other. (Setting <code class="docutils literal"><span
+ class="pre">$|=1</span></code> in Perl causes each print statement to
+flush the <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-const docutils literal"><span class="pre">STDOUT</span></code></a>
+handle, which is necessary for this example to
+work. Otherwise all the output is buffered and printed to the pipe at
+once, to be read by just one consumer process.)</p>
+<p>Here is an even more complex multi-stage producer-consumer example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">run</span><span class="p">(</span><span class="n">pipeline</span><span
+ class="p">(</span><span class="sb">`perl -le '$|=1; for(0..9){ print; sleep 1 }'`</span><span
+ class="p">,</span>
+           <span class="n">prefixer</span><span
+ class="p">(</span><span class="s">"X"</span><span class="p">,</span><span
+ class="mi">3</span><span class="p">)</span> <span class="o">&amp;</span> <span
+ class="n">prefixer</span><span class="p">(</span><span class="s">"Y"</span><span
+ class="p">,</span><span class="mi">3</span><span class="p">)</span> <span
+ class="o">&amp;</span> <span class="n">prefixer</span><span class="p">(</span><span
+ class="s">"Z"</span><span class="p">,</span><span class="mi">3</span><span
+ class="p">),</span>
+           <span class="n">prefixer</span><span
+ class="p">(</span><span class="s">"A"</span><span class="p">,</span><span
+ class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span
+ class="n">prefixer</span><span class="p">(</span><span class="s">"B"</span><span
+ class="p">,</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">A</span> <span class="n">X</span> <span class="mi">0</span>
+<span class="n">B</span> <span class="n">Y</span> <span class="mi">1</span>
+<span class="n">A</span> <span class="n">Z</span> <span class="mi">2</span>
+<span class="n">B</span> <span class="n">X</span> <span class="mi">3</span>
+<span class="n">A</span> <span class="n">Y</span> <span class="mi">4</span>
+<span class="n">B</span> <span class="n">Z</span> <span class="mi">5</span>
+<span class="n">A</span> <span class="n">X</span> <span class="mi">6</span>
+<span class="n">B</span> <span class="n">Y</span> <span class="mi">7</span>
+<span class="n">A</span> <span class="n">Z</span> <span class="mi">8</span>
+<span class="n">B</span> <span class="n">X</span> <span class="mi">9</span>
+</pre>
+</div>
+</div>
+<p>This example is similar to the previous one, except there are two
+stages
+of consumers, and the stages have different latency so they use a
+different number of parallel workers, to maintain saturated throughput.</p>
+<p>We strongly encourage you to try all these examples to see how they
+work.</p>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1860 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>入出力ネットワーク</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">General
+I/O<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">STDOUT </td>
+      <td style="vertical-align: top;">Global variable referring to the
+standard out stream.<br>
+      </td>
+      <td style="vertical-align: top;">STDOUT<br>
+      </td>
+      <td style="vertical-align: top;">Base.TTY(open, 0 bytes waiting) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">STDERR </td>
+      <td style="vertical-align: top;">Global variable referring to the
+standard error
+stream.<br>
+      </td>
+      <td style="vertical-align: top;">STDERR </td>
+      <td style="vertical-align: top;">Base.TTY(open, 0 bytes waiting)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">STDIN </td>
+      <td style="vertical-align: top;">Global variable referring to the
+standard input
+stream.<br>
+      </td>
+      <td style="vertical-align: top;">STDIN </td>
+      <td style="vertical-align: top;">何も起きない<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">open(file_name[, read, write,
+create, truncate, append]) → IOStream </td>
+      <td style="vertical-align: top;">Open a file in a mode specified
+by five boolean
+arguments. The default is to open files for reading only. Returns a
+stream for accessing the file.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">open(file_name[, mode]) →
+IOStream </td>
+      <td style="vertical-align: top;">Alternate syntax for open, where
+a string-based mode
+specifier is used instead of the five booleans. The values of mode
+correspond to those from fopen(3) or Perl open, and are equivalent to
+setting the following boolean groups:<br>
+      <table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 60%;">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">r <br>
+            </td>
+            <td style="vertical-align: top;">読み込み<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">r+ <br>
+            </td>
+            <td style="vertical-align: top;">読み書き</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">w<br>
+            </td>
+            <td style="vertical-align: top;">作成し、切り捨てる、書き込み</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">w+<br>
+            </td>
+            <td style="vertical-align: top;">作成し、切り捨てる、読み取り、書き込み<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">a<br>
+            </td>
+            <td style="vertical-align: top;">作成、追加、書き込み</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">a+</td>
+            <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>作成</span><span>、</span><span>追加</span><span
+ class="">、</span><span class="">読み取り、書き込み</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">open(command,
+mode::AbstractString="r", stdio=DevNull) </td>
+      <td style="vertical-align: top;">Start running command
+asynchronously, and return a
+tuple (stream,process). If mode is "r", then stream reads from the
+process’s standard output and stdio optionally specifies the process’s
+standard input stream. If mode is "w", then stream writes to the
+process’s standard input and stdio optionally specifies the process’s
+standard output stream.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">open(f::Function, command,
+mode::AbstractString="r", stdio=DevNull) </td>
+      <td style="vertical-align: top;">Similar to open(command, mode,
+stdio), but calls
+f(stream) on the resulting read or write stream, then closes the stream
+and waits for the process to complete. Returns the value returned by f.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">open(f::Function, args...) </td>
+      <td style="vertical-align: top;">Apply the function f to the
+result of open(args...)
+and close the resulting file descriptor upon completion.<br>
+Example: open(readall, "file.txt")<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IOBuffer() <br>
+→ IOBuffer </td>
+      <td style="vertical-align: top;">Create an in-memory I/O stream.<br>
+      </td>
+      <td style="vertical-align: top;">IOBuffer() </td>
+      <td style="vertical-align: top;">IOBuffer(data=UInt8[...],
+readable=true, writable=true, seekable=true, append=fa<br>
+lse, size=0, maxsize=Inf, ptr=1, mark=-1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IOBuffer(size::Int) </td>
+      <td style="vertical-align: top;">Create a fixed size IOBuffer.
+The buffer will not
+grow dynamically.<br>
+      </td>
+      <td style="vertical-align: top;">IOBuffer(40) </td>
+      <td style="vertical-align: top;">IOBuffer(data=UInt8[...],
+readable=true, writable=true, seekable=true, append=fa<br>
+lse, size=0, maxsize=40, ptr=1, mark=-1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IOBuffer(string) </td>
+      <td style="vertical-align: top;">Create a read-only IOBuffer on
+the data underlying
+the given string<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;IOBuffer("string") </td>
+      <td style="vertical-align: top;">IOBuffer(data=UInt8[...],
+readable=true, writable=false, seekable=true, append=f<br>
+alse, size=6, maxsize=Inf, ptr=1, mark=-1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IOBuffer([data][, readable,
+writable[, maxsize]]) </td>
+      <td style="vertical-align: top;">Create an IOBuffer, which may
+optionally operate on
+a pre-existing array. If the readable/writable arguments are given,
+they restrict whether or not the buffer may be read from or written to
+respectively. By default the buffer is readable but not writable. The
+last argument optionally specifies a size beyond which the buffer may
+not be grown.<br>
+      </td>
+      <td style="vertical-align: top;">IOBuffer() </td>
+      <td style="vertical-align: top;">IOBuffer(data=UInt8[...],
+readable=true, writable=true, seekable=true, append=fa<br>
+lse, size=0, maxsize=Inf, ptr=1, mark=-1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">takebuf_array(b::IOBuffer) </td>
+      <td style="vertical-align: top;">Obtain the contents of an
+IOBuffer as an array,
+without copying. Afterwards, the IOBuffer is reset to its initial state.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">takebuf_string(b::IOBuffer) </td>
+      <td style="vertical-align: top;">Obtain the contents of an
+IOBuffer as a string,
+without copying. Afterwards, the IOBuffer is reset to its initial state.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fdio([name::AbstractString,
+]fd::Integer[, own::Bool]) <br>
+→ IOStream </td>
+      <td style="vertical-align: top;">Create an IOStream object from
+an integer file
+descriptor. If own is true, closing this object will close the
+underlying descriptor. By default, an IOStream is closed when it is
+garbage collected. name allows you to associate the descriptor with a
+named file.<br>
+      </td>
+      <td style="vertical-align: top;">fdio(1) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">flush(stream) </td>
+      <td style="vertical-align: top;">Commit all currently buffered
+writes to the given
+stream.<br>
+      </td>
+      <td style="vertical-align: top;">flush(fdio(1)) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">close(stream) </td>
+      <td style="vertical-align: top;">Close an I/O stream. Performs a
+flush first.<br>
+      </td>
+      <td style="vertical-align: top;">close(fdio(1)) </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">write(stream, x) </td>
+      <td style="vertical-align: top;">Write the canonical binary
+representation of a value
+to the given stream. Returns the number of bytes written into the
+stream.<br>
+&nbsp;&nbsp;&nbsp; You can write multiple values with the same
+:func:write call. i.e. the following are equivalent:<br>
+      </td>
+      <td style="vertical-align: top;">write(fdio(1), "test")<br>
+write(stream, x, y...)<br>
+&nbsp;&nbsp;&nbsp; write(stream, x) + write(stream, y...)</td>
+      <td style="vertical-align: top;">4<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">read(stream, type) </td>
+      <td style="vertical-align: top;">Read a value of the given type
+from a stream, in
+canonical binary representation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">read(stream, type, dims) </td>
+      <td style="vertical-align: top;">Read a series of values of the
+given type from a
+stream, in canonical binary representation. dims is either a tuple or a
+series of integer arguments specifying the size of Array to return.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">read!(stream, array::Array) </td>
+      <td style="vertical-align: top;">Read binary data from a stream,
+filling in the
+argument array.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readbytes!(stream,
+b::Vector{UInt8}, nb=length(b); all=true) </td>
+      <td style="vertical-align: top;">Read at most nb bytes from the
+stream into b,
+returning the number of bytes read (increasing the size of b as needed).<br>
+See readbytes for a description of the all option.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readbytes(stream,
+nb=typemax(Int); all=true) </td>
+      <td style="vertical-align: top;">Read at most nb bytes from the
+stream, returning a
+Vector{UInt8} of the bytes read.<br>
+If all is true (the default), this function will
+block repeatedly trying to read all requested bytes, until an error or
+end-of-file occurs. If all is false, at most one read call is
+performed, and the amount of data returned is device-dependent. Note
+that not all stream types support the all option.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">position(s) </td>
+      <td style="vertical-align: top;">Get the current position of a
+stream.<br>
+      </td>
+      <td style="vertical-align: top;">position(fdio(1)) </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">seek(s, pos) </td>
+      <td style="vertical-align: top;">Seek a stream to the given
+position.<br>
+      </td>
+      <td style="vertical-align: top;">seek(fdio(1),1) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">seekstart(s) </td>
+      <td style="vertical-align: top;">Seek a stream to its beginning.<br>
+      </td>
+      <td style="vertical-align: top;">seekstart(fdio(1)) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">seekend(s) </td>
+      <td style="vertical-align: top;">Seek a stream to its end.<br>
+      </td>
+      <td style="vertical-align: top;"> <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">skip(s, offset) </td>
+      <td style="vertical-align: top;">Seek a stream relative to the
+current position.<br>
+      </td>
+      <td style="vertical-align: top;">skip(fdio(1),1) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mark(s) </td>
+      <td style="vertical-align: top;">Add a mark at the current
+position of stream s.
+Returns the marked position.<br>
+See also unmark(), reset(), ismarked()<br>
+      </td>
+      <td style="vertical-align: top;">mark(fdio(1)) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unmark(s) </td>
+      <td style="vertical-align: top;">Remove a mark from stream s.
+Returns true if the
+stream was marked, false otherwise.<br>
+See also mark(), reset(), ismarked()<br>
+      </td>
+      <td style="vertical-align: top;">unmark(fdio(1))<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">false </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reset(s) </td>
+      <td style="vertical-align: top;">Reset a stream s to a previously
+marked position,
+and remove the mark. Returns the previously marked position. Throws an
+error if the stream is not marked.<br>
+See also mark(), unmark(), ismarked()<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ismarked(s) </td>
+      <td style="vertical-align: top;">Returns true if stream s is
+marked.<br>
+See also mark(), unmark(), reset()<br>
+      </td>
+      <td style="vertical-align: top;"> ismarked(fdio(1)) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eof(stream) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Tests whether an I/O stream is
+at end-of-file. If
+the stream is not yet exhausted, this function will block to wait for
+more data if necessary, and then return false. Therefore it is always
+safe to read one byte after seeing eof return false. eof will return
+false as long as buffered data is still available, even if the remote
+end of a connection is closed.<br>
+      </td>
+      <td style="vertical-align: top;">eof(fdio(1)) </td>
+      <td style="vertical-align: top;">true<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isreadonly(stream) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Determine whether a stream is
+read-only.<br>
+      </td>
+      <td style="vertical-align: top;">isreadonly(fdio(1)) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isopen(object) → Bool </td>
+      <td style="vertical-align: top;">Determine whether an object -
+such as a stream,
+timer, or mmap &#8211; is not yet closed. Once an object is closed, it will
+never produce a new event. However, a closed stream may still have data
+to read in its buffer, use eof to check for the ability to read data.
+Use poll_fd to be notified when a stream might be writable or readable.<br>
+      </td>
+      <td style="vertical-align: top;"> isopen(fdio(1)) </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">serialize(stream, value) </td>
+      <td style="vertical-align: top;">Write an arbitrary value to a
+stream in an opaque
+format, such that it can be read back by deserialize. The read-back
+value will be as identical as possible to the original. In general,
+this process will not work if the reading and writing are done by
+different versions of Julia, or an instance of Julia with a different
+system image. Ptr values are serialized as all-zero bit patterns (NULL).<br>
+      </td>
+      <td style="vertical-align: top;">serialize(fdio(1),2)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deserialize(stream) </td>
+      <td style="vertical-align: top;">Read a value written by
+serialize.<br>
+      </td>
+      <td style="vertical-align: top;">deserialize(fdio(0))<br>
+123<br>
+      </td>
+      <td style="vertical-align: top;">123<br>
+Any<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print_escaped(io,
+str::AbstractString, esc::AbstractString) </td>
+      <td style="vertical-align: top;">General escaping of traditional
+C and Unicode escape
+sequences, plus any characters in esc are also escaped (with a
+backslash).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print_unescaped(io,
+s::AbstractString) </td>
+      <td style="vertical-align: top;">General unescaping of
+traditional C and Unicode
+escape sequences. Reverse of print_escaped().<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print_joined(io, items, delim[,
+last]) </td>
+      <td style="vertical-align: top;">Print elements of items to io
+with delim between
+them. If last is specified, it is used as the final delimiter instead
+of delim.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print_shortest(io, x) </td>
+      <td style="vertical-align: top;">Print the shortest possible
+representation, with the
+minimum number of consecutive non-zero digits, of number x, ensuring
+that it would parse to the exact same number.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fd(stream) </td>
+      <td style="vertical-align: top;">Returns the file descriptor
+backing the stream or
+file. Note that this function only applies to synchronous File‘s and
+IOStream‘s not to any of the asynchronous streams.<br>
+      </td>
+      <td style="vertical-align: top;"> fd(fdio(0)) </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">redirect_stdout() </td>
+      <td style="vertical-align: top;">Create a pipe to which all C and
+Julia level STDOUT
+output will be redirected. Returns a tuple (rd,wr) representing the
+pipe ends. Data written to STDOUT may now be read from the rd end of
+the pipe. The wr end is given for convenience in case the old STDOUT
+object was cached by the user and needs to be replaced elsewhere.<br>
+      </td>
+      <td style="vertical-align: top;">redirect_stdout() </td>
+      <td style="vertical-align: top;">(Base.PipeEndpoint(open, 0 bytes
+waiting),Base.PipeEndpoint(open, 0 bytes waitin<br>
+g))<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">redirect_stdout(stream) </td>
+      <td style="vertical-align: top;">Replace STDOUT by stream for all
+C and julia level
+output to STDOUT. Note that stream must be a TTY, a Pipe or a TCPSocket.<br>
+      </td>
+      <td style="vertical-align: top;">redirect_stdout(fdio(1)) </td>
+      <td style="vertical-align: top;">IOStream(&lt;fd 1&gt;)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">redirect_stderr([stream]) </td>
+      <td style="vertical-align: top;">Like redirect_stdout, but for
+STDERR<br>
+      </td>
+      <td style="vertical-align: top;">redirect_stderr() </td>
+      <td style="vertical-align: top;">(Base.PipeEndpoint(open, 0 bytes
+waiting),Base.PipeEndpoint(open, 0 bytes waitin<br>
+g))<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">redirect_stdin([stream]) </td>
+      <td style="vertical-align: top;">Like redirect_stdout, but for
+STDIN. Note that the
+order of the return tuple is still (rd,wr), i.e. data to be read from
+STDIN, may be written to wr.<br>
+      </td>
+      <td style="vertical-align: top;">redirect_stdin() </td>
+      <td style="vertical-align: top;">(Base.PipeEndpoint(open, 0 bytes
+waiting),Base.PipeEndpoint(open, 0 bytes waitin<br>
+g))<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readchomp(x) </td>
+      <td style="vertical-align: top;">Read the entirety of x as a
+string but remove
+trailing newlines. Equivalent to chomp(readall(x)).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">truncate(file, n) </td>
+      <td style="vertical-align: top;">Resize the file or buffer given
+by the first
+argument to exactly n bytes, filling previously unallocated space with
+‘\0’ if the file or buffer is grown<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">skipchars(stream, predicate;
+linecomment::Char) </td>
+      <td style="vertical-align: top;">Advance the stream until before
+the first character
+for which predicate returns false. For example skipchars(stream,
+isspace) will skip all whitespace. If keyword argument linecomment is
+specified, characters from that character through the end of a line
+will also be skipped.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">countlines(io[, eol::Char]) </td>
+      <td style="vertical-align: top;">Read io until the end of the
+stream/file and count
+the number of lines. To specify a file pass the filename as the first
+argument. EOL markers other than ‘\n’ are supported by passing them as
+the second argument.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">PipeBuffer() </td>
+      <td style="vertical-align: top;">An IOBuffer that allows reading
+and performs writes
+by appending. Seeking and truncating are not supported. See IOBuffer
+for the available constructors.<br>
+      </td>
+      <td style="vertical-align: top;">PipeBuffer() </td>
+      <td style="vertical-align: top;">IOBuffer(data=UInt8[...],
+readable=true, writable=true, seekable=false, append=t<br>
+rue, size=0, maxsize=Inf, ptr=1, mark=-1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">PipeBuffer(data::Vector{UInt8}[,
+maxsize]) </td>
+      <td style="vertical-align: top;">Create a PipeBuffer to operate
+on a data vector,
+optionally specifying a size beyond which the underlying Array may not
+be grown.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readavailable(stream) </td>
+      <td style="vertical-align: top;">Read all available data on the
+stream, blocking the
+task only if no data is available. The result is a Vector{UInt8,1}.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4"> Text
+I/O </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">show(x) </td>
+      <td style="vertical-align: top;">Write an informative text
+representation of a value
+to the current output stream. New types should overload show(io, x)
+where the first argument is a stream. The representation used by show
+generally includes Julia-specific formatting and type information.<br>
+      </td>
+      <td style="vertical-align: top;">show(1)<br>
+      </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">showcompact(x) </td>
+      <td style="vertical-align: top;">Show a more compact
+representation of a value. This
+is used for printing array elements. If a new type has a different
+compact representation, it should overload showcompact(io, x) where the
+first argument is a stream.<br>
+      </td>
+      <td style="vertical-align: top;">showcompact(1) </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">showall(x) </td>
+      <td style="vertical-align: top;">Similar to show, except shows
+all elements of arrays.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">summary(x) </td>
+      <td style="vertical-align: top;">Return a string giving a brief
+description of a
+value. By default returns string(typeof(x)). For arrays, returns
+strings like “2x2 Float64 Array”.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print(x) </td>
+      <td style="vertical-align: top;">Write (to the default output
+stream) a canonical
+(un-decorated) text representation of a value if there is one,
+otherwise call show. The representation used by print includes minimal
+formatting and tries to avoid Julia-specific details.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">println(x) </td>
+      <td style="vertical-align: top;">Print (using print()) x followed
+by a newline.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">print_with_color(color::Symbol,
+[io, ]strings...) </td>
+      <td style="vertical-align: top;">Print strings in a color
+specified as a symbol, for
+example :red or :blue.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">info(msg) </td>
+      <td style="vertical-align: top;">Display an informational
+message. Argument msg is a
+string describing the information to be displayed.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">warn(msg) </td>
+      <td style="vertical-align: top;">Display a warning. Argument msg
+is a string
+describing the warning to be displayed.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@printf([io::IOStream, ]"%Fmt",
+args...) </td>
+      <td style="vertical-align: top;">Print args using C printf()
+style format
+specification string. Optionally, an IOStream may be passed as the
+first argument to redirect output.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@sprintf("%Fmt", args...)</td>
+      <td style="vertical-align: top;">Return @printf formatted output
+as string.<br>
+      </td>
+      <td style="vertical-align: top;">s = @sprintf "this is a %s
+%15.1f" "test" 34.567;<br>
+println(s)<br>
+      </td>
+      <td style="vertical-align: top;">this is a
+test&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+34.6</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sprint(f::Function, args...) </td>
+      <td style="vertical-align: top;">Call the given function with an
+I/O stream and the
+supplied extra arguments. Everything written to this I/O stream is
+returned as a string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">showerror(io, e) </td>
+      <td style="vertical-align: top;">Show a descriptive
+representation of an exception
+object.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dump(x) </td>
+      <td style="vertical-align: top;">Show all user-visible structure
+of a value.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">xdump(x) </td>
+      <td style="vertical-align: top;">Show all structure of a value,
+including all fields
+of objects.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readall(stream::IO) </td>
+      <td style="vertical-align: top;">Read the entire contents of an
+I/O stream as a
+string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readall(filename::AbstractString)
+      </td>
+      <td style="vertical-align: top;">Open filename, read the entire
+contents as a string,
+then close the file. Equivalent to open(readall, filename).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readline(stream=STDIN) </td>
+      <td style="vertical-align: top;">Read a single line of text,
+including a trailing
+newline character (if one is reached before the end of the input), from
+the given stream (defaults to STDIN),<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readuntil(stream, delim) </td>
+      <td style="vertical-align: top;">Read a string, up to and
+including the given
+delimiter byte.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readlines(stream) </td>
+      <td style="vertical-align: top;">Read all lines as an array.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eachline(stream) </td>
+      <td style="vertical-align: top;">Create an iterable object that
+will yield each line
+from a stream.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm<br>
+(source, <br>
+delim::Char, <br>
+T::Type, <br>
+eol::Char; <br>
+header=false, <br>
+skipstart=0, <br>
+skipblanks=true, <br>
+use_mmap, <br>
+ignore_invalid_chars=false,
+quotes=true, <br>
+dims, <br>
+comments=true, comment_char='#') </td>
+      <td style="vertical-align: top;">Read a matrix from the source
+where each line
+(separated by eol) gives one row, with elements separated by the given
+delimeter. The source can be a text file, stream or byte array. Memory
+mapped files can be used by passing the byte array representation of
+the mapped segment as source.<br>
+If T is a numeric type, the result is an array of
+that type, with any non-numeric elements as NaN for floating-point
+types, or zero. Other useful values of T include ASCIIString,
+AbstractString, and Any.<br>
+&nbsp;If header is true, the first row of data will be
+read as header and the tuple (data_cells, header_cells) is returned
+instead of only data_cells.<br>
+Specifying skipstart will ignore the corresponding
+number of initial lines from the input.<br>
+If skipblanks is true, blank lines in the input will
+be ignored.<br>
+If use_mmap is true, the file specified by source is
+memory mapped for potential speedups. Default is true except on
+Windows. On Windows, you may want to specify true if the file is large,
+and is only read once and not written to.<br>
+&nbsp;If ignore_invalid_chars is true, bytes in source
+with invalid character encoding will be ignored. Otherwise an error is
+thrown indicating the offending character position.<br>
+If quotes is true, column enclosed within
+double-quote (”) characters are allowed to contain new lines and column
+delimiters. Double-quote characters within a quoted field must be
+escaped with another double-quote. Specifying dims as a tuple of the
+expected rows and columns (including header, if any) may speed up
+reading of large files. If comments is true, lines beginning with
+comment_char and text following comment_char in any line are ignored.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm(source, delim::Char,
+eol::Char; options...) </td>
+      <td style="vertical-align: top;">If all data is numeric, the
+result will be a numeric
+array. If some elements cannot be parsed as numbers, a cell array of
+numbers and strings is returned.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm(source, delim::Char,
+T::Type; options...) </td>
+      <td style="vertical-align: top;">The end of line delimiter is
+taken as n.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm(source, delim::Char;
+options...) </td>
+      <td style="vertical-align: top;">The end of line delimiter is
+taken as n. If all data
+is numeric, the result will be a numeric array. If some elements cannot
+be parsed as numbers, a cell array of numbers and strings is returned.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm(source, T::Type;
+options...) </td>
+      <td style="vertical-align: top;">The columns are assumed to be
+separated by one or
+more whitespaces. The end of line delimiter is taken as n.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readdlm(source; options...) </td>
+      <td style="vertical-align: top;">The columns are assumed to be
+separated by one or
+more whitespaces. The end of line delimiter is taken as n. If all data
+is numeric, the result will be a numeric array. If some elements cannot
+be parsed as numbers, a cell array of numbers and strings is returned.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">writedlm(f, A, delim='\t') </td>
+      <td style="vertical-align: top;">Write A (a vector, matrix or an
+iterable collection
+of iterable rows) as text to f (either a filename string or an IO
+stream) using the given delimeter delim (which defaults to tab, but can
+be any printable Julia object, typically a Char or AbstractString).<br>
+For example, two vectors x and y of the same length
+can be written as two columns of tab-delimited text to f by either
+writedlm(f, [x y]) or by writedlm(f, zip(x, y)).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readcsv(source, [T::Type];
+options...) </td>
+      <td style="vertical-align: top;">Equivalent to readdlm with delim
+set to comma.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">writecsv(filename, A) </td>
+      <td style="vertical-align: top;">Equivalent to writedlm with
+delim set to comma.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base64EncodePipe(ostream) </td>
+      <td style="vertical-align: top;">Returns a new write-only I/O
+stream, which converts
+any bytes written to it into base64-encoded ASCII bytes written to
+ostream. Calling close on the Base64Pipe stream is necessary to
+complete the encoding (but does not close ostream).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base64DecodePipe(istream) </td>
+      <td style="vertical-align: top;">Returns a new read-only I/O
+stream, which decodes
+base64-encoded data read from istream.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">base64encode(writefunc, args...)<br>
+base64encode(args...)</td>
+      <td style="vertical-align: top;">Given a write-like function
+writefunc, which takes
+an I/O stream as its first argument, base64(writefunc, args...) calls
+writefunc to write args... to a base64-encoded string, and returns the
+string. base64(args...) is equivalent to base64(write, args...): it
+converts its arguments into bytes using the standard write functions
+and returns the base64-encoded string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">base64decode(string) </td>
+      <td style="vertical-align: top;">Decodes the base64-encoded
+string and returns a
+Vector{UInt8} of the decoded bytes.<br>
+文字列をbase64のコードにして配列に収める<br>
+      </td>
+      <td style="vertical-align: top;">base64decode("abcdef") </td>
+      <td style="vertical-align: top;">4-element Array{UInt8,1}:<br>
+&nbsp;0x69<br>
+&nbsp;0xb7<br>
+&nbsp;0x1d<br>
+&nbsp;0x79<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4"> <span
+ style="font-weight: bold;">Multimedia I/O</span><br>
+      <span style="font-weight: normal;">Just as text output is
+performed by print and user-defined types can
+indicate their textual representation by overloading show, Julia
+provides a standardized mechanism for rich multimedia output (such as
+images, formatted text, or even audio and video), consisting of three
+parts:</span><br style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; A function
+display(x) to request the richest
+available multimedia display of a Julia object x (with a plain-text
+fallback).</span><br style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; Overloading
+writemime allows one to indicate
+arbitrary multimedia representations (keyed by standard MIME types) of
+user-defined types.</span><br style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+Multimedia-capable display backends may be
+registered by subclassing a generic Display type and pushing them onto
+a stack of display backends via pushdisplay.</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">The base Julia runtime
+provides only plain-text display, but richer
+displays may be enabled by loading external modules or by using
+graphical Julia environments (such as the IPython-based IJulia
+notebook).</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">display(x)<br>
+display(d::Display, x)<br>
+display(mime, x)<br>
+display(d::Display, mime, x) </td>
+      <td style="vertical-align: top;"><br>
+      <br>
+Display x using the topmost applicable display in
+the display stack, typically using the richest supported multimedia
+output for x, with plain-text STDOUT output as a fallback. The
+display(d, x) variant attempts to display x on the given display d
+only, throwing a MethodError if d cannot display objects of this type.<br>
+&nbsp;&nbsp;&nbsp; There are also two variants with a mime argument (a
+MIME type string, such as "image/png"), which attempt to display x
+using the requested MIME type only, throwing a MethodError if this type
+is not supported by either the display(s) or by x. With these variants,
+one can also supply the “raw” data in the requested MIME type by
+passing x::AbstractString (for MIME types with text-based storage, such
+as text/html or application/postscript) or x::Vector{UInt8} (for binary
+MIME types).<br>
+      </td>
+      <td style="vertical-align: top;">display(50)<br>
+      </td>
+      <td style="vertical-align: top;">50<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">redisplay(x)<br>
+redisplay(d::Display, x)<br>
+redisplay(mime, x)<br>
+redisplay(d::Display, mime, x) </td>
+      <td style="vertical-align: top;">By default, the redisplay
+functions simply call
+display. However, some display backends may override redisplay to
+modify an existing display of x (if any). Using redisplay is also a
+hint to the backend that x may be redisplayed several times, and the
+backend may choose to defer the display until (for example) the next
+interactive prompt.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">displayable(mime) <br>
+→ Bool<br>
+displayable<br>
+(d::Display, mime) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Returns a boolean value
+indicating whether the given
+mime type (string) is displayable by any of the displays in the current
+display stack, or specifically by the display d in the second variant.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">writemime(stream, mime, x) </td>
+      <td style="vertical-align: top;">The display functions ultimately
+call writemime in
+order to write an object x as a given mime type to a given I/O stream
+(usually a memory buffer), if possible. In order to provide a rich
+multimedia representation of a user-defined type T, it is only
+necessary to define a new writemime method for T, via:
+writemime(stream, ::MIME"mime", x::T) = ..., where mime is a MIME-type
+string and the function body calls write (or similar) to write that
+representation of x to stream. (Note that the MIME"" notation only
+supports literal strings; to construct MIME types in a more flexible
+manner use MIME{symbol("")}.)<br>
+For example, if you define a MyImage type and know
+how to write it to a PNG file, you could define a function
+writemime(stream, ::MIME"image/png", x::MyImage) = ... to allow your
+images to be displayed on any PNG-capable Display (such as IJulia). As
+usual, be sure to import Base.writemime in order to add new methods to
+the built-in Julia function writemime.<br>
+Technically, the MIME"mime" macro defines a
+singleton type for the given mime string, which allows us to exploit
+Julia’s dispatch mechanisms in determining how to display objects of
+any given type.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mimewritable(mime, x) </td>
+      <td style="vertical-align: top;">Returns a boolean value
+indicating whether or not
+the object x can be written as the given mime type. (By default, this
+is determined automatically by the existence of the corresponding
+writemime function for typeof(x).)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reprmime(mime, x) </td>
+      <td style="vertical-align: top;">Returns an AbstractString or
+Vector{UInt8}
+containing the representation of x in the requested mime type, as
+written by writemime (throwing a MethodError if no appropriate
+writemime is available). An AbstractString is returned for MIME types
+with textual representations (such as "text/html" or
+"application/postscript"), whereas binary data is returned as
+Vector{UInt8}. (The function istext(mime) returns whether or not Julia
+treats a given mime type as text.)<br>
+&nbsp;&nbsp;&nbsp; As a special case, if x is an AbstractString (for
+textual MIME types) or a Vector{UInt8} (for binary MIME types), the
+reprmime function assumes that x is already in the requested mime
+format and simply returns x.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">stringmime(mime, x) </td>
+      <td style="vertical-align: top;">Returns an AbstractString
+containing the
+representation of x in the requested mime type. This is similar to
+reprmime except that binary data is base64-encoded as an ASCII string.<br>
+As mentioned above, one can also define new display backends. For
+example, a module that can display PNG images in a window can register
+this capability with Julia, so that calling display(x) on types with
+PNG representations will automatically display the image using the
+module’s window.<br>
+In order to define a new display backend, one should first create a
+subtype D of the abstract class Display. Then, for each MIME type (mime
+string) that can be displayed on D, one should define a function
+display(d::D, ::MIME"mime", x) = ... that displays x as that MIME type,
+usually by calling reprmime(mime, x). A MethodError should be thrown if
+x cannot be displayed as that MIME type; this is automatic if one calls
+reprmime. Finally, one should define a function display(d::D, x) that
+queries mimewritable(mime, x) for the mime types supported by D and
+displays the “best” one; a MethodError should be thrown if no supported
+MIME types are found for x. Similarly, some subtypes may wish to
+override redisplay(d::D, ...). (Again, one should import Base.display
+to add new methods to display.) The return values of these functions
+are up to the implementation (since in some cases it may be useful to
+return a display “handle” of some type). The display functions for D
+can then be called directly, but they can also be invoked automatically
+from display(x) simply by pushing a new display onto the
+display-backend stack with:<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pushdisplay(d::Display) </td>
+      <td style="vertical-align: top;">Pushes a new display d on top of
+the global
+display-backend stack. Calling display(x) or display(mime, x) will
+display x on the topmost compatible backend in the stack (i.e., the
+topmost backend that does not throw a MethodError).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">popdisplay()<br>
+popdisplay(d::Display) </td>
+      <td style="vertical-align: top;">Pop the topmost backend off of
+the display-backend
+stack, or the topmost copy of d in the second variant.<br>
+      </td>
+      <td style="vertical-align: top;">popdisplay()<br>
+      </td>
+      <td style="vertical-align: top;"><a href="popdisplay%28%29.txt">popdisplay().txt</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">TextDisplay(stream) </td>
+      <td style="vertical-align: top;">Returns a TextDisplay &lt;:
+Display, which can
+display any object as the text/plain MIME type (only), writing the text
+representation to the given I/O stream. (The text representation is the
+same as the way an object is printed in the Julia REPL.)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">istext(m::MIME) </td>
+      <td style="vertical-align: top;">Determine whether a MIME type is
+text data.<br>
+      </td>
+      <td style="vertical-align: top;">istext("TEXT") </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Memory-mapped
+I/O </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Mmap.Anonymous<br>
+(name, readonly, create) </td>
+      <td style="vertical-align: top;">Create an IO-like object for
+creating zeroed-out
+mmapped-memory that is not tied to a file for use in Mmap.mmap. Used by
+SharedArray for creating shared memory arrays.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Mmap.mmap<br>
+(io::Union{IOStream,<br>
+AbstractString,<br>
+Mmap.AnonymousMmap}<br>
+[,
+type::Type{Array{T,N}}, <br>
+dims, offset]; <br>
+grow::Bool=true, <br>
+shared::Bool=true)<br>
+      <br>
+Mmap.mmap(type::Type{Array{T, N}}, dims) </td>
+      <td style="vertical-align: top;">Create an Array whose values are
+linked to a file,
+using memory-mapping. This provides a convenient way of working with
+data too large to fit in the computer’s memory.<br>
+&nbsp;&nbsp;&nbsp; The type is an Array{T,N} with a bits-type element
+of T and dimension N that determines how the bytes of the array are
+interpreted. Note that the file must be stored in binary format, and no
+format conversions are possible (this is a limitation of operating
+systems, not Julia).<br>
+&nbsp;&nbsp;&nbsp; dims is a tuple or single Integer specifying the
+size or length of the array.<br>
+&nbsp;&nbsp;&nbsp; The file is passed via the stream argument, either
+as an open IOStream or filename string. When you initialize the stream,
+use "r" for a “read-only” array, and "w+" to create a new array used to
+write values to disk.<br>
+&nbsp;&nbsp;&nbsp; If no type argument is specified, the default is
+Vector{UInt8}.<br>
+&nbsp;&nbsp;&nbsp; Optionally, you can specify an offset (in bytes) if,
+for example, you want to skip over a header in the file. The default
+value for the offset is the current stream position for an IOStream.<br>
+&nbsp;&nbsp;&nbsp; The grow keyword argument specifies whether the disk
+file should be grown to accommodate the requested size of array (if the
+total file size is &lt; requested array size). Write privileges are
+required to grow the file.<br>
+&nbsp;&nbsp;&nbsp; The shared keyword argument specifies whether the
+resulting Array and changes made to it will be visible to other
+processes mapping the same file.<br>
+&nbsp;&nbsp;&nbsp; For example, the following code:<br>
+&nbsp;&nbsp;&nbsp; # Create a file for mmapping<br>
+&nbsp;&nbsp;&nbsp; # (you could alternatively use mmap to do this step,
+too)<br>
+&nbsp;&nbsp;&nbsp; A = rand(1:20, 5, 30)<br>
+&nbsp;&nbsp;&nbsp; s = open("/tmp/mmap.bin", "w+")<br>
+&nbsp;&nbsp;&nbsp; # We'll write the dimensions of the array as the
+first two Ints in the file<br>
+&nbsp;&nbsp;&nbsp; write(s, size(A,1))<br>
+&nbsp;&nbsp;&nbsp; write(s, size(A,2))<br>
+&nbsp;&nbsp;&nbsp; # Now write the data<br>
+&nbsp;&nbsp;&nbsp; write(s, A)<br>
+&nbsp;&nbsp;&nbsp; close(s)<br>
+&nbsp;&nbsp;&nbsp; # Test by reading it back in<br>
+&nbsp;&nbsp;&nbsp; s = open("/tmp/mmap.bin")&nbsp;&nbsp; # default is
+read-only<br>
+&nbsp;&nbsp;&nbsp; m = read(s, Int)<br>
+&nbsp;&nbsp;&nbsp; n = read(s, Int)<br>
+&nbsp;&nbsp;&nbsp; A2 = Mmap.mmap(s, Matrix{Int}, (m,n))<br>
+&nbsp;&nbsp;&nbsp; creates a m-by-n Matrix{Int}, linked to the file
+associated with stream s.<br>
+&nbsp;&nbsp;&nbsp; A more portable file would need to encode the word
+size―32 bit or 64 bit―and endianness information in the header. In
+practice, consider encoding binary data using standard formats like
+HDF5 (which can be used with memory-mapping).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Mmap.mmap(io, BitArray[, dims,
+offset]) </td>
+      <td style="vertical-align: top;">Create a BitArray whose values
+are linked to a file,
+using memory-mapping; it has the same purpose, works in the same way,
+and has the same arguments, as mmap(), but the byte representation is
+different.<br>
+Example: B = Mmap.mmap(s, BitArray, (25,30000))<br>
+This would create a 25-by-30000 BitArray, linked to
+the file associated with stream s.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Mmap.sync!(array) </td>
+      <td style="vertical-align: top;">Forces synchronization between
+the in-memory version
+of a memory-mapped Array or BitArray and the on-disk version.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4"> Network
+I/O </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">connect([host, ]port) <br>
+→
+TCPSocket </td>
+      <td style="vertical-align: top;">Connect to the host host on port
+port<br>
+      </td>
+      <td style="vertical-align: top;">connect(80) </td>
+      <td style="vertical-align: top;">TCPSocket(open, 0 bytes waiting)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">connect(path) <br>
+→ PipeEndpoint </td>
+      <td style="vertical-align: top;">Connect to the Named Pipe /
+Domain Socket at path<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">listen([addr, ]port) <br>
+→ TCPServer </td>
+      <td style="vertical-align: top;">Listen on port on the address
+specified by addr. By
+default this listens on localhost only. To listen on all interfaces
+pass IPv4(0) or IPv6(0) as appropriate.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">listen(path) <br>
+→ PipeServer </td>
+      <td style="vertical-align: top;">Create and listen on a Named
+Pipe / Domain Socket<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getaddrinfo(host) </td>
+      <td style="vertical-align: top;">Gets the IP address of the host
+(may have to do a
+DNS lookup)<br>
+      </td>
+      <td style="vertical-align: top;">getaddrinfo("127.0.0.1") </td>
+      <td style="vertical-align: top;">ip"127.0.0.1"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parseip(addr) </td>
+      <td style="vertical-align: top;">Parse a string specifying an
+IPv4 or IPv6 ip address.<br>
+      </td>
+      <td style="vertical-align: top;">parseip("127.0.0.1") </td>
+      <td style="vertical-align: top;">ip"127.0.0.1"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IPv4(host::Integer) <br>
+→ IPv4 </td>
+      <td style="vertical-align: top;">Returns IPv4 object from ip
+address formatted as
+Integer<br>
+      </td>
+      <td style="vertical-align: top;"> IPv4(123456789) </td>
+      <td style="vertical-align: top;">ip"7.91.205.21"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IPv6(host::Integer) <br>
+→ IPv6 </td>
+      <td style="vertical-align: top;">Returns IPv6 object from ip
+address formatted as
+Integer<br>
+      </td>
+      <td style="vertical-align: top;">IPv6(123456789456456145624567845694545661311)
+      </td>
+      <td style="vertical-align: top;">ip"5ce0:e9aa:fb15:9027:eabc:74dc:f301:d7f"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nb_available(stream) </td>
+      <td style="vertical-align: top;">Returns the number of bytes
+available for reading
+before a read from this stream or buffer will block.<br>
+      </td>
+      <td style="vertical-align: top;">nb_available(fdio(1)) </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">accept(server[, client]) </td>
+      <td style="vertical-align: top;">Accepts a connection on the
+given server and returns
+a connection to the client. An uninitialized client stream may be
+provided, in which case it will be used instead of creating a new
+stream.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">listenany(port_hint) <br>
+-&gt; (UInt16, TCPServer) </td>
+      <td style="vertical-align: top;">Create a TCPServer on any port,
+using hint as a
+starting point. Returns a tuple of the actual port that the server was
+created on and the server itself.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">poll_fd<br>
+(fd, timeout_s::Real; readable=false, writable=false)</td>
+      <td style="vertical-align: top;">Monitor a file descriptor fd for
+changes in the read or write availability, and with a timeout given by
+timeout_s seconds.<br>
+The keyword arguments determine which of read and/or write status
+should be monitored; at least one of them must be set to true.<br>
+The returned value is an object with boolean fields readable, writable,
+and timedout, giving the result of the polling.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">poll_file<br>
+(path, interval_s::Real, <br>
+timeout_s::Real) <br>
+-&gt; (previous::StatStruct, current::StatStruct)</td>
+      <td style="vertical-align: top;">Monitor a file for changes by
+polling every interval_s seconds until a change occurs or timeout_s
+seconds have elapsed. The interval_s should be a long period; the
+default is 5.007 seconds.<br>
+&nbsp;&nbsp;&nbsp; Returns a pair of StatStruct objects (previous,
+current) when a change is detected.<br>
+&nbsp;&nbsp;&nbsp; To determine when a file was modified, compare
+mtime(prev) != mtime(current) to detect notification of changes.
+However, using watch_file for this operation is preferred, since it is
+more reliable and efficient, although in some situations it may not be
+available.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">watch_file(path, timeout_s::Real)</td>
+      <td style="vertical-align: top;">Watch file or directory path for
+changes until a change occurs or timeout_s seconds have elapsed.<br>
+The returned value is an object with boolean fields changed, renamed,
+and timedout, giving the result of watching the file.<br>
+This behavior of this function varies slightly across platforms. See
+&lt;https://nodejs.org/api/fs.html#fs_caveats&gt; for more detailed
+information.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bind(socket::Union{UDPSocket,
+TCPSocket}, <br>
+host::IPv4, port::Integer)</td>
+      <td style="vertical-align: top;">Bind socket to the given
+host:port. Note that 0.0.0.0 will listen on all devices.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">send(socket::UDPSocket, <br>
+host::IPv4, port::Integer, msg)</td>
+      <td style="vertical-align: top;">Send msg over socket to
+host:port.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">recv(socket::UDPSocket)</td>
+      <td style="vertical-align: top;">Read a UDP packet from the
+specified socket, and return the bytes received. This call blocks.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">recvfrom(socket::UDPSocket) <br>
+-&gt; (address, data)</td>
+      <td style="vertical-align: top;">Read a UDP packet from the
+specified socket, returning a tuple of (address, data), where address
+will be either IPv4 or IPv6 as appropriate.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setopt<br>
+(sock::UDPSocket; multicast_loop = nothing, multicast_ttl=nothing, <br>
+enable_broadcast=nothing, <br>
+ttl=nothing)</td>
+      <td style="vertical-align: top;">Set UDP socket options.
+multicast_loop: loopback for multicast packets (default: true).
+multicast_ttl: TTL for multicast packets. enable_broadcast: flag must
+be set to true if socket will be used for broadcast messages, or else
+the UDP system will return an access error (default: false). ttl:
+Time-to-live of packets sent on the socket.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ntoh(x)</td>
+      <td style="vertical-align: top;">Converts the endianness of a
+value from Network byte order (big-endian) to that used by the Host.<br>
+      </td>
+      <td style="vertical-align: top;">ntoh(1) </td>
+      <td style="vertical-align: top;">72057594037927936<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hton(x)</td>
+      <td style="vertical-align: top;">Converts the endianness of a
+value from that used by the Host to Network byte order (big-endian).<br>
+      </td>
+      <td style="vertical-align: top;"> hton(1) </td>
+      <td style="vertical-align: top;">72057594037927936<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ltoh(x)</td>
+      <td style="vertical-align: top;">Converts the endianness of a
+value from Little-endian to that used by the Host.<br>
+      </td>
+      <td style="vertical-align: top;">ltoh(1) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">htol(x)</td>
+      <td style="vertical-align: top;">Converts the endianness of a
+value from that used by the Host to Little-endian.<br>
+      </td>
+      <td style="vertical-align: top;">htol(2) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ENDIAN_BOM</td>
+      <td style="vertical-align: top;">The 32-bit byte-order-mark
+indicates the native byte order of the host machine. Little-endian
+machines will contain the value 0x04030201. Big-endian machines will
+contain the value 0x01020304.<br>
+      </td>
+      <td style="vertical-align: top;">ENDIAN_BOM </td>
+      <td style="vertical-align: top;">0x04030201<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+</body>
+</html>

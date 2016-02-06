@@ -1,0 +1,276 @@
+julia> Base.runtests()
+        From worker 3:       * linalg/qr             in 132.52 seconds, maxrss
+526.44 MB
+        From worker 3:       * linalg/dense          in  55.77 seconds, maxrss
+603.48 MB
+        From worker 3:       * linalg/matmul         in  17.43 seconds, maxrss
+648.57 MB
+        From worker 3:       * linalg/schur          in   8.21 seconds, maxrss
+649.49 MB
+        From worker 3:       * linalg/special        in   5.26 seconds, maxrss
+649.49 MB
+        From worker 3:       * linalg/eigen          in   3.24 seconds, maxrss
+649.49 MB
+        From worker 3:       * linalg/bunchkaufman   in   1.42 seconds, maxrss
+649.49 MB
+        From worker 3:       * linalg/svd            in   5.71 seconds, maxrss
+649.49 MB
+        From worker 2:       * linalg/triangular     in 231.29 seconds, maxrss
+606.43 MB
+        From worker 2:       * linalg/tridiag        in  21.48 seconds, maxrss
+621.59 MB
+        From worker 3:       * linalg/lapack         in  24.16 seconds, maxrss
+649.49 MB
+        From worker 2:       * linalg/bidiag         in  20.96 seconds, maxrss
+650.52 MB
+        From worker 3:       * linalg/diagonal       in  28.40 seconds, maxrss
+685.72 MB
+        From worker 2:       * linalg/pinv           in  10.42 seconds, maxrss
+722.24 MB
+        From worker 3:       * linalg/givens         in   2.68 seconds, maxrss
+690.57 MB
+        From worker 2:       * linalg/cholesky       in  17.76 seconds, maxrss
+722.24 MB
+        From worker 2:       * linalg/symmetric      in  13.83 seconds, maxrss
+722.24 MB
+        From worker 3:       * linalg/lu             in  32.81 seconds, maxrss
+788.07 MB
+        From worker 3:       * linalg/uniformscaling in   3.46 seconds, maxrss
+789.02 MB
+        From worker 2:       * linalg/generic        in   7.25 seconds, maxrss
+722.24 MB
+        From worker 3:       * linalg/arnoldi        in  18.17 seconds, maxrss
+807.70 MB
+        From worker 3:       * keywordargs           in   4.02 seconds, maxrss
+812.60 MB
+        From worker 2:       * core                  in  30.86 seconds, maxrss
+744.97 MB
+        From worker 2:       * printf                in   7.27 seconds, maxrss
+744.97 MB
+        From worker 2:       * char                  in   1.26 seconds, maxrss
+744.97 MB
+        From worker 2:       * string                in  61.11 seconds, maxrss
+770.32 MB
+        From worker 2:       * triplequote           in   0.85 seconds, maxrss
+770.32 MB
+        From worker 2:       * unicode               in  51.23 seconds, maxrss
+770.32 MB
+        From worker 3:       * numbers               in 155.82 seconds, maxrss
+901.59 MB
+        From worker 3:       * dict                  in  29.19 seconds, maxrss
+901.59 MB
+        From worker 3:       * hashing               in  12.04 seconds, maxrss
+901.59 MB
+        From worker 3:       * remote                in   4.07 seconds, maxrss
+901.59 MB
+        From worker 3:       * iobuffer              in   6.57 seconds, maxrss
+901.59 MB
+        From worker 3:       * staged                in   4.43 seconds, maxrss
+901.59 MB
+        From worker 2:       * dates                 in 115.21 seconds, maxrss
+770.32 MB
+        From worker 2:       * tuple                 in   2.68 seconds, maxrss
+770.32 MB
+        From worker 3:       * arrayops              in 139.61 seconds, maxrss
+901.59 MB
+        From worker 3:       * reduce                in   8.78 seconds, maxrss
+901.59 MB
+        From worker 3:       * reducedim             in  31.31 seconds, maxrss
+901.59 MB
+        From worker 3:       * random                in  36.14 seconds, maxrss
+901.59 MB
+        From worker 3:       * abstractarray         in  84.32 seconds, maxrss
+901.59 MB
+        From worker 3:       * intfuncs              in   2.70 seconds, maxrss
+901.59 MB
+        From worker 3:       * simdloop              in   3.81 seconds, maxrss
+901.59 MB
+        From worker 3:       * blas                  in  63.24 seconds, maxrss
+901.59 MB
+        From worker 3:       * sparse                in 1155.06 seconds, maxrss
+ 901.59 MB
+        From worker 3:       * bitarray              in 406.46 seconds, maxrss
+901.59 MB
+        From worker 3:       * copy                  in  12.73 seconds, maxrss
+901.59 MB
+        From worker 3:       * math                  in 157.40 seconds, maxrss
+901.59 MB
+        From worker 3:       * fastmath              in  50.02 seconds, maxrss
+901.59 MB
+        From worker 3:       * functional            in  16.08 seconds, maxrss
+901.59 MB
+        From worker 3:       * operators             in   5.64 seconds, maxrss
+901.59 MB
+        From worker 3:       * path                  in  18.65 seconds, maxrss
+901.59 MB
+        From worker 3:       * ccall                 in  41.46 seconds, maxrss
+901.59 MB
+        From worker 3:       * parse                 in  26.89 seconds, maxrss
+901.59 MB
+        From worker 3:       * loading               in   1.12 seconds, maxrss
+901.59 MB
+        From worker 3:       * bigint                in  31.36 seconds, maxrss
+901.59 MB
+        From worker 2:       * subarray              in 2488.83 seconds, maxrss
+ 815.42 MB
+        From worker 3:       * sorting               in 431.89 seconds, maxrss
+901.59 MB
+        From worker 3:       * spawn                       [stdio passthrough ok
+]
+        From worker 2:       * statistics            in 366.03 seconds, maxrss
+815.42 MB
+        From worker 2:       * backtrace             in  13.36 seconds, maxrss
+815.42 MB
+        From worker 2:       * priorityqueue         in  28.16 seconds, maxrss
+815.42 MB
+        From worker 3:   in 394.06 seconds, maxrss  901.59 MB
+        From worker 2:       * file                  in 235.72 seconds, maxrss
+830.30 MB
+        From worker 2:       * version               in   9.53 seconds, maxrss
+830.30 MB
+        From worker 2:       * resolve               in  33.35 seconds, maxrss
+859.48 MB
+        From worker 2:       * pollfd                in   6.11 seconds, maxrss
+861.09 MB
+        From worker 3:       * mmap                  in 109.85 seconds, maxrss
+901.59 MB
+        From worker 2:       * mpfr                  in  31.61 seconds, maxrss
+884.05 MB
+        From worker 2:       * complex               in  26.27 seconds, maxrss
+898.39 MB
+        From worker 2:       * socket                in  12.75 seconds, maxrss
+910.01 MB
+        From worker 2:       * floatapprox           in   1.66 seconds, maxrss
+911.45 MB
+        From worker 2:       * readdlm               in  58.85 seconds, maxrss
+958.76 MB
+The following 'Returned code...' warnings indicate normal behavior:
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+WARNING: Returned code may not match what actually runs.
+        From worker 2:       * reflection            in  19.17 seconds, maxrss
+958.76 MB
+        From worker 2:       * regex                 in  14.36 seconds, maxrss
+958.76 MB
+        From worker 2:       * float16               in  24.07 seconds, maxrss
+958.76 MB
+        From worker 2:       * combinatorics         in  64.99 seconds, maxrss
+958.76 MB
+        From worker 2:       * sysinfo               in  21.79 seconds, maxrss
+958.76 MB
+        From worker 2:       * rounding              in  13.09 seconds, maxrss
+958.76 MB
+        From worker 3:       * broadcast             in 350.41 seconds, maxrss
+901.59 MB
+        From worker 3:       * mod2pi                in   4.48 seconds, maxrss
+901.59 MB
+        From worker 3:       * euler                 in  41.60 seconds, maxrss
+901.59 MB
+        From worker 2:       * ranges                in 205.93 seconds, maxrss
+958.76 MB
+        From worker 3:       * show                  in 105.96 seconds, maxrss
+901.59 MB
+        From worker 2:       * lineedit              in  78.78 seconds, maxrss
+958.76 MB
+        From worker 3:       * replcompletions       in 173.33 seconds, maxrss
+901.59 MB
+        From worker 3:       * replutil              in  16.01 seconds, maxrss
+901.59 MB
+        From worker 2:       * repl                  in 181.23 seconds, maxrss
+958.76 MB
+        From worker 2:       * test                  in  19.73 seconds, maxrss
+958.76 MB
+        From worker 2:       * goto                  in   1.86 seconds, maxrss
+958.76 MB
+        From worker 3:       * sets                  in 115.24 seconds, maxrss
+901.59 MB
+        From worker 2:       * llvmcall              in 102.09 seconds, maxrss
+958.76 MB
+        From worker 2:       * nullable              in  34.05 seconds, maxrss
+958.76 MB
+        From worker 2:       * meta                  in   3.33 seconds, maxrss
+958.76 MB
+        From worker 3:       * grisu                 in 107.95 seconds, maxrss
+901.59 MB
+        From worker 3:       * libgit2               in   1.51 seconds, maxrss
+901.59 MB
+        From worker 2:       * profile               in  22.61 seconds, maxrss
+958.77 MB
+        From worker 2:       * markdown              in  37.63 seconds, maxrss
+975.74 MB
+        From worker 3:       * docs                  in  50.24 seconds, maxrss
+901.59 MB
+        From worker 2:       * base64                in   3.75 seconds, maxrss
+976.64 MB
+        From worker 2:       * functors              in   7.75 seconds, maxrss
+979.13 MB
+        From worker 3:       * serialize             in  33.57 seconds, maxrss
+901.59 MB
+        From worker 3:       * enums                 in  15.14 seconds, maxrss
+901.59 MB
+WARNING: Forcibly interrupting busy workers
+WARNING: rmprocs: process 1 not removed
+        From worker 3:       * cmdlineargs           in 147.30 seconds, maxrss
+901.59 MB
+        From worker 3:       * i18n                  in   3.07 seconds, maxrss
+901.59 MB
+        From worker 3:       * workspace             in  17.94 seconds, maxrss
+901.59 MB
+        From worker 3:       * libdl                 in  12.49 seconds, maxrss
+901.59 MB
+        From worker 3:       * int                   in  59.16 seconds, maxrss
+901.59 MB
+        From worker 3:       * intset                in  21.89 seconds, maxrss
+901.59 MB
+        From worker 3:       * floatfuncs            in  27.16 seconds, maxrss
+901.59 MB
+        From worker 3:       * parallel              in 106.36 seconds, maxrss
+901.59 MB
+        From worker 3:       * inline                in  58.90 seconds, maxrss
+901.59 MB
+        From worker 2:       * misc                  in 512.83 seconds, maxrss
+992.18 MB
+        From worker 2:       * dsp                   in 145.53 seconds, maxrss
+992.18 MB
+        From worker 3:       * fft                   in 185.60 seconds, maxrss
+901.59 MB
+        From worker 2:       * examples              in  77.17 seconds, maxrss
+992.18 MB
+        From worker 1:       * compile
+NOTE: The following 'replacing module' warning indicates normal operation:
+WARNING: replacing module Foo4b3a94a1a081a8cb
+WARNING: replacing module Foo4b3a94a1a081a8cb
+WARNING: replacing module Foo4b3a94a1a081a8cb
+
+NOTE: The following 'LoadError: __precompile__(false)' indicates normal operatio
+n
+ERROR: LoadError: __precompile__(false) is not allowed in files that are being p
+recompiled
+ in __precompile__ at loading.jl:161
+while loading C:\Users\Saito\AppData\Local\Temp\jul78E9.tmp\Baz.jl, in expressio
+n starting on line 1
+INFO: Recompiling stale cache file C:\Users\Saito\AppData\Local\Temp\jul78E9.tmp
+\FooBar.ji for module FooBar.
+
+NOTE: The following 'LoadError: break me' indicates normal operation
+INFO: Recompiling stale cache file C:\Users\Saito\AppData\Local\Temp\julFCF2.tmp
+\FooBar.ji for module FooBar.
+ERROR: LoadError: break me
+ in error at error.jl:21
+while loading C:\Users\Saito\AppData\Local\Temp\jul78E9.tmp\FooBar.jl, in expres
+sion starting on line 3
+ in  81.25 seconds, maxrss  213.69 MB
+    SUCCESS
+WARNING: Forcibly interrupting busy workers
+write: connection reset by peer (ECONNRESET)
+
+julia>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variables — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Integers and Floating-Point Numbers"
+ href="integers-and-floating-point-numbers.html">
+  <link rel="prev" title="Getting Started" href="getting-started.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="wy-nav-content">
+<div class="rst-content"><span style="font-weight: bold;"> Variables</span><a
+ class="headerlink" href="#variables" title="Permalink to this headline">変
+数</a>
+<div role="main" class="document">
+<div class="section" id="variables">
+<p>A variable, in Julia, is a name associated (or bound) to a value.
+It’s useful when you want to store a value (that you obtained after
+some math, for example) for later use. For example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="c"># Assign the value 10 to the variable x</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">=</span> <span class="mi">10</span>
+<span class="mi">10</span>
+
+<span class="c"># Doing math with x's value</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">+</span> <span class="mi">1</span>
+<span class="mi">11</span>
+
+<span class="c"># Reassign x's value</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">1</span>
+<span class="mi">2</span>
+
+<span class="c"># You can assign values of other types, like strings of text</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">=</span> <span class="s">"Hello World!"</span>
+<span class="s">"Hello World!"</span>
+</pre>
+</div>
+</div>
+<p>Julia provides an extremely flexible system for naming variables.
+Variable names are case-sensitive, and have no semantic meaning (that
+is,
+the language will not treat variables differently based on their names).</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y</span> <span
+ class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+<span class="o">-</span><span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Z</span> <span
+ class="o">=</span> <span class="s">"My string"</span>
+<span class="s">"My string"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">customary_phrase</span> <span
+ class="o">=</span> <span class="s">"Hello world!"</span>
+<span class="s">"Hello world!"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">UniversalDeclarationOfHumanRightsStart</span> <span
+ class="o">=</span> <span class="s">"人人生而自由，在尊严和权力上一律平等。"</span>
+<span class="s">"人人生而自由，在尊严和权力上一律平等。"</span>
+</pre>
+</div>
+</div>
+<p>Unicode names (in UTF-8 encoding) are allowed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>julia&gt; δ = 0.00001<br>1.0e-5<br><br>julia&gt; 안녕하세요 = "Hello"<br>"Hello"<br></pre>
+</div>
+</div>
+<p>In the Julia REPL and several other Julia editing environments, you
+can type many Unicode math symbols by typing the backslashed LaTeX
+symbol
+name followed by tab. For example, the variable name <code
+ class="docutils literal"><span class="pre">δ</span></code> can be
+entered by typing <code class="docutils literal"><span class="pre">\delta</span></code>-<em>tab</em>,
+or even <code class="docutils literal"><span class="pre">α̂₂</span></code>
+by
+<code class="docutils literal"><span class="pre">\alpha</span></code>-<em>tab</em>-<code
+ class="docutils literal"><span class="pre">\hat</span></code>-<em>tab</em>-<code
+ class="docutils literal"><span class="pre">\_2</span></code>-<em>tab</em>.</p>
+<p>Julia will even let you redefine built-in constants and functions if
+needed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>julia&gt; pi<br>π = 3.1415926535897...<br><br>julia&gt; pi = 3<br>WARNING: imported binding for pi overwritten in module Main<br>3<br><br>julia&gt; pi<br>3<br><br>julia&gt; sqrt(100)<br>10.0<br><br>julia&gt; sqrt = 4<br>WARNING: imported binding for sqrt overwritten in module Main<br>4<br></pre>
+</div>
+</div>
+<p>However, this is obviously not recommended to avoid potential
+confusion.</p>
+<div class="section" id="allowed-variable-names">
+<h2>Allowed Variable Names 可能な変数名</h2>
+<p>Variable names must begin with a letter (A-Z or a-z), underscore, or
+a
+subset of Unicode code points greater than 00A0; in particular, <a
+ class="reference external"
+ href="http://www.fileformat.info/info/unicode/category/index.htm">Unicode
+character categories</a> Lu/Ll/Lt/Lm/Lo/Nl (letters), Sc/So (currency
+and
+other symbols), and a few other letter-like characters (e.g. a subset
+of the Sm math symbols) are allowed. Subsequent characters may also
+include ! and digits (0-9 and other characters in categories Nd/No),
+as well as other Unicode code points: diacritics and other modifying
+marks (categories Mn/Mc/Me/Sk), some punctuation connectors (category
+Pc), primes, and a few other characters.</p>
+<p>Operators like <code class="docutils literal"><span class="pre">+</span></code>
+are also valid identifiers, but are parsed specially. In
+some contexts, operators can be used just like variables; for example
+<code class="docutils literal"><span class="pre">(+)</span></code>
+refers to the addition function, and <code class="docutils literal"><span
+ class="pre">(+)</span> <span class="pre">=</span> <span class="pre">f</span></code>
+will reassign
+it. Most of the Unicode infix operators (in category Sm),
+such as <code class="docutils literal"><span class="pre">⊕</span></code>,
+are parsed as infix operators and are available for
+user-defined methods (e.g. you can use <code class="docutils literal"><span
+ class="pre">const</span> <span class="pre">⊗</span> <span class="pre">=</span>
+<span class="pre">kron</span></code> to define
+<code class="docutils literal"><span class="pre">⊗</span></code> as an
+infix Kronecker product).</p>
+<p>The only explicitly disallowed names for variables are the names of
+built-in
+statements:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="k">else</span> <span class="o">=</span> <span class="n">false</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">syntax</span><span
+ class="p">:</span> <span class="n">unexpected</span> <span class="s">"else"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="k">try</span> <span
+ class="o">=</span> <span class="s">"No"</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">syntax</span><span
+ class="p">:</span> <span class="n">unexpected</span> <span class="s">"="</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="stylistic-conventions">
+<h2>Stylistic Conventions　文体表記</h2>
+<p>While Julia imposes few restrictions on valid names, it has become
+useful to
+adopt the following conventions:</p>
+<ul class="simple">
+  <li>Names of variables are in lower case.</li>
+  <li>Word separation can be indicated by underscores (<code
+ class="docutils literal"><span class="pre">'_'</span></code>), but use
+of
+underscores is discouraged unless the name would be hard to read
+otherwise.</li>
+  <li>Names of <code class="docutils literal"><span class="pre">Type</span></code>s
+and <code class="docutils literal"><span class="pre">Module</span></code>s
+begin with a capital letter and word separation is
+shown with upper camel case instead of underscores.</li>
+  <li>Names of <code class="docutils literal"><span class="pre">function</span></code>s
+and <code class="docutils literal"><span class="pre">macro</span></code>s
+are in lower case, without
+underscores.</li>
+  <li>Functions that write to their arguments have names that end in <code
+ class="docutils literal"><span class="pre">!</span></code>.
+These are sometimes called “mutating” or “in-place” functions because
+they are intended to produce changes in their arguments after the
+function is called, not just return a value.</li>
+</ul>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

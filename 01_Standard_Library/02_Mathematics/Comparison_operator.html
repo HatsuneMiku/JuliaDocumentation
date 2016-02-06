@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>比較演算子</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">比較演算子</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">==(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">xとｙが等しいか等しくないかtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">==(12,8)<br>
+==(8,8)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">!=(x,y)<br>
+≠(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">ｘとyが等しくないか，true or false<br>
+      </td>
+      <td style="vertical-align: top;">!=(12,8)<br>
+!=(8,8)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">===(x,y)<br>
+≡(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">is()と併用して使える<br>
+xとｙが等しいか等しくないかtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">===(12,8)<br>
+is(8,9)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">!==(x,y)<br>
+&#8802;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">xとyが等しくないかtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">!is(5,8)<br>
+!==(7,8)<br>
+!==(7,7)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&lt;(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">xよりyが大きいかtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">&lt;(5,6)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&lt;=(x,y)<br>
+&#8804;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">x以上yか，true or false<br>
+      </td>
+      <td style="vertical-align: top;">&lt;=(5,6)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&gt;(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">xの方がyより大きいか，true or false<br>
+      </td>
+      <td style="vertical-align: top;">&gt;(4,5)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&gt;=(x,y)<br>
+&#8805;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">x以下yか，true or false<br>
+      </td>
+      <td style="vertical-align: top;">&gt;=(4,5)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.==(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の各要素の相当true or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.==(A,B)<br>
+==(A,B)(ドットがないとき)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp; true&nbsp; false<br>
+&nbsp;false&nbsp; false<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.!=(x, y)<br>
+.≠(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の各要素が等しいかの判定true or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+!=(A,B) </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp;false&nbsp; true<br>
+&nbsp; true&nbsp; true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.&lt;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の各要素がx&lt;yならtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.&lt;(A,B) </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp;false&nbsp; false<br>
+&nbsp;false&nbsp; false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.&lt;=(x, y)<br>
+.&#8804;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の各要素がx≦yならtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.&lt;=(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp; true&nbsp; false<br>
+&nbsp;false&nbsp; false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.&gt;(x, y)</td>
+      <td style="vertical-align: top;">行列の各要素がx&gt;yならtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.&gt;(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp;false&nbsp; true<br>
+&nbsp; true&nbsp; true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.&gt;=(x, y)<br>
+.&#8805;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の各要素がx≧yならtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.&gt;=(A,B) </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp;true&nbsp; true<br>
+&nbsp;true&nbsp; true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cmp(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">xの方が小さい-1 等しい0　大きい1　‐1 or 0 or1<br>
+      </td>
+      <td style="vertical-align: top;">cmp(3,2)<br>
+      </td>
+      <td style="vertical-align: top;">1</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

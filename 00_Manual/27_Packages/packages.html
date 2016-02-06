@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Packages — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Profiling" href="profile.html">
+  <link rel="prev" title="Embedding Julia" href="embedding.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="packages">
+<h1>パッケージ<a class="headerlink" href="#packages"
+ title="Permalink to this headline"></a></h1>
+<p>Julia has a built-in package manager for installing add-on
+functionality written in Julia.
+It can also install external libraries using your operating system’s
+standard system for doing so, or by compiling from source.
+The list of registered Julia packages can be found at <a
+ class="reference external" href="http://pkg.julialang.org">http://pkg.julialang.org</a>.
+All package manager commands are found in the <a
+ class="reference internal" href="../stdlib/pkg.html#module-Base.Pkg"
+ title="Base.Pkg"><code class="xref jl jl-mod docutils literal"><span
+ class="pre">Pkg</span></code></a> module, included in Julia’s <code
+ class="xref jl jl-mod docutils literal"><span class="pre">Base</span></code>
+install.</p>
+<p>First we’ll go over the mechanics of the <code
+ class="docutils literal"><span class="pre">Pkg</span></code> family of
+commands and then we’ll provide some guidance on how
+to get your package registered. Be sure to read the section below on
+package naming conventions, tagging versions
+and the importance of a <code class="docutils literal"><span
+ class="pre">REQUIRE</span></code> file for when you’re ready to add
+your code to the curated METADATA repository.</p>
+<div class="section" id="package-status">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">パッ
+ケージステータス</span></span><a class="headerlink" href="#package-status"
+ title="Permalink to this headline"></a></h2>
+<p>The <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.status" title="Base.Pkg.status"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.status()</span></code></a>
+function prints out a summary of the state of packages you have
+installed.
+Initially, you’ll have no packages installed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span
+ class="p">()</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Initializing</span> <span
+ class="n">package</span> <span class="n">repository</span> <span
+ class="o">/</span><span class="n">Users</span><span class="o">/</span><span
+ class="n">stefan</span><span class="o">/.</span><span class="n">julia</span><span
+ class="o">/</span><span class="n">v0</span><span class="o">.</span><span
+ class="mi">4</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Cloning</span> <span
+ class="n">METADATA</span> <span class="n">from</span> <span class="n">git</span><span
+ class="p">:</span><span class="o">//</span><span class="n">github</span><span
+ class="o">.</span><span class="n">com</span><span class="o">/</span><span
+ class="n">JuliaLang</span><span class="o">/</span><span class="n">METADATA</span><span
+ class="o">.</span><span class="n">jl</span>
+<span class="n">No</span> <span class="n">packages</span> <span
+ class="n">installed</span><span class="o">.</span>
+</pre>
+</div>
+</div>
+<p>Your package directory is automatically initialized the first time
+you run a <a class="reference internal"
+ href="../stdlib/pkg.html#module-Base.Pkg" title="Base.Pkg"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Pkg</span></code></a>
+command that expects it to exist – which includes <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.status"
+ title="Base.Pkg.status"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.status()</span></code></a>.
+Here’s an example non-trivial set of required and additional packages:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span
+ class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">8</span>
+ <span
+ class="o">-</span> <span class="n">UTF16</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">6</span>
+</pre>
+</div>
+</div>
+<p>These packages are all on registered versions, managed by <a
+ class="reference internal" href="../stdlib/pkg.html#module-Base.Pkg"
+ title="Base.Pkg"><code class="xref jl jl-mod docutils literal"><span
+ class="pre">Pkg</span></code></a>.
+Packages can be in more complicated states, indicated by annotations to
+the right of the installed package version; we will explain these
+states and annotations as we encounter them.
+For programmatic usage, <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.installed" title="Base.Pkg.installed"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.installed()</span></code></a>
+returns a dictionary, mapping installed package names to the version of
+that package which is installed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">installed</span><span
+ class="p">()</span>
+<span class="n">Dict</span><span class="p">{</span><span class="n">ASCIIString</span><span
+ class="p">,</span><span class="n">VersionNumber</span><span class="p">}</span> <span
+ class="n">with</span> <span class="mi">4</span> <span class="n">entries</span><span
+ class="p">:</span>
+<span class="s">"Distributions"</span>     <span class="o">=&gt;</span> <span
+ class="n">v</span><span class="s">"0.2.8"</span>
+<span class="s">"Stats"</span>             <span class="o">=&gt;</span> <span
+ class="n">v</span><span class="s">"0.2.6"</span>
+<span class="s">"UTF16"</span>             <span class="o">=&gt;</span> <span
+ class="n">v</span><span class="s">"0.2.0"</span>
+<span class="s">"NumericExtensions"</span> <span class="o">=&gt;</span> <span
+ class="n">v</span><span class="s">"0.2.17"</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="adding-and-removing-packages">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">パッ
+ケージの追加と削除</span></span><a class="headerlink"
+ href="#adding-and-removing-packages" title="Permalink to this headline"></a></h2>
+<p>Julia’s package manager is a little unusual in that it is
+declarative rather than imperative.
+This means that you tell it what you want and it figures out what
+versions to install (or remove) to satisfy those requirements optimally
+– and minimally.
+So rather than installing a package, you just add it to the list of
+requirements and then “resolve” what needs to be installed.
+In particular, this means that if some package had been installed
+because it was needed by a previous version of something you wanted,
+and a newer version doesn’t have that requirement anymore, updating
+will actually remove that package.</p>
+<p>Your package requirements are in the file <code
+ class="docutils literal"><span class="pre">~/.julia/v0.4/REQUIRE</span></code>.
+You can edit this file by hand and then call <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.resolve"
+ title="Base.Pkg.resolve"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.resolve()</span></code></a> to install, upgrade or
+remove packages to optimally satisfy the requirements, or you can do <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.edit"
+ title="Base.Pkg.edit"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.edit()</span></code></a>, which will open <code
+ class="docutils literal"><span class="pre">REQUIRE</span></code> in
+your editor (configured via the <code class="docutils literal"><span
+ class="pre">EDITOR</span></code> or <code class="docutils literal"><span
+ class="pre">VISUAL</span></code> environment variables), and then
+automatically call <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.resolve" title="Base.Pkg.resolve"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.resolve()</span></code></a>
+afterwards if necessary.
+If you only want to add or remove the requirement for a single package,
+you can also use the non-interactive <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.add" title="Base.Pkg.add"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.add()</span></code></a>
+and <a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.rm"
+ title="Base.Pkg.rm"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.rm()</span></code></a> commands, which add or remove a
+single requirement to <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+and then call <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.resolve" title="Base.Pkg.resolve"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.resolve()</span></code></a>.</p>
+<p>You can add a package to the list of requirements with the <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.add"
+ title="Base.Pkg.add"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.add()</span></code></a> function, and the package and
+all the packages that it depends on will be installed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">status</span><span
+ class="p">()</span>
+<span class="n">No</span> <span class="n">packages</span> <span
+ class="n">installed</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">add</span><span class="p">(</span><span
+ class="s">"Distributions"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Cloning</span> <span
+ class="n">cache</span> <span class="n">of</span> <span class="n">Distributions</span> <span
+ class="n">from</span> <span class="n">git</span><span class="p">:</span><span
+ class="o">//</span><span class="n">github</span><span class="o">.</span><span
+ class="n">com</span><span class="o">/</span><span class="n">JuliaStats</span><span
+ class="o">/</span><span class="n">Distributions</span><span class="o">.</span><span
+ class="n">jl</span><span class="o">.</span><span class="n">git</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Cloning</span> <span
+ class="n">cache</span> <span class="n">of</span> <span class="n">NumericExtensions</span> <span
+ class="n">from</span> <span class="n">git</span><span class="p">:</span><span
+ class="o">//</span><span class="n">github</span><span class="o">.</span><span
+ class="n">com</span><span class="o">/</span><span class="n">lindahua</span><span
+ class="o">/</span><span class="n">NumericExtensions</span><span
+ class="o">.</span><span class="n">jl</span><span class="o">.</span><span
+ class="n">git</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Cloning</span> <span
+ class="n">cache</span> <span class="n">of</span> <span class="n">Stats</span> <span
+ class="n">from</span> <span class="n">git</span><span class="p">:</span><span
+ class="o">//</span><span class="n">github</span><span class="o">.</span><span
+ class="n">com</span><span class="o">/</span><span class="n">JuliaStats</span><span
+ class="o">/</span><span class="n">Stats</span><span class="o">.</span><span
+ class="n">jl</span><span class="o">.</span><span class="n">git</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">Distributions</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.7</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">NumericExtensions</span> <span class="n">v0</span><span
+ class="o">.</span><span class="mf">2.17</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">Stats</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.6</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">REQUIRE</span> <span
+ class="n">updated</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">6</span>
+</pre>
+</div>
+</div>
+<p>What this is doing is first adding <code class="docutils literal"><span
+ class="pre">Distributions</span></code> to your <code
+ class="docutils literal"><span class="pre">~/.julia/v0.4/REQUIRE</span></code>
+file:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">cat</span> <span class="o">~/.</span><span
+ class="n">julia</span><span class="o">/</span><span class="n">v0</span><span
+ class="o">.</span><span class="mi">4</span><span class="o">/</span><span
+ class="n">REQUIRE</span>
+<span class="n">Distributions</span>
+</pre>
+</div>
+</div>
+<p>It then runs <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.resolve" title="Base.Pkg.resolve"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.resolve()</span></code></a>
+using these new requirements, which leads to the conclusion that the <code
+ class="docutils literal"><span class="pre">Distributions</span></code>
+package should be installed since it is required but not installed.
+As stated before, you can accomplish the same thing by editing your <code
+ class="docutils literal"><span class="pre">~/.julia/v0.4/REQUIRE</span></code>
+file by hand and then running <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.resolve" title="Base.Pkg.resolve"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.resolve()</span></code></a>
+yourself:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">echo</span> <span
+ class="n">UTF16</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span
+ class="n">julia</span><span class="o">/</span><span class="n">v0</span><span
+ class="o">.</span><span class="mi">4</span><span class="o">/</span><span
+ class="n">REQUIRE</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Cloning</span> <span
+ class="n">cache</span> <span class="n">of</span> <span class="n">UTF16</span> <span
+ class="n">from</span> <span class="n">git</span><span class="p">:</span><span
+ class="o">//</span><span class="n">github</span><span class="o">.</span><span
+ class="n">com</span><span class="o">/</span><span class="n">nolta</span><span
+ class="o">/</span><span class="n">UTF16</span><span class="o">.</span><span
+ class="n">jl</span><span class="o">.</span><span class="n">git</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">UTF16</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+ <span
+ class="o">-</span> <span class="n">UTF16</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">6</span>
+</pre>
+</div>
+</div>
+<p>This is functionally equivalent to calling <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.add"
+ title="Base.Pkg.add"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.add("UTF16")</span></code></a>, except that <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.add"
+ title="Base.Pkg.add"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.add()</span></code></a> doesn’t change <code
+ class="docutils literal"><span class="pre">REQUIRE</span></code> until
+<em>after</em> installation has completed, so if there are problems, <code
+ class="docutils literal"><span class="pre">REQUIRE</span></code> will
+be left as it was before calling <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.add" title="Base.Pkg.add"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.add()</span></code></a>.
+The format of the <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+file is described in <a class="reference external"
+ href="#man-package-requirements">Requirements Specification</a>;
+it allows, among other things, requiring specific ranges of versions of
+packages.</p>
+<p>When you decide that you don’t want to have a package around any
+more, you can use <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.rm" title="Base.Pkg.rm"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.rm()</span></code></a>
+to remove the requirement for it from the <code
+ class="docutils literal"><span class="pre">REQUIRE</span></code> file:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">rm</span><span
+ class="p">(</span><span class="s">"Distributions"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Removing</span> <span
+ class="n">Distributions</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.7</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Removing</span> <span
+ class="n">Stats</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.6</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Removing</span> <span
+ class="n">NumericExtensions</span> <span class="n">v0</span><span
+ class="o">.</span><span class="mf">2.17</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">REQUIRE</span> <span
+ class="n">updated</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">UTF16</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">rm</span><span class="p">(</span><span
+ class="s">"UTF16"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Removing</span> <span
+ class="n">UTF16</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.0</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">REQUIRE</span> <span
+ class="n">updated</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">No</span> <span class="n">packages</span> <span
+ class="n">installed</span><span class="o">.</span>
+</pre>
+</div>
+</div>
+<p>Once again, this is equivalent to editing the <code
+ class="docutils literal"><span class="pre">REQUIRE</span></code> file
+to remove the line with each package name on it then running <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.resolve"
+ title="Base.Pkg.resolve"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.resolve()</span></code></a> to update the set of
+installed packages to match.
+While <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.add" title="Base.Pkg.add"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.add()</span></code></a>
+and <a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.rm"
+ title="Base.Pkg.rm"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.rm()</span></code></a> are convenient for adding and
+removing requirements for a single package, when you want to add or
+remove multiple packages, you can call <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.edit" title="Base.Pkg.edit"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.edit()</span></code></a>
+to manually change the contents of <code class="docutils literal"><span
+ class="pre">REQUIRE</span></code> and then update your packages
+accordingly.
+<a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.edit"
+ title="Base.Pkg.edit"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.edit()</span></code></a> does not roll back the
+contents of <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+if <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.resolve" title="Base.Pkg.resolve"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.resolve()</span></code></a>
+fails – rather, you have to run <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.edit" title="Base.Pkg.edit"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.edit()</span></code></a>
+again to fix the files contents yourself.</p>
+<p>Because the package manager uses git internally to manage the
+package git repositories, users may run into protocol issues (if behind
+a firewall, for example), when running <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.add" title="Base.Pkg.add"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.add()</span></code></a>.
+The following command can be run from the command line to tell git to
+use ‘https’ instead of the ‘git’ protocol when cloning repositories:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">git</span> <span class="n">config</span> <span
+ class="o">--</span><span class="kd">global</span> <span class="n">url</span><span
+ class="o">.</span><span class="s">"https://"</span><span class="o">.</span><span
+ class="n">insteadOf</span> <span class="n">git</span><span class="p">:</span><span
+ class="o">//</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="offline-installation-of-packages">
+<h2><span id="result_box" class="short_text" lang="ja"><span>パッケージ</span><span>の</span><span
+ class="">オフライン</span><span class="">インストール</span></span><a
+ class="headerlink" href="#offline-installation-of-packages"
+ title="Permalink to this headline"></a></h2>
+<p>For machines with no Internet connection, packages may be installed
+by copying
+the package root directory (given by <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.dir" title="Base.Pkg.dir"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.dir()</span></code></a>)
+from a machine with the
+same operating system and environment.</p>
+<p><a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.add"
+ title="Base.Pkg.add"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.add()</span></code></a> does the following within the
+package root directory:</p>
+<ol class="arabic simple">
+  <li>Adds the name of the package to <code class="docutils literal"><span
+ class="pre">REQUIRE</span></code>.</li>
+  <li>Downloads the package to <code class="docutils literal"><span
+ class="pre">.cache</span></code>, then copies the package to the
+package root directory.</li>
+  <li>Recursively performs step 2 against all the packages listed in
+the package’s <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+file.</li>
+  <li>Runs <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.build" title="Base.Pkg.build"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.build()</span></code></a></li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Copying installed packages from a different machine is
+brittle for packages
+requiring binary external dependencies. Such packages may break due to
+differences in operating system versions, build environments, and/or
+absolute path dependencies.</p>
+</div>
+</div>
+<div class="section" id="installing-unregistered-packages">
+<h2><span id="result_box" class="short_text" lang="ja"><span>未登録の</span><span
+ class="">パッケージのインストール</span></span><a class="headerlink"
+ href="#installing-unregistered-packages"
+ title="Permalink to this headline"></a></h2>
+<p>Julia packages are simply git repositories, clonable via any of the <a
+ class="reference external"
+ href="https://www.kernel.org/pub/software/scm/git/docs/git-clone.html#URLS">protocols</a>
+that git supports, and containing Julia code that follows certain
+layout conventions.
+Official Julia packages are registered in the <a
+ class="reference external"
+ href="https://github.com/JuliaLang/METADATA.jl">METADATA.jl</a>
+repository, available at a well-known location <a
+ class="footnote-reference" href="#id2" id="id1">[1]</a>.
+The <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.add" title="Base.Pkg.add"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.add()</span></code></a>
+and <a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.rm"
+ title="Base.Pkg.rm"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.rm()</span></code></a> commands in the previous
+section interact with registered packages, but the package manager can
+install and work with unregistered packages too.
+To install an unregistered package, use <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.clone" title="Base.Pkg.clone"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.clone(url)</span></code></a>,
+where <code class="docutils literal"><span class="pre">url</span></code>
+is a git URL from which the package can be cloned:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>julia&gt; Pkg.clone("git://example.com/path/to/Package.jl.git")<br>INFO: Cloning Package from git://example.com/path/to/Package.jl.git<br>Cloning into 'Package'...<br>remote: Counting objects: 22, done.<br>remote: Compressing objects: 100% (10/10), done.<br>remote: Total 22 (delta 8), reused 22 (delta 8)<br>Receiving objects: 100% (22/22), 2.64 KiB, done.<br>Resolving deltas: 100% (8/8), done.<br></pre>
+</div>
+</div>
+<p>By convention, Julia repository names end with <code
+ class="docutils literal"><span class="pre">.jl</span></code> (the
+additional <code class="docutils literal"><span class="pre">.git</span></code>
+indicates a “bare” git repository), which keeps them from colliding
+with repositories for other languages, and also makes Julia packages
+easy to find in search engines.
+When packages are installed in your <code class="docutils literal"><span
+ class="pre">.julia/v0.4</span></code> directory, however, the
+extension is redundant so we leave it off.</p>
+<p>If unregistered packages contain a <code class="docutils literal"><span
+ class="pre">REQUIRE</span></code> file at the top of their source
+tree, that file will be used to determine which registered packages the
+unregistered package depends on, and they will automatically be
+installed.
+Unregistered packages participate in the same version resolution logic
+as registered packages, so installed package versions will be adjusted
+as necessary to satisfy the requirements of both registered and
+unregistered packages.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+  <colgroup><col class="label"><col></colgroup> <tbody valign="top">
+    <tr>
+      <td class="label"><a class="fn-backref" href="#id1">[1]</a></td>
+      <td>The official set of packages is at <a
+ class="reference external"
+ href="https://github.com/JuliaLang/METADATA.jl">https://github.com/JuliaLang/METADATA.jl</a>,
+but individuals and organizations can easily use a different metadata
+repository. This allows control which packages are available for
+automatic installation. One can allow only audited and approved package
+versions, and make private packages or forks available. See <a
+ class="reference internal" href="#man-custom-metadata"><span>Custom
+METADATA</span></a> for details.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="updating-packages">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">更新</span><span
+ class="">パッケージ</span></span><a class="headerlink"
+ href="#updating-packages" title="Permalink to this headline"></a></h2>
+<p>When package developers publish new registered versions of packages
+that you’re using, you will, of course, want the new shiny versions.
+To get the latest and greatest versions of all your packages, just do <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.update"
+ title="Base.Pkg.update"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.update()</span></code></a>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span
+ class="p">()</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Updating</span> <span
+ class="n">METADATA</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Computing</span> <span
+ class="n">changes</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Upgrading</span> <span
+ class="n">Distributions</span><span class="p">:</span> <span class="n">v0</span><span
+ class="o">.</span><span class="mf">2.8</span> <span class="o">=&gt;</span> <span
+ class="n">v0</span><span class="o">.</span><span class="mf">2.10</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Upgrading</span> <span
+ class="n">Stats</span><span class="p">:</span> <span class="n">v0</span><span
+ class="o">.</span><span class="mf">2.7</span> <span class="o">=&gt;</span> <span
+ class="n">v0</span><span class="o">.</span><span class="mf">2.8</span>
+</pre>
+</div>
+</div>
+<p>The first step of updating packages is to pull new changes to <code
+ class="docutils literal"><span class="pre">~/.julia/v0.4/METADATA</span></code>
+and see if any new registered package versions have been published.
+After this, <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.update" title="Base.Pkg.update"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.update()</span></code></a>
+attempts to update packages that are checked out on a branch and not
+dirty (i.e. no changes have been made to files tracked by git) by
+pulling changes from the package’s upstream repository.
+Upstream changes will only be applied if no merging or rebasing is
+necessary – i.e. if the branch can be <a class="reference external"
+ href="http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging">“fast-forwarded”</a>.
+If the branch cannot be fast-forwarded, it is assumed that you’re
+working on it and will update the repository yourself.</p>
+<p>Finally, the update process recomputes an optimal set of package
+versions to have installed to satisfy your top-level requirements and
+the requirements of “fixed” packages.
+A package is considered fixed if it is one of the following:</p>
+<ol class="arabic simple">
+  <li><strong>Unregistered:</strong> the package is not in <code
+ class="docutils literal"><span class="pre">METADATA</span></code> –
+you installed it with <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.clone" title="Base.Pkg.clone"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.clone()</span></code></a>.</li>
+  <li><strong>Checked out:</strong> the package repo is on a
+development branch.</li>
+  <li><strong>Dirty:</strong> changes have been made to files in the
+repo.</li>
+</ol>
+<p>If any of these are the case, the package manager cannot freely
+change the installed version of the package, so its requirements must
+be satisfied by whatever other package versions it picks.
+The combination of top-level requirements in <code
+ class="docutils literal"><span class="pre">~/.julia/v0.4/REQUIRE</span></code>
+and the requirement of fixed packages are used to determine what should
+be installed.</p>
+</div>
+<div class="section" id="checkout-pin-and-free">
+<h2><span id="result_box" class="short_text" lang="ja"><span>チェックアウト</span><span
+ class="">、</span><span class="">ピン</span><span class="">および</span><span
+ class="">無料</span></span><a class="headerlink"
+ href="#checkout-pin-and-free" title="Permalink to this headline"></a></h2>
+<p>You may want to use the <code class="docutils literal"><span
+ class="pre">master</span></code> version of a package rather than one
+of its registered versions.
+There might be fixes or functionality on master that you need that
+aren’t yet published in any registered versions, or you may be a
+developer of the package and need to make changes on <code
+ class="docutils literal"><span class="pre">master</span></code> or
+some other development branch.
+In such cases, you can do <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.checkout" title="Base.Pkg.checkout"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.checkout(pkg)</span></code></a>
+to checkout the <code class="docutils literal"><span class="pre">master</span></code>
+branch of <code class="docutils literal"><span class="pre">pkg</span></code>
+or <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.checkout" title="Base.Pkg.checkout"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.checkout(pkg,branch)</span></code></a>
+to checkout some other branch:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span
+ class="p">(</span><span class="s">"Distributions"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">Distributions</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.9</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">NumericExtensions</span> <span class="n">v0</span><span
+ class="o">.</span><span class="mf">2.17</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Installing</span> <span
+ class="n">Stats</span> <span class="n">v0</span><span class="o">.</span><span
+ class="mf">2.7</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">REQUIRE</span> <span
+ class="n">updated</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">checkout</span><span class="p">(</span><span
+ class="s">"Distributions"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Checking</span> <span
+ class="n">out</span> <span class="n">Distributions</span> <span
+ class="n">master</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">No</span> <span
+ class="n">packages</span> <span class="n">to</span> <span class="n">install</span><span
+ class="p">,</span> <span class="n">update</span> <span class="n">or</span> <span
+ class="n">remove</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span><span
+ class="o">+</span>             <span class="n">master</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+</pre>
+</div>
+</div>
+<p>Immediately after installing <code class="docutils literal"><span
+ class="pre">Distributions</span></code> with <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.add"
+ title="Base.Pkg.add"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.add()</span></code></a> it is on the current most
+recent registered version – <code class="docutils literal"><span
+ class="pre">0.2.9</span></code> at the time of writing this.
+Then after running <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.checkout" title="Base.Pkg.checkout"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.checkout("Distributions")</span></code></a>,
+you can see from the output of <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.status" title="Base.Pkg.status"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.status()</span></code></a>
+that <code class="docutils literal"><span class="pre">Distributions</span></code>
+is on an unregistered version greater than <code
+ class="docutils literal"><span class="pre">0.2.9</span></code>,
+indicated by the “pseudo-version” number <code class="docutils literal"><span
+ class="pre">0.2.9+</span></code>.</p>
+<p>When you checkout an unregistered version of a package, the copy of
+the <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+file in the package repo takes precedence over any requirements
+registered in <code class="docutils literal"><span class="pre">METADATA</span></code>,
+so it is important that developers keep this file accurate and
+up-to-date, reflecting the actual requirements of the current version
+of the package.
+If the <code class="docutils literal"><span class="pre">REQUIRE</span></code>
+file in the package repo is incorrect or missing, dependencies may be
+removed when the package is checked out.
+This file is also used to populate newly published versions of the
+package if you use the API that <a class="reference internal"
+ href="../stdlib/pkg.html#module-Base.Pkg" title="Base.Pkg"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Pkg</span></code></a>
+provides for this (described below).</p>
+<p>When you decide that you no longer want to have a package checked
+out on a branch, you can “free” it back to the control of the package
+manager with <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.free" title="Base.Pkg.free"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.free(pkg)</span></code></a>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">free</span><span
+ class="p">(</span><span class="s">"Distributions"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Freeing</span> <span
+ class="n">Distributions</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">No</span> <span
+ class="n">packages</span> <span class="n">to</span> <span class="n">install</span><span
+ class="p">,</span> <span class="n">update</span> <span class="n">or</span> <span
+ class="n">remove</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+</pre>
+</div>
+</div>
+<p>After this, since the package is on a registered version and not on
+a branch, its version will be updated as new registered versions of the
+package are published.</p>
+<p>If you want to pin a package at a specific version so that calling <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.update"
+ title="Base.Pkg.update"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.update()</span></code></a> won’t change the version
+the package is on, you can use the <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.pin" title="Base.Pkg.pin"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.pin()</span></code></a>
+function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">pin</span><span
+ class="p">(</span><span class="s">"Stats"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Creating</span> <span
+ class="n">Stats</span> <span class="n">branch</span> <span class="n">pinned</span><span
+ class="o">.</span><span class="mi">47</span><span class="n">c198b1</span><span
+ class="o">.</span><span class="n">tmp</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>              <span
+ class="n">pinned</span><span class="o">.</span><span class="mi">47</span><span
+ class="n">c198b1</span><span class="o">.</span><span class="n">tmp</span>
+</pre>
+</div>
+</div>
+<p>After this, the <code class="docutils literal"><span class="pre">Stats</span></code>
+package will remain pinned at version <code class="docutils literal"><span
+ class="pre">0.2.7</span></code> – or more specifically, at commit <code
+ class="docutils literal"><span class="pre">47c198b1</span></code>, but
+since versions are permanently associated a given git hash, this is the
+same thing.
+<a class="reference internal" href="../stdlib/pkg.html#Base.Pkg.pin"
+ title="Base.Pkg.pin"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.pin()</span></code></a> works by creating a throw-away
+branch for the commit you want to pin the package at and then checking
+that branch out.
+By default, it pins a package at the current commit, but you can choose
+a different version by passing a second argument:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">pin</span><span
+ class="p">(</span><span class="s">"Stats"</span><span class="p">,</span><span
+ class="n">v</span><span class="s">"0.2.5"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Creating</span> <span
+ class="n">Stats</span> <span class="n">branch</span> <span class="n">pinned</span><span
+ class="o">.</span><span class="mi">1</span><span class="n">fd0983b</span><span
+ class="o">.</span><span class="n">tmp</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">No</span> <span
+ class="n">packages</span> <span class="n">to</span> <span class="n">install</span><span
+ class="p">,</span> <span class="n">update</span> <span class="n">or</span> <span
+ class="n">remove</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">5</span>              <span
+ class="n">pinned</span><span class="o">.</span><span class="mi">1</span><span
+ class="n">fd0983b</span><span class="o">.</span><span class="n">tmp</span>
+</pre>
+</div>
+</div>
+<p>Now the <code class="docutils literal"><span class="pre">Stats</span></code>
+package is pinned at commit <code class="docutils literal"><span
+ class="pre">1fd0983b</span></code>, which corresponds to version <code
+ class="docutils literal"><span class="pre">0.2.5</span></code>.
+When you decide to “unpin” a package and let the package manager update
+it again, you can use <a class="reference internal"
+ href="../stdlib/pkg.html#Base.Pkg.free" title="Base.Pkg.free"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Pkg.free()</span></code></a>
+like you would to move off of any branch:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">free</span><span
+ class="p">(</span><span class="s">"Stats"</span><span class="p">)</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">Freeing</span> <span
+ class="n">Stats</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span> <span class="n">No</span> <span
+ class="n">packages</span> <span class="n">to</span> <span class="n">install</span><span
+ class="p">,</span> <span class="n">update</span> <span class="n">or</span> <span
+ class="n">remove</span><span class="o">.</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span
+ class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="n">Required</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">Distributions</span>                 <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">9</span>
+<span class="n">Additional</span> <span class="n">packages</span><span
+ class="p">:</span>
+ <span class="o">-</span> <span class="n">NumericExtensions</span>             <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">17</span>
+ <span
+ class="o">-</span> <span class="n">Stats</span>                         <span
+ class="mf">0.2</span><span class="o">.</span><span class="mi">7</span>
+</pre>
+</div>
+</div>
+<p>After this, the <code class="docutils literal"><span class="pre">Stats</span></code>
+package is managed by the package manager again, and future calls to <a
+ class="reference internal" href="../stdlib/pkg.html#Base.Pkg.update"
+ title="Base.Pkg.update"><code class="xref jl jl-func docutils literal"><span
+ class="pre">Pkg.update()</span></code></a> will upgrade it to newer
+versions when they are published.
+The throw-away <code class="docutils literal"><span class="pre">pinned.1fd0983b.tmp</span></code>
+branch remains in your local <code class="docutils literal"><span
+ class="pre">Stats</span></code> repo, but since git branches are
+extremely lightweight, this doesn’t really matter;
+if you feel like cleaning them up, you can go into the repo and delete
+those branches <a class="footnote-reference" href="#id4" id="id3">[2]</a>.</p>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+  <colgroup><col class="label"><col></colgroup> <tbody valign="top">
+    <tr>
+      <td class="label"><a class="fn-backref" href="#id3">[2]</a></td>
+      <td>Packages that aren’t on branches will also be marked as dirty
+if you make changes in the repo, but that’s a less common thing to do.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="custom-metadata-repository">
+<span id="man-custom-metadata"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span>カスタム</span><span
+ class="">メタデータ・リポジトリ</span></span><a class="headerlink"
+ href="#custom-metadata-repository" title="Permalink to this headline"></a></h2>
+<p>By default, Julia assumes you will be using the <a
+ class="reference external"
+ href="https://github.com/JuliaLang/METADATA.jl">official METADATA.jl</a>
+repository for downloading and installing packages.
+You can also provide a different metadata repository location.
+A common approach is to keep your <code class="docutils literal"><span
+ class="pre">metadata-v2</span></code> branch up to date with the Julia
+official branch and add another branch with your custom packages.
+You can initialize your local metadata repository using that custom
+location and branch and then periodically rebase your custom branch
+with the official <code class="docutils literal"><span class="pre">metadata-v2</span></code>
+branch.
+In order to use a custom repository and branch, issue the following
+command:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Pkg</span><span class="o">.</span><span class="n">init</span><span
+ class="p">(</span><span class="s">"https://me.example.com/METADATA.jl.git"</span><span
+ class="p">,</span> <span class="s">"branch"</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>The branch argument is optional and defaults to <code
+ class="docutils literal"><span class="pre">metadata-v2</span></code>.
+Once initialized, a file named <code class="docutils literal"><span
+ class="pre">META_BRANCH</span></code> in your <code
+ class="docutils literal"><span class="pre">~/.julia/vX.Y/</span></code>
+path will track the branch that your METADATA repository was
+initialized with.
+If you want to change branches, you will need to either modify the <code
+ class="docutils literal"><span class="pre">META_BRANCH</span></code>
+file directly (be careful!) or remove the <code
+ class="docutils literal"><span class="pre">vX.Y</span></code>
+directory and re-initialize your METADATA repository using the <code
+ class="docutils literal"><span class="pre">Pkg.init</span></code>
+command.</p>
+</div>
+</div>
+<br>
+</div>
+<a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

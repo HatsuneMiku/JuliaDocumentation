@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talking to the compiler (the :meta mechanism) — Julia Language
+0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="SubArrays" href="subarrays.html">
+  <link rel="prev" title="Base.Cartesian" href="cartesian.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="talking-to-the-compiler-the-meta-mechanism">
+<h1>Talking to the compiler (the <code class="docutils literal"><span
+ class="pre">:meta</span></code> mechanism)<a class="headerlink"
+ href="#talking-to-the-compiler-the-meta-mechanism"
+ title="Permalink to this headline">¶</a></h1>
+<p>In some circumstances, one might wish to provide hints or
+instructions
+that a given block of code has special properties: you might always
+want to inline it, or you might want to turn on special compiler
+optimization passes. Starting with version 0.4, julia has a
+convention that these instructions can be placed inside a <code
+ class="docutils literal"><span class="pre">:meta</span></code>
+expression, which is typically (but not necessarily) the first
+expression in the body of a function.</p>
+<p><code class="docutils literal"><span class="pre">:meta</span></code>
+expressions are created with macros. As an example, consider
+the implementation of the <code class="docutils literal"><span
+ class="pre">@inline</span></code> macro:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">macro</span> <span class="n">inline</span><span
+ class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span
+ class="n">esc</span><span class="p">(</span><span class="n">_inline</span><span
+ class="p">(</span><span class="n">ex</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="n">_inline</span><span class="p">(</span><span class="n">ex</span><span
+ class="p">::</span><span class="n">Expr</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">pushmeta</span><span class="o">!</span><span
+ class="p">(</span><span class="n">ex</span><span class="p">,</span> <span
+ class="p">:</span><span class="n">inline</span><span class="p">)</span>
+<span class="n">_inline</span><span class="p">(</span><span class="n">arg</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">arg</span>
+</pre>
+</div>
+</div>
+<p>Here, <code class="docutils literal"><span class="pre">ex</span></code>
+is expected to be an expression defining a function.
+A statement like this:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">@</span><span class="n">inline</span> <span
+ class="k">function</span><span class="nf"> myfunction</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span
+ class="n">x</span><span class="o">*</span><span class="p">(</span><span
+ class="n">x</span><span class="o">+</span><span class="mi">3</span><span
+ class="p">)</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>gets turned into an expression like this:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">quote</span>
+    <span class="k">function</span><span
+ class="nf"> myfunction</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span>
+        <span class="n">Expr</span><span class="p">(:</span><span
+ class="n">meta</span><span class="p">,</span> <span class="p">:</span><span
+ class="n">inline</span><span class="p">)</span>
+        <span
+ class="n">x</span><span class="o">*</span><span class="p">(</span><span
+ class="n">x</span><span class="o">+</span><span class="mi">3</span><span
+ class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">pushmeta!(ex,</span>
+<span class="pre">:symbol,</span> <span class="pre">args...)</span></code>
+appends <code class="docutils literal"><span class="pre">:symbol</span></code>
+to the end of
+the <code class="docutils literal"><span class="pre">:meta</span></code>
+expression, creating a new <code class="docutils literal"><span
+ class="pre">:meta</span></code> expression if
+necessary. If <code class="docutils literal"><span class="pre">args</span></code>
+is specified, a nested expression containing
+<code class="docutils literal"><span class="pre">:symbol</span></code>
+and these arguments is appended instead, which can be used
+to specify additional information.</p>
+<p>To use the metadata, you have to parse these <code
+ class="docutils literal"><span class="pre">:meta</span></code>
+expressions.
+If your implementation can be performed within Julia, <code
+ class="docutils literal"><span class="pre">popmeta!</span></code> is
+very handy: <code class="docutils literal"><span class="pre">popmeta!(body,</span>
+<span class="pre">:symbol)</span></code> will scan a function <em>body</em>
+expression (one without the function signature) for a <code
+ class="docutils literal"><span class="pre">:meta</span></code>
+expression, extract any arguments, and return a tuple <code
+ class="docutils literal"><span class="pre">(found::Bool,</span>
+<span class="pre">args::Array{Any})</span></code>. If the metadata did
+not have any arguments, or
+<code class="docutils literal"><span class="pre">:symbol</span></code>
+was not found, the <code class="docutils literal"><span class="pre">args</span></code>
+array will be empty.</p>
+<p>Not yet provided is a convenient infrastructure for parsing <code
+ class="docutils literal"><span class="pre">:meta</span></code>
+expressions from C++.</p>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="subarrays.html"
+ class="btn btn-neutral float-right" title="SubArrays">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="cartesian.html"
+ class="btn btn-neutral" title="Base.Cartesian"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

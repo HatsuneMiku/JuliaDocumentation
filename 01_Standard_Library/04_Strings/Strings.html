@@ -1,0 +1,1106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>文字列</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">文字列</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">length(s)<br>
+      </td>
+      <td style="vertical-align: top;">文字列の長さを求める<br>
+      </td>
+      <td style="vertical-align: top;">length("book") </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">*</code><span
+ class="sig-paren">(</span><em>s</em>, <em>t</em><span
+ class="sig-paren">)</span> </td>
+      <td style="vertical-align: top;">文字列sと文字列tをつなげて一つの文字列にする．<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"<br>
+t="efg"<br>
+*(s,t)<br>
+      </td>
+      <td style="vertical-align: top;">"abc"<br>
+"efg"<br>
+"abcefg"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">^</code><span
+ class="sig-paren">(</span><em>s</em>, <em>n</em><span
+ class="sig-paren">)</span> </td>
+      <td style="vertical-align: top;">文字列sをn回つなげて一つの文字列にする．<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"<br>
+^(s, 2) </td>
+      <td style="vertical-align: top;">"abcabc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">string(xs...)<br>
+      </td>
+      <td style="vertical-align: top;">文字列のパラメーターをつなげて一つの文字列にする．<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"<br>
+t="efg"<br>
+string(s,t) </td>
+      <td style="vertical-align: top;">"abcefg"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">repr(x)<br>
+      </td>
+      <td style="vertical-align: top;">文字列xの文字をエスケープ文字を含む文字列で返す<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"<br>
+repr(s) </td>
+      <td style="vertical-align: top;">"\"abc\""<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bytestring(::Ptr{UInt8}[,
+length])<br>
+      </td>
+      <td style="vertical-align: top;">Create a string from the address
+of a C (0-terminated) string encoded in ASCII or UTF-8. A copy is made;
+the ptr can be safely freed. If length is specified, the string does
+not have to be 0-terminated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <dl class="function">
+        <dt><code class="descname">bytestring</code><span
+ class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span></dt>
+      </dl>
+      </td>
+      <td style="vertical-align: top;">Convert a string to a contiguous
+byte array representation appropriate for passing it to C functions.
+The string will be encoded as either ASCII or UTF-8.<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"
+      <dl class="function">
+        <dt><code class="descname">bytestring</code><span
+ class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span></dt>
+      </dl>
+      </td>
+      <td style="vertical-align: top;">"abc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">ascii(::Array{UInt8, 1})</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">Create an ASCII string from a
+byte array.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ascii(s)<br>
+      </td>
+      <td style="vertical-align: top;">Convert a string to a contiguous
+ASCII string (all characters must be valid ASCII characters).<br>
+      </td>
+      <td style="vertical-align: top;">s="abc"<br>
+ascii(s)<br>
+      </td>
+      <td style="vertical-align: top;">"abc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ascii(::Ptr{UInt8}[, length])<br>
+      </td>
+      <td style="vertical-align: top;">Create an ASCII string from the
+address of a C (0-terminated) string encoded in ASCII. A copy is made;
+the ptr can be safely freed. If length is specified, the string does
+not have to be 0-terminated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf8(::Array{UInt8, 1})<br>
+      </td>
+      <td style="vertical-align: top;">Create a UTF-8 string from a
+byte array.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf8(::Ptr{UInt8}[, length])<br>
+      </td>
+      <td style="vertical-align: top;">Create a UTF-8 string from the
+address of a C (0-terminated) string encoded in UTF-8. A copy is made;
+the ptr can be safely freed. If length is specified, the string does
+not have to be 0-terminated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf8(s)<br>
+      </td>
+      <td style="vertical-align: top;">Convert a string to a contiguous
+UTF-8 string (all characters must be valid UTF-8 characters).<br>
+      </td>
+      <td style="vertical-align: top;">
+      <dl class="function">
+        <dt><code class="descname">s="abc"<br>
+          <span style="font-family: sans-serif;">utf8(s)</span></code><span
+ class="sig-paren"></span></dt>
+      </dl>
+      </td>
+      <td style="vertical-align: top;">"abc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@r_str -&gt; Regex<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; Construct a regex,
+such as r"^[a-z]*$". The regex also accepts one or more flags, listed
+after the ending quote, to change its behaviour:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i enables case-insensitive
+matching<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m treats the ^ and $ tokens
+as matching the start and end of individual lines, as opposed to the
+whole string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; s allows the . modifier to
+match newlines.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x enables “comment mode”:
+whitespace is enabled except when escaped with \, and # is treated as
+starting a comment.<br>
+&nbsp;&nbsp;&nbsp; For example, this regex has all three flags enabled:<br>
+&nbsp;&nbsp;&nbsp; julia&gt; match(r"a+.*b+.*?d$"ism, "Goodbye,\nOh,
+angry,\nBad world\n")<br>
+&nbsp;&nbsp;&nbsp; RegexMatch("angry,\nBad world")<br>
+      </td>
+      <td style="vertical-align: top;">@r_str "Regex"<br>
+      </td>
+      <td style="vertical-align: top;">r"Regex"</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@html_str -&gt; Docs.HTML<br>
+      </td>
+      <td style="vertical-align: top;">Create an HTML object from a
+literal string.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">@html_str "Docs.HTML"</td>
+      <td style="vertical-align: top;">HTML{ASCIIString}("Docs.HTML")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@text_str -&gt; Docs.Text<br>
+      </td>
+      <td style="vertical-align: top;">文字を並べるだけになるCreate a Text object
+from a literal string.<br>
+      </td>
+      <td style="vertical-align: top;">@text_str "Docs.Text"</td>
+      <td style="vertical-align: top;">Docs.Text<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">normalize_string(s,
+normalform::Symbol)<br>
+      </td>
+      <td style="vertical-align: top;">Normalize the string s according
+to one of the four
+“normal forms” of the Unicode standard: normalform can be :NFC, :NFD,
+:NFKC, or :NFKD. Normal forms C (canonical composition) and D
+(canonical decomposition) convert different visually identical
+representations of the same abstract string into a single canonical
+form, with form C being more compact. Normal forms KC and KD
+additionally canonicalize “compatibility equivalents”: they convert
+characters that are abstractly similar but visually distinct into a
+single canonical choice (e.g. they expand ligatures into the individual
+characters), with form KC being more compact.<br>
+&nbsp;&nbsp;&nbsp; Alternatively, finer control and additional
+transformations may be be obtained by calling normalize_string(s;
+keywords...), where any number of the following boolean keywords
+options (which all default to false except for compose) are specified:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; compose=false: do not
+perform canonical composition<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; decompose=true: do canonical
+decomposition instead of canonical composition (compose=true is ignored
+if present)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; compat=true: compatibility
+equivalents are canonicalized<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; casefold=true: perform
+Unicode case folding, e.g. for case-insensitive string comparison<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; newline2lf=true,
+newline2ls=true, or newline2ps=true: convert various newline sequences
+(LF, CRLF, CR, NEL) into a linefeed (LF), line-separation (LS), or
+paragraph-separation (PS) character, respectively<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stripmark=true: strip
+diacritical marks (e.g. accents)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stripignore=true: strip
+Unicode’s “default ignorable” characters (e.g. the soft hyphen or the
+left-to-right marker)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stripcc=true: strip control
+characters; horizontal tabs and form feeds are converted to spaces;
+newlines are also converted to spaces unless a newline-conversion flag
+was specified<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rejectna=true: throw an
+error if unassigned code points are found<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stable=true: enforce Unicode
+Versioning Stability<br>
+&nbsp;&nbsp;&nbsp; For example, NFKC corresponds to the options
+compose=true, compat=true, stable=true.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">graphemes(s) <br>
+→ iterator over
+substrings of s<br>
+      </td>
+      <td style="vertical-align: top;">Returns an iterator over
+substrings of s that correspond to the extended graphemes in the
+string, as defined by Unicode UAX #29. (Roughly, these are what users
+would perceive as single characters, even though they may contain more
+than one codepoint; for example a letter combined with an accent mark
+is a single grapheme.)<br>
+      </td>
+      <td style="vertical-align: top;">graphemes(s)</td>
+      <td style="vertical-align: top;">length-3
+GraphemeIterator{ASCIIString} for "abc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">isvalid(value)</span></code> → Bool</td>
+      <td style="vertical-align: top;">Returns true if the given value
+is valid for its type, which currently can be one of Char, ASCIIString,
+UTF8String, UTF16String, or UTF32String.<br>
+      </td>
+      <td style="vertical-align: top;">isvalid("わ")</td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isvalid(T, value) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Returns true if the given value
+is valid for that type. Types currently can be Char, ASCIIString,
+UTF8String, UTF16String, or UTF32String Values for Char can be of type
+Char or UInt32 Values for ASCIIString and UTF8String can be of that
+type, or Vector{UInt8} Values for UTF16String can be UTF16String or
+Vector{UInt16} Values for UTF32String can be UTF32String, Vector{Char}
+or Vector{UInt32}<br>
+      </td>
+      <td style="vertical-align: top;"> isvalid("A", 4)<br>
+isvalid("A", 1)<br>
+isvalid("abc", 3)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isvalid(str, i)<br>
+      </td>
+      <td style="vertical-align: top;">Tells whether index i is valid
+for the given string<br>
+      </td>
+      <td style="vertical-align: top;">isvalid("abc", 1)<br>
+isvalid("abc", 4)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">is_assigned_char(c) → Bool<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span class="">指定されたキャラクター型</span><span>または整数</span><span>が</span><span
+ class="">割り当てられたユニ</span><span class="">コードポイント</span><span class="">であ
+る</span><span>場合にtrueを返します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">is_assigned_char('c')</td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ismatch(r::Regex,
+s::AbstractString) → Bool<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>文字列が</span><span>与えられた正規表現</span><span>の</span><span>一
+致</span><span class="">を含むかどうかを</span><span class="">テストします。</span></span>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">match(r::Regex,
+s::AbstractString[, idx::Integer[, addopts]])<br>
+      </td>
+      <td style="vertical-align: top;">Search for the first match of
+the regular expression r in s and return a RegexMatch object containing
+the match, or nothing if the match failed. The matching substring can
+be retrieved by accessing m.match and the captured sequences can be
+retrieved by accessing m.captures The optional idx argument specifies
+an index at which to start the search.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eachmatch(r::Regex,
+s::AbstractString[, overlap::Bool=false])<br>
+      </td>
+      <td style="vertical-align: top;">Search for all matches of a the
+regular expression r in s and return a iterator over the matches. If
+overlap is true, the matching sequences are allowed to overlap indices
+in the original string, otherwise they must be from distinct character
+ranges.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">matchall(r::Regex,
+s::AbstractString[, overlap::Bool=false]) <br>
+→ Vector{AbstractString}<br>
+      </td>
+      <td style="vertical-align: top;">各一致から一致するサブストリングのベクトルを返します。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lpad(string, n, p)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja">p<span>をコピーして左</span><span>に</span><span>パ
+ディング</span><span>することにより</span><span>、</span><span>印刷したとき</span><span>、少
+なくとも</span><span>n列</span><span>ワイド文字列</span><span class="">を作成します</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;">lpad("123" ,5, "1234123") </td>
+      <td style="vertical-align: top;">"12123"<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rpad(string, n, p)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">p</span><span class="">のコピー</span><span>と</span><span>右
+側に</span><span>パディング</span><span>することにより</span><span>、</span><span
+ class="">印刷したとき</span><span>、少なくとも</span><span>n列</span><span>ワイド文字列</span><span
+ class="">を作成します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">rpad("123" ,5, "1234123")<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"12312" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">search(string, chars[, start])<br>
+      </td>
+      <td style="vertical-align: top;">Search for the first occurrence
+of the given characters within the given string. The second argument
+may be a single character, a vector or a set of characters, a string,
+or a regular expression (though regular expressions are only allowed on
+contiguous strings, such as ASCII or UTF-8 strings). The third argument
+optionally specifies a starting index. The return value is a range of
+indexes where the matching sequence is found, such that s[search(s,x)]
+== x:<br>
+&nbsp;&nbsp;&nbsp; search(string, "substring") = start:end such that
+string[start:end] == "substring", or 0:-1 if unmatched.<br>
+&nbsp;&nbsp;&nbsp; search(string, 'c') = index such that string[index]
+== 'c', or 0 if unmatched.<br>
+      </td>
+      <td style="vertical-align: top;">search("1234", '2') </td>
+      <td style="vertical-align: top;">2<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rsearch(string, chars[, start])<br>
+      </td>
+      <td style="vertical-align: top;">Similar to search, but returning
+the last occurrence of the given characters within the given string,
+searching in reverse from start.<br>
+      </td>
+      <td style="vertical-align: top;">rsearch("54321", '2')<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">searchindex(string, substring[,
+start])<br>
+      </td>
+      <td style="vertical-align: top;">Similar to search, but return
+only the start index at which the substring is found, or 0 if it is not.<br>
+      </td>
+      <td style="vertical-align: top;">searchindex("012345678", "12")<br>
+      </td>
+      <td style="vertical-align: top;">2 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rsearchindex(string, substring[,
+start])<br>
+      </td>
+      <td style="vertical-align: top;">Similar to rsearch, but return
+only the start index at which the substring is found, or 0 if it is not.<br>
+      </td>
+      <td style="vertical-align: top;">rsearchindex("0123456789","34")<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">4 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">contains(haystack, needle)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>第二引数</span><span>は、</span><span>最初</span><span>の</span><span>部
+分文字列</span><span>である</span><span class="">かどうかを確認します。</span></span> </td>
+      <td style="vertical-align: top;">contains("0123456789","123")<br>
+contains("0123456789","124") </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reverse(s::AbstractString) <br>
+→
+AbstractString<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>文字列</span><span class="">を反転させる</span></span>
+      </td>
+      <td style="vertical-align: top;">reverse("abcdef")<br>
+      </td>
+      <td style="vertical-align: top;">"fedcba" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">replace(string, pat, r[, n])<br>
+      </td>
+      <td style="vertical-align: top;">Search for the given pattern
+pat, and replace each occurrence with r. If n is provided, replace at
+most n occurrences. As with search, the second argument may be a single
+character, a vector or a set of characters, a string, or a regular
+expression. If r is a function, each occurrence is replaced with r(s)
+where s is the matched substring. If pat is a regular expression and r
+is a SubstitutionString, then capture group references in r are
+replaced with the corresponding matched text.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">split(string, [chars]; limit=0,
+keep=true)<br>
+      </td>
+      <td style="vertical-align: top;">Return an array of substrings by
+splitting the given string on occurrences of the given character
+delimiters, which may be specified in any of the formats allowed by
+search‘s second argument (i.e. a single character, collection of
+characters, string, or regular expression). If chars is omitted, it
+defaults to the set of all space characters, and keep is taken to be
+false. The two keyword arguments are optional: they are are a maximum
+size for the result and a flag determining whether empty fields should
+be kept in the result.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rsplit(string, [chars]; limit=0,
+keep=true)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>分割</span><span>と同様ですが、</span><span>文
+字列の末尾</span><span>から始まります</span><span class="">。</span></span><br>
+      </td>
+      <td style="vertical-align: top;">rsplit("12345",'2') </td>
+      <td style="vertical-align: top;">2-element
+Array{SubString{ASCIIString},1}:<br>
+&nbsp;"1"<br>
+&nbsp;"345"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">strip(string[, chars])<br>
+      </td>
+      <td style="vertical-align: top;">Retu<span id="result_box"
+ class="short_text" lang="ja"><span class=""></span></span>rn string
+with any leading
+and trailing whitespace removed. If chars (a character, or vector or
+set of characters) is provided, instead remove characters contained in
+it.<br>
+      </td>
+      <td style="vertical-align: top;">strip("123456")<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"123456" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lstrip(string[, chars])<br>
+      </td>
+      <td style="vertical-align: top;">Return string with any leading
+whitespace removed. If chars (a character, or vector or set of
+characters) is provided, instead remove characters contained in it.<br>
+      </td>
+      <td style="vertical-align: top;">lstrip("123456")<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"123456" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rstrip(string[, chars])<br>
+      </td>
+      <td style="vertical-align: top;">Return string with any trailing
+whitespace removed. If chars (a character, or vector or set of
+characters) is provided, instead remove characters contained in it.<br>
+      </td>
+      <td style="vertical-align: top;">rstrip("123456",'6')<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"12345" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">startswith(string, prefix |
+chars)<br>
+→Bool<br>
+      </td>
+      <td style="vertical-align: top;">Returns true if string starts
+with prefix. If the second argument is a vector or set of characters,
+tests whether the first character of string belongs to that set.<br>
+      </td>
+      <td style="vertical-align: top;">startswith("123456", '3')<br>
+startswith("123456", '1')<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">endswith(string, suffix | chars)<br>
+→Bool<br>
+      </td>
+      <td style="vertical-align: top;">Returns true if string ends with
+suffix. If the second argument is a vector or set of characters, tests
+whether the last character of string belongs to that set.<br>
+      </td>
+      <td style="vertical-align: top;">endswith("123456", '3')<br>
+endswith("123456", '6')<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">uppercase(string)<br>
+      </td>
+      <td style="vertical-align: top;">文字列の小文字を大文字にする．<br>
+      </td>
+      <td style="vertical-align: top;">uppercase("string") </td>
+      <td style="vertical-align: top;">"STRING"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lowercase(string)<br>
+      </td>
+      <td style="vertical-align: top;">文字列の大文字を小文字にする<br>
+      </td>
+      <td style="vertical-align: top;">lowercase("ABCDEF") </td>
+      <td style="vertical-align: top;">"abcdef"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ucfirst(string)<br>
+      </td>
+      <td style="vertical-align: top;">頭文字だけ大文字にする．<br>
+      </td>
+      <td style="vertical-align: top;">ucfirst("abcdef")<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"Abcdef" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lcfirst(string)<br>
+      </td>
+      <td style="vertical-align: top;">頭文字だけ小文字にする．<br>
+      </td>
+      <td style="vertical-align: top;"> lcfirst("ABCDEF") </td>
+      <td style="vertical-align: top;">"aBCDEF"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">join(strings, delim[, last])</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">文字の間にdelimで指定した文字を入れるlastに文字列を指定す
+ると最後のつなぎ目になる．<br>
+      </td>
+      <td style="vertical-align: top;">join("123", "sss")<br>
+join("123", "sss","ppp")<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">"1sss2sss3"<br>
+"1sss2ppp3" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">chop(string)<br>
+      </td>
+      <td style="vertical-align: top;">最後の文字を省いた文字列にする<br>
+      </td>
+      <td style="vertical-align: top;">julia&gt; chop("string") </td>
+      <td style="vertical-align: top;">"strin"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">chomp(string)</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">文字列から末尾に改行を削除してください。<br>
+      </td>
+      <td style="vertical-align: top;">chomp("abc\n")<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname">"abc"<br>
+      </code><span class="sig-paren"></span></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ind2chr(string, i)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>文字インデックス</span><span>に</span><span>バ
+イトインデックス</span><span class="">に変換します。文字列以上の数を入れるとエラー</span></span> </td>
+      <td style="vertical-align: top;">ind2chr("ABCDE", 3)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">chr2ind(string, i)<br>
+      </td>
+      <td style="vertical-align: top;">バイトインデックスに文字インデックスに変換します。<br>
+      </td>
+      <td style="vertical-align: top;">chr2ind("abcdef" ,6) </td>
+      <td style="vertical-align: top;">6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextind(str, i)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>私</span><span>の後に</span><span>次の有効な</span><span>文字列</span><span>の</span><span>イ
+ンデックスを取得します</span><span>。</span><span>ストラト</span><span>（</span><span>の</span><span>端
+部よりも</span><span>、文字列</span><span>の</span><span>終了後の</span><span>値が大きいほど</span><span
+ class="">返します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">nextind("abcde", 2)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevind(str, i)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>私</span><span>の前に</span><span>、以前の</span><span>有
+効な文字列</span><span>の</span><span>インデックスを取得します</span><span>。</span><span>文
+字列の先頭に</span><span>1未満の値</span><span class="">を返しました。</span></span> </td>
+      <td style="vertical-align: top;">prevind("abcde", 3) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randstring([rng, ]len=8) </td>
+      <td style="vertical-align: top;">ASCII文字列でlenで指定された文字数のでたらめの文字列を作
+る．<br>
+      </td>
+      <td style="vertical-align: top;">randstring(8) </td>
+      <td style="vertical-align: top;">"SPXETdGe"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">charwidth(c)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">文字</span><span>を印刷するのに</span><span>必
+要な列</span><span>の数を与えます</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">charwidth('c') </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">strwidth(s)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>文字列を出力</span><span>するために必要な</span><span>列
+数</span><span class="">を与えます</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">strwidth("abcdefgh") </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isalnum(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is
+alphanumeric, or whether this is true for all elements of a string. A
+character is classified as alphabetic if it belongs to the Unicode
+general category Letter or Number, i.e. a character whose category code
+begins with ‘L’ or ‘N’.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isalpha(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is
+alphabetic, or whether this is true for all elements of a string. A
+character is classified as alphabetic if it belongs to the Unicode
+general category Letter, i.e. a character whose category code begins
+with ‘L’.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isascii(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character
+belongs to the ASCII character set, or whether this is true for all
+elements of a string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">iscntrl(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is a
+control character, or whether this is true for all elements of a
+string. Control characters are the non-printing characters of the
+Latin-1 subset of Unicode.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isdigit(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is a
+numeric digit (0-9), or whether this is true for all elements of a
+string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isgraph(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is
+printable, and not a space, or whether this is true for all elements of
+a string. Any character that would cause a printer to use ink should be
+classified with isgraph(c)==true.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">islower(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is a
+lowercase letter, or whether this is true for all elements of a string.
+A character is classified as lowercase if it belongs to Unicode
+category Ll, Letter: Lowercase.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isnumber(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is
+numeric, or whether this is true for all elements of a string. A
+character is classified as numeric if it belongs to the Unicode general
+category Number, i.e. a character whose category code begins with ‘N’.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isprint(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is
+printable, including spaces, but not a control character. For strings,
+tests whether this is true for all elements of the string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ispunct(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character
+belongs to the Unicode general category Punctuation, i.e. a character
+whose category code begins with ‘P’. For strings, tests whether this is
+true for all elements of the string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isspace(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is any
+whitespace character. Includes ASCII characters ‘\t’, ‘\n’, ‘\v’, ‘\f’,
+‘\r’, and ‘ ‘, Latin-1 character U+0085, and characters in Unicode
+category Zs. For strings, tests whether this is true for all elements
+of the string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isupper(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is an
+uppercase letter, or whether this is true for all elements of a string.
+A character is classified as uppercase if it belongs to Unicode
+category Lu, Letter: Uppercase, or Lt, Letter: Titlecase.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isxdigit(c::Union{Char,
+AbstractString}) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Tests whether a character is a
+valid hexadecimal digit, or whether this is true for all elements of a
+string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symbol(x...) → Symbol<br>
+      </td>
+      <td style="vertical-align: top;">Create a Symbol by concatenating
+the string representations of the arguments together.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">escape_string(str::AbstractString)
+→ AbstractString<br>
+      </td>
+      <td style="vertical-align: top;">General escaping of traditional
+C and Unicode escape sequences. See print_escaped() for more general
+escaping.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unescape_string(s::AbstractString)
+→ AbstractString<br>
+      </td>
+      <td style="vertical-align: top;">General unescaping of
+traditional C and Unicode escape sequences. Reverse of escape_string().
+See also print_unescaped().<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf16(s) </td>
+      <td style="vertical-align: top;">Create a UTF-16 string from a
+byte array, array of UInt16, or any other string type. (Data must be
+valid UTF-16. Conversions of byte arrays check for a byte-order marker
+in the first two bytes, and do not include it in the resulting string.)<br>
+&nbsp;&nbsp;&nbsp; Note that the resulting UTF16String data is
+terminated by the NUL codepoint (16-bit zero), which is not treated as
+a character in the string (so that it is mostly invisible in Julia);
+this allows the string to be passed directly to external functions
+requiring NUL-terminated data. This NUL is appended automatically by
+the utf16(s) conversion function. If you have a UInt16 array A that is
+already NUL-terminated valid UTF-16 data, then you can instead use
+UTF16String(A) to construct the string without making a copy of the
+data and treating the NUL as a terminator rather than as part of the
+string.<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">utf16(</span></code><code
+ class="descname">"abc"</code><code class="descname"><span
+ style="font-family: sans-serif;">)</span></code><span class="sig-paren"></span></td>
+      <td style="vertical-align: top;">"abc"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf16(::Union{Ptr{UInt16},
+Ptr{Int16}}[, length])<br>
+      </td>
+      <td style="vertical-align: top;">Create a string from the address
+of a NUL-terminated UTF-16 string. A copy is made; the pointer can be
+safely freed. If length is specified, the string does not have to be
+NUL-terminated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf32(s)<br>
+      </td>
+      <td style="vertical-align: top;">Create a UTF-32 string from a
+byte array, array of Char or UInt32, or any other string type.
+(Conversions of byte arrays check for a byte-order marker in the first
+four bytes, and do not include it in the resulting string.)<br>
+&nbsp;&nbsp;&nbsp; Note that the resulting UTF32String data is
+terminated by the NUL codepoint (32-bit zero), which is not treated as
+a character in the string (so that it is mostly invisible in Julia);
+this allows the string to be passed directly to external functions
+requiring NUL-terminated data. This NUL is appended automatically by
+the utf32(s) conversion function. If you have a Char or UInt32 array A
+that is already NUL-terminated UTF-32 data, then you can instead use
+UTF32String(A) to construct the string without making a copy of the
+data and treating the NUL as a terminator rather than as part of the
+string.<br>
+      </td>
+      <td style="vertical-align: top;">utf32("1234")<br>
+      </td>
+      <td style="vertical-align: top;">"1234" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">utf32(::Union{Ptr{Char},
+Ptr{UInt32}, Ptr{Int32}}[, length])<br>
+      </td>
+      <td style="vertical-align: top;">Create a string from the address
+of a NUL-terminated UTF-32 string. A copy is made; the pointer can be
+safely freed. If length is specified, the string does not have to be
+NUL-terminated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">wstring(s)<br>
+      </td>
+      <td style="vertical-align: top;">This is a synonym for either
+utf32(s) or utf16(s), depending on whether Cwchar_t is 32 or 16 bits,
+respectively. The synonym WString for UTF32String or UTF16String is
+also provided. </td>
+      <td style="vertical-align: top;"><code class="descname">wstring</code><span
+ class="sig-paren">(</span><em></em><code class="descname">"abc"</code><span
+ class="sig-paren">)</span></td>
+      <td style="vertical-align: top;">"abc"<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

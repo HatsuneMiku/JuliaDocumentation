@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Metaprogramming" href="metaprogramming.html">
+  <link rel="prev" title="Modules" href="modules.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="documentation"><span id="man-documentation"></span>
+<h1>ドキュメンテーション<a class="headerlink" href="#documentation"
+ title="Permalink to this headline"></a></h1>
+<p>Julia enables package developers and users to document functions,
+types and
+other objects easily, either via the built-in documentation system in
+Julia 0.4
+or the <a class="reference external"
+ href="https://github.com/MichaelHatherly/Docile.jl">Docile.jl</a>
+package in
+Julia 0.3.</p>
+<p>In 0.4:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"Tells you if there are too foo items in the array."</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">xs</span><span
+ class="p">::</span><span class="n">Array</span><span class="p">)</span> <span
+ class="o">=</span> <span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>Documentation is interpreted as <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Markdown">Markdown</a>,
+so you can use indentation and code fences to delimit code examples
+from text.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"""</span>
+<span class="s">The `@bar` macro will probably make your code 2x faster or something. Use</span>
+<span class="s">it like this:</span>
+
+<span class="s">    @bar buy_drink_for("</span><span class="n">Jiahao</span><span
+ class="s">")</span>
+<span class="s">"""</span>
+<span class="k">macro</span> <span class="n">bar</span><span class="p">(</span><span
+ class="n">ex</span><span class="p">)</span> <span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>Documentation is very free-form; there are no set formatting
+restrictions or strict conventions. It’s hoped that best practices will
+emerge fairly naturally as package developers learn to use the new
+system.</p>
+<p>Technically, any object can be associated with any other as
+metadata;
+Markdown happens to be the default, but one can construct other string
+macros and pass them to the <code class="docutils literal"><span
+ class="pre">@doc</span></code> macro just as well.</p>
+<div class="section" id="accessing-documentation">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">マ
+ニュアルへのアクセス</span></span><a class="headerlink"
+ href="#accessing-documentation" title="Permalink to this headline"></a></h2>
+<p>Documentation can be accessed at the REPL or in IJulia by typing <code
+ class="docutils literal"><span class="pre">?</span></code>
+followed by the name of a function or macro, and pressing <code
+ class="docutils literal"><span class="pre">Enter</span></code>. For
+example,</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">?</span><span class="n">fft</span>
+<span class="o">?</span><span class="p">@</span><span class="n">time</span>
+<span class="o">?</span><span class="n">r</span><span class="s">""</span>
+</pre>
+</div>
+</div>
+<p>will bring up docs for the relevant function, macro or string macro
+respectively. In <a class="reference external"
+ href="http://junolab.org">Juno</a> using <code
+ class="docutils literal"><span class="pre">Ctrl-D</span></code> will
+bring up documentation for the object under the cursor.</p>
+</div>
+<div class="section" id="functions-methods">
+<h2><span id="result_box" class="short_text" lang="ja"><span>機能</span><span
+ class="">および方法</span></span><a class="headerlink"
+ href="#functions-methods" title="Permalink to this headline"></a></h2>
+<p>Functions in Julia may have multiple implementations, known as
+methods.
+While it’s good practice for generic functions to have a single
+purpose,
+Julia allows methods to be documented individually if necessary. For
+example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"""</span>
+<span class="s">Multiplication operator. `x*y*z*...` calls this function with multiple</span>
+<span class="s">arguments, i.e. `*(x,y,z...)`.</span>
+<span class="s">"""</span>
+<span class="k">function</span><span class="nf"> </span><span class="o">*(</span><span
+ class="n">x</span><span class="p">,</span> <span class="n">y</span><span
+ class="p">)</span>
+  <span class="c"># ... [implementation sold separately] ...</span>
+<span class="k">end</span>
+
+<span class="s">"When applied to strings, concatenates them."</span>
+<span class="k">function</span><span class="nf"> </span><span class="o">*(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">AbstractString</span><span
+ class="p">,</span> <span class="n">y</span><span class="p">::</span><span
+ class="n">AbstractString</span><span class="p">)</span>
+  <span
+ class="c"># ... [insert secret sauce here] ...</span>
+<span class="k">end</span>
+
+<span class="n">help</span><span class="o">?&gt;*</span>
+<span class="n">Multiplication</span> <span class="n">operator</span><span
+ class="o">.</span> <span class="sb">`x*y*z*...`</span> <span class="n">calls</span> <span
+ class="n">this</span> <span class="k">function</span><span class="nf"> with</span> <span
+ class="n">multiple</span>
+<span class="n">arguments</span><span class="p">,</span> <span class="n">i</span><span
+ class="o">.</span><span class="n">e</span><span class="o">.</span> <span
+ class="sb">`*(x,y,z...)`</span><span class="o">.</span>
+
+<span class="n">When</span> <span class="n">applied</span> <span
+ class="n">to</span> <span class="n">strings</span><span class="p">,</span> <span
+ class="n">concatenates</span> <span class="n">them</span><span
+ class="o">.</span>
+</pre>
+</div>
+</div>
+<p>When retrieving documentation for a generic function, the metadata
+for
+each method is concatenated with the <code class="docutils literal"><span
+ class="pre">catdoc</span></code> function, which can of
+course be overridden for custom types.</p>
+</div>
+<div class="section" id="advanced-usage">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">高度
+な使い方</span></span><a class="headerlink" href="#advanced-usage"
+ title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal"><span class="pre">@doc</span></code>
+macro associates its first argument with its second in a
+per-module dictionary called <code class="docutils literal"><span
+ class="pre">META</span></code>. By default, documentation is
+expected to be written in Markdown, and the <code
+ class="docutils literal"><span class="pre">doc""</span></code> string
+macro simply
+creates an object representing the Markdown content. In the future it
+is
+likely to do more advanced things such as allowing for relative image
+or
+link paths.</p>
+<p>When used for retrieving documentation, the <code
+ class="docutils literal"><span class="pre">@doc</span></code> macro
+(or equally,
+the <code class="docutils literal"><span class="pre">doc</span></code>
+function) will search all <code class="docutils literal"><span
+ class="pre">META</span></code> dictionaries for metadata
+relevant to the given object and return it. The returned object (some
+Markdown content, for example) will by default display itself
+intelligently. This design also makes it easy to use the doc system in
+a
+programmatic way; for example, to re-use documentation between
+different
+versions of a function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">@</span><span class="n">doc</span> <span class="s">"..."</span> <span
+ class="n">foo</span><span class="o">!</span>
+<span class="p">@</span><span class="n">doc</span> <span class="p">(@</span><span
+ class="n">doc</span> <span class="n">foo</span><span class="o">!</span><span
+ class="p">)</span> <span class="n">foo</span>
+</pre>
+</div>
+</div>
+<p>Or for use with Julia’s metaprogramming functionality:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">for</span> <span class="p">(</span><span class="n">f</span><span
+ class="p">,</span> <span class="n">op</span><span class="p">)</span> <span
+ class="k">in</span> <span class="p">((:</span><span class="n">add</span><span
+ class="p">,</span> <span class="p">:</span><span class="o">+</span><span
+ class="p">),</span> <span class="p">(:</span><span class="n">subtract</span><span
+ class="p">,</span> <span class="p">:</span><span class="o">-</span><span
+ class="p">),</span> <span class="p">(:</span><span class="n">multiply</span><span
+ class="p">,</span> <span class="p">:</span><span class="o">*</span><span
+ class="p">),</span> <span class="p">(:</span><span class="n">divide</span><span
+ class="p">,</span> <span class="p">:</span><span class="o">/</span><span
+ class="p">))</span>
+    <span class="p">@</span><span class="n">eval</span> <span
+ class="k">begin</span>
+        <span class="o">$</span><span class="n">f</span><span
+ class="p">(</span><span class="n">a</span><span class="p">,</span><span
+ class="n">b</span><span class="p">)</span> <span class="o">=</span> <span
+ class="o">$</span><span class="n">op</span><span class="p">(</span><span
+ class="n">a</span><span class="p">,</span><span class="n">b</span><span
+ class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+<span class="p">@</span><span class="n">doc</span> <span class="s">"`add(a,b)` adds `a` and `b` together"</span> <span
+ class="n">add</span>
+<span class="p">@</span><span class="n">doc</span> <span class="s">"`subtract(a,b)` subtracts `b` from `a`"</span> <span
+ class="n">subtract</span>
+</pre>
+</div>
+</div>
+<p>Documentation written in non-toplevel blocks, such as <code
+ class="docutils literal"><span class="pre">if</span></code>, <code
+ class="docutils literal"><span class="pre">for</span></code>, and <code
+ class="docutils literal"><span class="pre">let</span></code>, are not
+automatically added to the documentation system. <code
+ class="docutils literal"><span class="pre">@doc</span></code> must be
+used in these cases. For
+example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="n">VERSION</span> <span
+ class="o">&gt;</span> <span class="n">v</span><span class="s">"0.4"</span>
+    <span
+ class="s">"..."</span>
+    <span class="n">f</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span> <span class="o">=</span> <span
+ class="n">x</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>will not add any documentation to <code class="docutils literal"><span
+ class="pre">f</span></code> even when the condition is <code
+ class="docutils literal"><span class="pre">true</span></code> and must
+instead
+be written as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="n">VERSION</span> <span
+ class="o">&gt;</span> <span class="n">v</span><span class="s">"0.4"</span>
+    <span
+ class="p">@</span><span class="n">doc</span> <span class="s">"..."</span> <span
+ class="o">-&gt;</span>
+    <span class="n">f</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span> <span class="o">=</span> <span
+ class="n">x</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="syntax-guide">
+<h2><span id="result_box" class="short_text" lang="ja"><span>構文</span><span
+ class="">ガイド</span></span><a class="headerlink" href="#syntax-guide"
+ title="Permalink to this headline"></a></h2>
+<p>A comprehensive overview of all documentable Julia syntax.</p>
+<p>In the following examples <code class="docutils literal"><span
+ class="pre">"..."</span></code> is used to illustrate an arbitrary
+docstring which may
+be one of the follow four variants and contain arbitrary text:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+
+<span class="n">doc</span><span class="s">"..."</span>
+
+<span class="s">"""</span>
+<span class="s">...</span>
+<span class="s">"""</span>
+
+<span class="n">doc</span><span class="s">"""</span>
+<span class="s">...</span>
+<span class="s">"""</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">@doc_str</span></code>
+should only be used when the docstring contains <code
+ class="docutils literal"><span class="pre">$</span></code> or <code
+ class="docutils literal"><span class="pre">\</span></code> characters
+that
+should not be parsed by Julia such as LaTeX syntax or Julia source code
+examples containing
+interpolation.</p>
+<div class="section" id="functions-and-methods">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">関数
+とメソッド</span></span><a class="headerlink" href="#functions-and-methods"
+ title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">function</span><span class="nf"> f</span> <span
+ class="k">end</span>
+
+<span class="s">"..."</span>
+<span class="n">f</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to <code class="docutils literal"><span class="pre">Function</span></code>
+<code class="docutils literal"><span class="pre">f</span></code>. The
+first version is the preferred syntax,
+however both are equivalent.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span>
+
+<span class="s">"..."</span>
+<span class="k">function</span><span class="nf"> f</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span>
+    <span class="n">x</span>
+<span class="k">end</span>
+
+<span class="s">"..."</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to <code class="docutils literal"><span class="pre">Method</span></code>
+<code class="docutils literal"><span class="pre">f(::Any)</span></code>.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span
+ class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to two <code class="docutils literal"><span class="pre">Method</span></code>s,
+namely <code class="docutils literal"><span class="pre">f(::Any)</span></code>
+and <code class="docutils literal"><span class="pre">f(::Any,</span> <span
+ class="pre">::Any)</span></code>.<span id="result_box"
+ class="short_text" lang="ja"><span class=""><br>
+</span></span></p>
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">タイ
+プ</span></span>&nbsp;</h2>
+<span class="s"><span style="font-family: monospace;"></span></span><span
+ class="s">"..."</span>
+<span class="k">abstract</span><span class="nc"> T</span>
+<span class="s">"..."</span>
+<span class="k">type</span><span class="nc"> T</span> <span class="k">end</span>
+<span class="s">"..."</span>
+<span class="k">immutable</span> <span class="n">T</span> <span
+ class="k">end</span><br>
+Adds the docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to type <code class="docutils literal"><span class="pre">T</span></code>.</div>
+<div class="section" id="types">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<a class="headerlink" href="#types" title="Permalink to this headline"></a>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">type</span><span class="nc"> T</span>
+    <span
+ class="s">"x"</span>
+    <span class="n">x</span>
+    <span class="s">"y"</span>
+    <span
+ class="n">y</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to type <code class="docutils literal"><span class="pre">T</span></code>,
+<code class="docutils literal"><span class="pre">"x"</span></code> to
+field <code class="docutils literal"><span class="pre">T.x</span></code>
+and <code class="docutils literal"><span class="pre">"y"</span></code>
+to field
+<code class="docutils literal"><span class="pre">T.y</span></code>.
+Also applicable to <code class="docutils literal"><span class="pre">immutable</span></code>
+types.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">typealias</span><span class="nc"> A</span> <span
+ class="n">T</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to the <code class="docutils literal"><span class="pre">Binding</span></code>
+<code class="docutils literal"><span class="pre">A</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">Binding</span></code>s
+are used to store a reference to a particular <code
+ class="docutils literal"><span class="pre">Symbol</span></code> in a <code
+ class="docutils literal"><span class="pre">Module</span></code>
+without storing the referenced value itself.</p>
+</div>
+<div class="section" id="macros">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">マク
+ロ</span></span><a class="headerlink" href="#macros"
+ title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">macro</span> <span class="n">m</span><span class="p">()</span> <span
+ class="k">end</span>
+
+<span class="s">"..."</span>
+<span class="p">:(@</span><span class="n">m</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to the <code class="docutils literal"><span class="pre">Binding</span></code>
+<code class="docutils literal"><span class="pre">@m</span></code>.
+Adding documentation at the definition
+is the preferred approach.</p>
+</div>
+<div class="section" id="modules">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">モ
+ジュール</span></span><a class="headerlink" href="#modules"
+ title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">module</span> <span class="n">M</span> <span class="k">end</span>
+
+<span class="k">module</span> <span class="n">M</span>
+
+<span class="s">"..."</span>
+<span class="n">M</span>
+
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to the <code class="docutils literal"><span class="pre">Module</span></code>
+<code class="docutils literal"><span class="pre">M</span></code>.
+Adding the docstring above the <code class="docutils literal"><span
+ class="pre">Module</span></code>
+is the preferred syntax, however both are equivalent.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="k">baremodule</span> <span class="n">M</span>
+<span class="c"># ...</span>
+<span class="k">end</span>
+
+<span class="k">baremodule</span> <span class="n">M</span>
+
+<span class="k">import</span> <span class="n">Base</span><span class="p">:</span> <span
+ class="n">call</span><span class="p">,</span> <span class="p">@</span><span
+ class="n">doc</span>
+
+<span class="s">"..."</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span>
+
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>Documenting a <code class="docutils literal"><span class="pre">baremodule</span></code>
+by placing a docstring above the expression automatically
+imports <code class="docutils literal"><span class="pre">call</span></code>
+and <code class="docutils literal"><span class="pre">@doc</span></code>
+into the module. These imports must be done manually when the
+module expression is not documented. Empty <code
+ class="docutils literal"><span class="pre">baremodule</span></code>s
+cannot be documented.</p>
+</div>
+<div class="section" id="global-variables">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">グ
+ローバル変数</span></span><a class="headerlink" href="#global-variables"
+ title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="kd">const</span> <span class="n">a</span> <span class="o">=</span> <span
+ class="mi">1</span>
+
+<span class="s">"..."</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="s">"..."</span>
+<span class="kd">global</span> <span class="n">c</span> <span class="o">=</span> <span
+ class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to the <code class="docutils literal"><span class="pre">Binding</span></code>s
+<code class="docutils literal"><span class="pre">a</span></code>, <code
+ class="docutils literal"><span class="pre">b</span></code>, and <code
+ class="docutils literal"><span class="pre">c</span></code>.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="n">sym</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to the value associated with <code class="docutils literal"><span
+ class="pre">sym</span></code>. Users should prefer
+documenting <code class="docutils literal"><span class="pre">sym</span></code>
+at it’s definition.</p>
+</div>
+<div class="section" id="multiple-objects">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">複数
+のオブジェクト</span></span><a class="headerlink" href="#multiple-objects"
+ title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to <code class="docutils literal"><span class="pre">a</span></code>
+and <code class="docutils literal"><span class="pre">b</span></code>
+each of which should be a documentable
+expression. This syntax is equivalent to</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="n">a</span>
+
+<span class="s">"..."</span>
+<span class="n">b</span>
+</pre>
+</div>
+</div>
+<p>Any number of expressions many be documented together in this way.
+This syntax can be useful
+when two functions are related, such as non-mutating and mutating
+versions <code class="docutils literal"><span class="pre">f</span></code>
+and <code class="docutils literal"><span class="pre">f!</span></code>.</p>
+</div>
+<div class="section" id="macro-generated-code">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">マク
+ロ</span><span class="">生成されたコード</span></span><a class="headerlink"
+ href="#macro-generated-code" title="Permalink to this headline"></a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"..."</span>
+<span class="p">@</span><span class="n">m</span> <span class="n">expression</span>
+</pre>
+</div>
+</div>
+<p>Adds docstring <code class="docutils literal"><span class="pre">"..."</span></code>
+to expression generated by expanding <code class="docutils literal"><span
+ class="pre">@m</span> <span class="pre">expression</span></code>.
+This allows
+for expressions decorated with <code class="docutils literal"><span
+ class="pre">@inline</span></code>, <code class="docutils literal"><span
+ class="pre">@noinline</span></code>, <code class="docutils literal"><span
+ class="pre">@generated</span></code>, or any other
+macro to be documented in the same way as undecorated expressions.</p>
+<p>Macro authors should take note that only macros that generate a
+single expression will
+automatically support docstrings. If a macro returns a block containing
+multiple
+subexpressions then the subexpression that should be documented must be
+marked using the
+<a class="reference internal" href="#@__doc__" title="@__doc__"><code
+ class="xref jl jl-func docutils literal"><span class="pre">@__doc__()</span></code></a>
+macro.</p>
+<p>The <code class="docutils literal"><span class="pre">@enum</span></code>
+macro makes use of <code class="docutils literal"><span class="pre">@__doc__</span></code>
+to allow for documenting <code class="docutils literal"><span
+ class="pre">Enum</span></code>s.
+Examining it’s definition should serve as an example of how to use <code
+ class="docutils literal"><span class="pre">@__doc__</span></code>
+correctly.</p>
+<dl class="function">
+  <dt id="@__doc__"><code class="descname">@__doc__</code><span
+ class="sig-paren">(</span><em>ex</em><span class="sig-paren">)</span><a
+ class="headerlink" href="#@__doc__"
+ title="Permalink to this definition">¶</a></dt>
+  <dd>
+    <p>Low-level macro used to mark expressions returned by a macro
+that should be documented. If more than one expression is marked then
+the same docstring is applied to each expression.</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">macro</span> <span class="n">example</span><span
+ class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span
+ class="k">quote</span>
+        <span class="o">$</span><span class="p">(</span><span
+ class="n">f</span><span class="p">)()</span> <span class="o">=</span> <span
+ class="mi">0</span>
+        <span class="p">@</span><span class="n">__doc__</span> <span
+ class="o">$</span><span class="p">(</span><span class="n">f</span><span
+ class="p">)(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">=</span> <span class="mi">1</span>
+        <span class="o">$</span><span
+ class="p">(</span><span class="n">f</span><span class="p">)(</span><span
+ class="n">x</span><span class="p">,</span> <span class="n">y</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mi">2</span>
+    <span
+ class="k">end</span> <span class="o">|&gt;</span> <span class="n">esc</span>
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+    <p><code class="docutils literal"><span class="pre">@__doc__</span></code>
+has no effect when a macro that uses it is not documented.</p>
+  </dd>
+</dl>
+</div>
+</div>
+<div class="section" id="markdown-syntax-notes">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span>マークダウン</span><span>構
+文</span><span class="">の注意事項</span></span></h2>
+</div>
+</div>
+<h2><a class="headerlink" href="#markdown-syntax-notes"
+ title="Permalink to this headline"></a></h2>
+<p>Julia’s Markdown parser supports most of the basic Markdown
+elements,
+including paragraphs, code blocks, bulleted lists and basic links. It’s
+also a work in progress, however, and support for more advanced things
+like tables is in the works.</p>
+<p>Markdown.jl supports interpolation in a very similar way to basic
+string
+literals, with the difference that it will store the object itself in
+the Markdown tree (as opposed to converting it to a string). When the
+Markdown content is rendered the usual <code class="docutils literal"><span
+ class="pre">writemime</span></code> methods will be
+called, and these can be overridden as usual. This design allows the
+Markdown to be extended with arbitrarily complex features (such as
+references) without cluttering the basic syntax.</p>
+<p>In principle, the Markdown parser itself can also be arbitrarily
+extended by packages, or an entirely custom flavour of Markdown can be
+used, but this should generally be unnecessary.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

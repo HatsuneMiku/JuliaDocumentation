@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scope of Variables — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Types" href="types.html">
+  <link rel="prev" title="Control Flow" href="control-flow.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="scope-of-variables"><span
+ id="man-variables-and-scoping"></span>
+<h1>変数のスコープ(有効範囲)</h1>
+<p>The <em>scope</em> of a variable is the region of code within which
+a variable
+is visible. Variable scoping helps avoid variable naming conflicts. The
+concept is intuitive: two functions can both have arguments called <code
+ class="docutils literal"><span class="pre">x</span></code>
+without the two <code class="docutils literal"><span class="pre">x</span></code>‘s
+referring to the same thing. Similarly there are
+many other cases where different blocks of code can use the same name
+without referring to the same thing. The rules for when the same
+variable name does or doesn’t refer to the same thing are called scope
+rules; this section spells them out in detail.</p>
+<p>Certain constructs in the language introduce <em>scope blocks</em>,
+which are
+regions of code that are eligible to be the scope of some set of
+variables. The scope of a variable cannot be an arbitrary set of source
+lines; instead, it will always line up with one of these blocks.
+The constructs introducing such blocks are:</p>
+<ul class="simple">
+  <li><code class="docutils literal"><span class="pre">function</span></code>
+bodies (<a class="reference internal"
+ href="functions.html#man-functions"><span>either syntax</span></a>)</li>
+  <li><code class="docutils literal"><span class="pre">while</span></code>
+loops</li>
+  <li><code class="docutils literal"><span class="pre">for</span></code>
+loops</li>
+  <li><code class="docutils literal"><span class="pre">try</span></code>
+blocks</li>
+  <li><code class="docutils literal"><span class="pre">catch</span></code>
+blocks</li>
+  <li><code class="docutils literal"><span class="pre">finally</span></code>
+blocks</li>
+  <li><code class="docutils literal"><span class="pre">let</span></code>
+blocks</li>
+  <li><code class="docutils literal"><span class="pre">type</span></code>
+blocks.</li>
+</ul>
+<p>Notably missing from this list are
+<a class="reference internal"
+ href="control-flow.html#man-compound-expressions"><span>begin blocks</span></a>
+and <a class="reference internal"
+ href="control-flow.html#man-conditional-evaluation"><span>if blocks</span></a>,
+which do
+<em>not</em> introduce new scope blocks.</p>
+<p>Certain constructs introduce new variables into the current
+innermost
+scope. When a variable is introduced into a scope, it is also inherited
+by all inner scopes unless one of those inner scopes explicitly
+overrides it.</p>
+<p>Julia uses <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Scope_%28computer_science%29#Lexical_scoping_vs._dynamic_scoping">lexical
+scoping</a>,
+meaning that a function’s scope does not inherit from its caller’s
+scope, but from the scope in which the function was defined.
+For example, in the following code the <code class="docutils literal"><span
+ class="pre">x</span></code> inside <code class="docutils literal"><span
+ class="pre">foo</span></code> is found
+in the global scope (and if no global variable <code
+ class="docutils literal"><span class="pre">x</span></code> existed, an
+undefined variable error would be raised):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">()</span>
+  <span class="n">x</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="nf"> bar</span><span
+ class="p">()</span>
+  <span class="n">x</span> <span class="o">=</span> <span
+ class="mi">1</span>
+  <span class="n">foo</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">bar</span><span
+ class="p">()</span>
+<span class="mi">2</span>
+</pre>
+</div>
+</div>
+<p>If <code class="docutils literal"><span class="pre">foo</span></code>
+is instead defined inside <code class="docutils literal"><span
+ class="pre">bar</span></code>, then it accesses
+the local <code class="docutils literal"><span class="pre">x</span></code>
+present in that function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> bar</span><span
+ class="p">()</span>
+  <span class="k">function</span><span class="nf"> foo</span><span
+ class="p">()</span>
+    <span class="n">x</span>
+  <span class="k">end</span>
+  <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+  <span
+ class="n">foo</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">bar</span><span
+ class="p">()</span>
+<span class="mi">1</span>
+</pre>
+</div>
+</div>
+<p>The constructs that introduce new variables into the current scope
+are as follows:</p>
+<ul class="simple">
+  <li>A declaration <code class="docutils literal"><span class="pre">local</span>
+    <span class="pre">x</span></code> or <code class="docutils literal"><span
+ class="pre">const</span> <span class="pre">x</span></code> introduces
+a new local variable.</li>
+  <li>A declaration <code class="docutils literal"><span class="pre">global</span>
+    <span class="pre">x</span></code> makes <code
+ class="docutils literal"><span class="pre">x</span></code> in the
+current scope and inner
+scopes refer to the global variable of that name.</li>
+  <li>A function’s arguments are introduced as new local variables into
+the
+function’s body scope.</li>
+  <li>An assignment <code class="docutils literal"><span class="pre">x</span>
+    <span class="pre">=</span> <span class="pre">y</span></code>
+introduces a new local variable <code class="docutils literal"><span
+ class="pre">x</span></code> only if <code class="docutils literal"><span
+ class="pre">x</span></code> is
+neither declared global nor introduced as local
+by any enclosing scope before <em>or after</em> the current line of
+code.</li>
+</ul>
+<p>In the following example, there is only one <code
+ class="docutils literal"><span class="pre">x</span></code> assigned
+both inside
+and outside the <code class="docutils literal"><span class="pre">for</span></code>
+loop:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+  <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+    <span
+ class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">+</span> <span class="mi">1</span>
+  <span class="k">end</span>
+  <span
+ class="n">x</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">foo</span><span
+ class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">10</span>
+</pre>
+</div>
+</div>
+<p>In the next example, the loop has a separate <code
+ class="docutils literal"><span class="pre">x</span></code> and the
+function
+always returns zero:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+  <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+    <span
+ class="kd">local</span> <span class="n">x</span>
+    <span class="n">x</span> <span
+ class="o">=</span> <span class="n">i</span>
+  <span class="k">end</span>
+  <span
+ class="n">x</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">foo</span><span
+ class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">0</span>
+</pre>
+</div>
+</div>
+<p>In this example, an <code class="docutils literal"><span class="pre">x</span></code>
+exists only inside the loop, and the function
+encounters an undefined variable error on its last line (unless there
+is
+a global variable <code class="docutils literal"><span class="pre">x</span></code>):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">n</span>
+    <span
+ class="n">x</span> <span class="o">=</span> <span class="n">i</span>
+  <span
+ class="k">end</span>
+  <span class="n">x</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">foo</span><span
+ class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">in</span> <span class="n">foo</span><span class="p">:</span> <span
+ class="n">x</span> <span class="n">not</span> <span class="n">defined</span>
+</pre>
+</div>
+</div>
+<p>A variable that is not assigned to or otherwise introduced locally
+defaults to global, so this function would return the value of the
+global <code class="docutils literal"><span class="pre">x</span></code>
+if there were such a variable, or produce an error if no such
+global existed. As a consequence, the only way to assign to a global
+variable inside a non-top-level scope is to explicitly declare the
+variable as global within some scope, since otherwise the assignment
+would introduce a new local rather than assigning to the global. This
+rule works out well in practice, since the vast majority of variables
+assigned inside functions are intended to be local variables, and using
+global variables should be the exception rather than the rule,
+and assigning new values to them even more so.</p>
+<p>One last example shows that an outer assignment introducing <code
+ class="docutils literal"><span class="pre">x</span></code> need
+not come before an inner usage:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span
+ class="n">f</span> <span class="o">=</span> <span class="n">y</span> <span
+ class="o">-&gt;</span> <span class="n">n</span> <span class="o">+</span> <span
+ class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+  <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+  <span
+ class="n">f</span><span class="p">(</span><span class="mi">2</span><span
+ class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">foo</span><span
+ class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="mi">13</span>
+</pre>
+</div>
+</div>
+<p>This behavior may seem slightly odd for a normal variable, but
+allows
+for named functions — which are just normal variables holding function
+objects — to be used before they are defined. This allows functions to
+be defined in whatever order is intuitive and convenient, rather than
+forcing bottom up ordering or requiring forward declarations, both of
+which one typically sees in C programs. As an example, here is an
+inefficient, mutually recursive way to test if positive integers are
+even or odd:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">even</span><span class="p">(</span><span class="n">n</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">n</span> <span
+ class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span
+ class="n">true</span>  <span class="p">:</span>  <span class="n">odd</span><span
+ class="p">(</span><span class="n">n</span><span class="o">-</span><span
+ class="mi">1</span><span class="p">)</span>
+<span class="n">odd</span><span class="p">(</span><span class="n">n</span><span
+ class="p">)</span>  <span class="o">=</span> <span class="n">n</span> <span
+ class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span
+ class="n">false</span> <span class="p">:</span> <span class="n">even</span><span
+ class="p">(</span><span class="n">n</span><span class="o">-</span><span
+ class="mi">1</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">even</span><span
+ class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">odd</span><span
+ class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+<p>Julia provides built-in, efficient functions to test for oddness and
+evenness
+called <a class="reference internal"
+ href="../stdlib/numbers.html#Base.iseven" title="Base.iseven"><code
+ class="xref jl jl-func docutils literal"><span class="pre">iseven()</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/numbers.html#Base.isodd" title="Base.isodd"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isodd()</span></code></a>
+so the above definitions should only be
+taken as examples.</p>
+<p>Since functions can be used before they are defined, as long as they
+are
+defined by the time they are actually called, no syntax for forward
+declarations is necessary, and definitions can be ordered arbitrarily.</p>
+<p>At the interactive prompt, variable scope works the same way as
+anywhere
+else. The prompt behaves as if there is scope block wrapped around
+everything you type, except that this scope block is identified with
+the
+global scope. This is especially evident in the case of assignments:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="mi">1</span><span
+ class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span
+ class="mi">10</span><span class="p">;</span> <span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">UndefVarError</span><span
+ class="p">:</span> <span class="n">y</span> <span class="n">not</span> <span
+ class="n">defined</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y</span> <span
+ class="o">=</span> <span class="mi">0</span>
+<span class="mi">0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="k">for</span> <span
+ class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">:</span><span class="mi">1</span><span class="p">;</span> <span
+ class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span
+ class="p">;</span> <span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y</span>
+<span class="mi">10</span>
+</pre>
+</div>
+</div>
+<p>In the former case, <code class="docutils literal"><span class="pre">y</span></code>
+only exists inside of the <code class="docutils literal"><span
+ class="pre">for</span></code> loop. In the
+latter case, an outer <code class="docutils literal"><span class="pre">y</span></code>
+has been introduced and so is inherited
+within the loop. Due to the special identification of the prompt’s
+scope
+block with the global scope, it is not necessary to declare <code
+ class="docutils literal"><span class="pre">global</span> <span
+ class="pre">y</span></code>
+inside the loop. However, in code not entered into the interactive
+prompt this declaration would be necessary in order to modify a global
+variable.</p>
+<p>Multiple variables can be declared global using the following syntax:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">()</span>
+    <span class="kd">global</span> <span class="n">x</span><span
+ class="o">=</span><span class="mi">1</span><span class="p">,</span> <span
+ class="n">y</span><span class="o">=</span><span class="s">"bar"</span><span
+ class="p">,</span> <span class="n">z</span><span class="o">=</span><span
+ class="mi">3</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">foo</span><span
+ class="p">()</span>
+<span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y</span>
+<span class="s">"bar"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">z</span>
+<span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">let</span></code>
+statement provides a different way to introduce variables.
+Unlike assignments to local variables, <code class="docutils literal"><span
+ class="pre">let</span></code> statements allocate new
+variable bindings each time they run. An assignment modifies an
+existing
+value location, and <code class="docutils literal"><span class="pre">let</span></code>
+creates new locations. This difference is
+usually not important, and is only detectable in the case of variables
+that outlive their scope via closures. The <code
+ class="docutils literal"><span class="pre">let</span></code> syntax
+accepts a
+comma-separated series of assignments and variable names:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">let</span> <span class="n">var1</span> <span
+ class="o">=</span> <span class="n">value1</span><span class="p">,</span> <span
+ class="n">var2</span><span class="p">,</span> <span class="n">var3</span> <span
+ class="o">=</span> <span class="n">value3</span>
+    <span class="n">code</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>The assignments are evaluated in order, with each right-hand side
+evaluated in the scope before the new variable on the left-hand side
+has been introduced. Therefore it makes sense to write something like
+<code class="docutils literal"><span class="pre">let</span> <span
+ class="pre">x</span> <span class="pre">=</span> <span class="pre">x</span></code>
+since the two <code class="docutils literal"><span class="pre">x</span></code>
+variables are distinct and have separate
+storage. Here is an example where the behavior of <code
+ class="docutils literal"><span class="pre">let</span></code> is needed:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">Fs</span> <span class="o">=</span> <span class="n">cell</span><span
+ class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span
+ class="mi">2</span>
+  <span class="n">Fs</span><span class="p">[</span><span
+ class="n">i</span><span class="p">]</span> <span class="o">=</span> <span
+ class="p">()</span><span class="o">-&gt;</span><span class="n">i</span>
+  <span
+ class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">1</span><span class="p">]()</span>
+<span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]()</span>
+<span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>Here we create and store two closures that return variable <code
+ class="docutils literal"><span class="pre">i</span></code>.
+However, it is always the same variable <code class="docutils literal"><span
+ class="pre">i</span></code>, so the two closures
+behave identically. We can use <code class="docutils literal"><span
+ class="pre">let</span></code> to create a new binding for
+<code class="docutils literal"><span class="pre">i</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">Fs</span> <span class="o">=</span> <span class="n">cell</span><span
+ class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span
+ class="mi">2</span>
+  <span class="k">let</span> <span class="n">i</span> <span
+ class="o">=</span> <span class="n">i</span>
+    <span class="n">Fs</span><span
+ class="p">[</span><span class="n">i</span><span class="p">]</span> <span
+ class="o">=</span> <span class="p">()</span><span class="o">-&gt;</span><span
+ class="n">i</span>
+  <span class="k">end</span>
+  <span class="n">i</span> <span
+ class="o">+=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">1</span><span class="p">]()</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]()</span>
+<span class="mi">2</span>
+</pre>
+</div>
+</div>
+<p>Since the <code class="docutils literal"><span class="pre">begin</span></code>
+construct does not introduce a new scope, it can be
+useful to use a zero-argument <code class="docutils literal"><span
+ class="pre">let</span></code> to just introduce a new scope
+block without creating any new bindings:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="k">let</span>
+         <span class="kd">local</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+         <span
+ class="k">let</span>
+           <span class="kd">local</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+         <span
+ class="k">end</span>
+         <span class="n">x</span>
+       <span
+ class="k">end</span>
+<span class="mi">1</span>
+</pre>
+</div>
+</div>
+<p>Since <code class="docutils literal"><span class="pre">let</span></code>
+introduces a new scope block, the inner local <code
+ class="docutils literal"><span class="pre">x</span></code>
+is a different variable than the outer local <code
+ class="docutils literal"><span class="pre">x</span></code>.</p>
+<div class="section" id="for-loops-and-comprehensions">
+<h2 style="font-weight: bold;">ループと内包表記については</h2>
+<p><code class="docutils literal"><span class="pre">for</span></code>
+loops and <a class="reference internal"
+ href="arrays.html#comprehensions"><span>comprehensions</span></a> have
+a special
+additional behavior: any new variables introduced in their body scopes
+are
+freshly allocated for each loop iteration. Therefore these constructs
+are
+similar to <code class="docutils literal"><span class="pre">while</span></code>
+loops with <code class="docutils literal"><span class="pre">let</span></code>
+blocks inside:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">Fs</span> <span class="o">=</span> <span class="n">cell</span><span
+ class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="mi">2</span>
+    <span
+ class="n">Fs</span><span class="p">[</span><span class="n">i</span><span
+ class="p">]</span> <span class="o">=</span> <span class="p">()</span><span
+ class="o">-&gt;</span><span class="n">i</span>
+<span class="k">end</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">1</span><span class="p">]()</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Fs</span><span
+ class="p">[</span><span class="mi">2</span><span class="p">]()</span>
+<span class="mi">2</span>
+</pre>
+</div>
+</div>
+<p><code class="docutils literal"><span class="pre">for</span></code>
+loops will reuse existing variables for iteration:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="mi">3</span>
+<span class="k">end</span>
+<span class="n">i</span>  <span class="c"># here equal to 3</span>
+</pre>
+</div>
+</div>
+<p>However, comprehensions do not do this, and always freshly allocate
+their
+iteration variables:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">[</span> <span class="n">x</span> <span class="k">for</span> <span
+ class="n">x</span><span class="o">=</span><span class="mi">1</span><span
+ class="p">:</span><span class="mi">3</span> <span class="p">]</span>
+<span class="n">x</span>  <span class="c"># here still equal to 0</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="constants">
+<h2 style="font-weight: bold;">定数</h2>
+<p>A common use of variables is giving names to specific, unchanging
+values. Such variables are only assigned once. This intent can be
+conveyed to the compiler using the <code class="docutils literal"><span
+ class="pre">const</span></code> keyword:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="kd">const</span> <span class="n">e</span>  <span
+ class="o">=</span> <span class="mf">2.71828182845904523536</span>
+<span class="kd">const</span> <span class="nb">pi</span> <span class="o">=</span> <span
+ class="mf">3.14159265358979323846</span>
+</pre>
+</div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">const</span></code>
+declaration is allowed on both global and local variables,
+but is especially useful for globals. It is difficult for the compiler
+to optimize code involving global variables, since their values (or
+even
+their types) might change at almost any time. If a global variable will
+not change, adding a <code class="docutils literal"><span class="pre">const</span></code>
+declaration solves this performance
+problem.</p>
+<p>Local constants are quite different. The compiler is able to
+determine
+automatically when a local variable is constant, so local constant
+declarations are not necessary for performance purposes.</p>
+<p>Special top-level assignments, such as those performed by the
+<code class="docutils literal"><span class="pre">function</span></code>
+and <code class="docutils literal"><span class="pre">type</span></code>
+keywords, are constant by default.</p>
+<p>Note that <code class="docutils literal"><span class="pre">const</span></code>
+only affects the variable binding; the variable may
+be bound to a mutable object (such as an array), and that object may
+still be modified.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

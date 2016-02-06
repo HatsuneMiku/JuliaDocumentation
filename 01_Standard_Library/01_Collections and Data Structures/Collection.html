@@ -1,0 +1,2246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>コレクションとデータ構造</title>
+</head>
+<body>
+<span style="font-weight: bold;">コレクションとデータ構造</span><br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Iteration<br>
+      </span>Sequential iteration is implemented by the methods <a
+ class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/01_Collections%20and%20Data%20Structures%EF%BC%BF%EF%BC%BF%EF%BC%BF%EF%BC%BF/collections.html#Base.start"
+ title="Base.start"><code class="xref jl jl-func docutils literal"><span
+ class="pre">start()</span></code></a>, <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/01_Collections%20and%20Data%20Structures%EF%BC%BF%EF%BC%BF%EF%BC%BF%EF%BC%BF/collections.html#Base.done"
+ title="Base.done"><code class="xref jl jl-func docutils literal"><span
+ class="pre">done()</span></code></a>,
+and <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/01_Collections%20and%20Data%20Structures%EF%BC%BF%EF%BC%BF%EF%BC%BF%EF%BC%BF/collections.html#Base.next"
+ title="Base.next"><code class="xref jl jl-func docutils literal"><span
+ class="pre">next()</span></code></a>.
+The general <code class="docutils literal"><span class="pre">for</span></code>
+loop:
+      <div class="highlight-julia">
+      <div class="highlight"><span class="k">for</span> <span class="n">i</span>
+      <span class="o">=</span> <span class="n">I</span> <span
+ class="c"># or "for i in I"</span><br>
+      <span class="c"># body</span><br>
+      <span class="k">end</span><br>
+      </div>
+      </div>
+is translated into:
+      <div class="highlight-julia">
+      <div class="highlight"><span class="n">state</span> <span
+ class="o">=</span> <span class="n">start</span><span class="p">(</span><span
+ class="n">I</span><span class="p">)</span><br>
+      <span class="k">while</span> <span class="o">!</span><span
+ class="n">done</span><span class="p">(</span><span class="n">I</span><span
+ class="p">,</span> <span class="n">state</span><span class="p">)</span><br>
+      <span class="p">(</span><span class="n">i</span><span class="p">,</span>
+      <span class="n">state</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">next</span><span class="p">(</span><span
+ class="n">I</span><span class="p">,</span> <span class="n">state</span><span
+ class="p">)</span><br>
+      <span class="c"># body</span><br>
+      <span class="k">end</span><br>
+      </div>
+      </div>
+The <code class="docutils literal"><span class="pre">state</span></code>
+object may be anything, and should be chosen appropriately for
+each iterable type. See the <a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/manual/interfaces.html#man-interfaces-iteration"><span>manual
+section on the iteration interface</span></a> for more details about
+defining a custom iterable
+type.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">start(iter) <br>
+→ state<br>
+      </td>
+      <td style="vertical-align: top;">Get initial iteration state for
+an iterable object<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">done(iter, state) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">Test whether we are done
+iterating<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">next(iter, state) <br>
+→ item, state<br>
+      </td>
+      <td style="vertical-align: top;">For a given iterable object and
+iteration state, return the current item and the next iteration state<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">zip(iters...)<br>
+      </td>
+      <td style="vertical-align: top;">For a set of iterable objects,
+returns an iterable of tuples, where the ith tuple contains the ith
+component of each input iterable.<br>
+Note that zip() is its own inverse: collect(zip(zip(a...)...)) ==
+collect(a).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">enumerate(iter)<br>
+      </td>
+      <td style="vertical-align: top;"> An iterator that yields (i, x)
+where i is an index starting at 1, and x is the ith value from the
+given iterator. It’s useful when you need not only the values x over
+which you are iterating, but also the index i of the iterations.<br>
+      </td>
+      <td style="vertical-align: top;">a = ["a", "b", "c"];<br>
+for (index, value) in enumerate(a)<br>
+&nbsp; println("$index $value")<br>
+end </td>
+      <td style="vertical-align: top;">1 a<br>
+2 b<br>
+3 c </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rest(iter, state)<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that yields the same
+elements as iter, but starting at the given state.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">countfrom(start=1, step=1)<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that counts forever,
+starting at start and incrementing by step.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">take(iter, n)<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that generates at
+most the first n elements of iter.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">drop(iter, n)<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that generates all
+but the first n elements of iter.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cycle(iter)<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that cycles through
+iter forever.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">repeated(x[, n::Int])<br>
+      </td>
+      <td style="vertical-align: top;">An iterator that generates the
+value x forever. If n is specified, generates x that many times
+(equivalent to take(repeated(x), n))<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">General Collections<br>
+      </span>Fully implemented by:<br>
+&nbsp;&nbsp;&nbsp; Range<br>
+&nbsp;&nbsp;&nbsp; UnitRange<br>
+&nbsp;&nbsp;&nbsp; Tuple<br>
+&nbsp;&nbsp;&nbsp; Number<br>
+&nbsp;&nbsp;&nbsp; AbstractArray<br>
+&nbsp;&nbsp;&nbsp; IntSet<br>
+&nbsp;&nbsp;&nbsp; Dict<br>
+&nbsp;&nbsp;&nbsp; WeakKeyDict<br>
+&nbsp;&nbsp;&nbsp; AbstractString<br>
+&nbsp;&nbsp;&nbsp; Set<span style="font-weight: bold;"><br>
+      </span> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isempty(collection) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">要素が空か，true,false</td>
+      <td style="vertical-align: top;"> isempty([])<br>
+isempty([1 2 3])</td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">empty!(collection) <br>
+→ collection<br>
+      </td>
+      <td style="vertical-align: top;">Remove all elements from a
+collection.<br>
+      </td>
+      <td style="vertical-align: top;">empty!([])<br>
+empty!([1,2,3])<br>
+      </td>
+      <td style="vertical-align: top;">0-element Array{Any,1}<br>
+0-element Array{Int64,1}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">length(collection) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">要素の個数を返すFor ordered, indexable
+collections, the maximum index i for which getindex(collection, i) is
+valid. For unordered collections, the number of elements.<br>
+      </td>
+      <td style="vertical-align: top;">julia&gt; length([1,2]) </td>
+      <td style="vertical-align: top;">2<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">endof(collection) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">要素のeofまでの個数を返すReturns the last
+index of the collection.<br>
+      </td>
+      <td style="vertical-align: top;">endof([1,2,4])</td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4">
+      <h2>Iterable Collections</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">in(item, collection) → Bool<br>
+∈(item, collection) <br>
+→ Bool<br>
+∋(collection, item) <br>
+→ Bool<br>
+&#8713;(item, collection) → Bool<br>
+&#8716;(collection, item) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Determine whether an item is in
+the given collection, in the sense that it is == to one of the values
+generated by iterating over the collection. Some collections need a
+slightly different definition; for example Sets check whether the item
+isequal() to one of the elements. Dicts look for (key,value) pairs, and
+the key is compared using isequal(). To test for the presence of a key
+in a dictionary, use haskey() or k in keys(dict).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eltype(type)<br>
+      </td>
+      <td style="vertical-align: top;">Determine the type of the
+elements generated by iterating a collection of the given type. For
+associative collection types, this will be a Pair{KeyType,ValType}. The
+definition eltype(x) = eltype(typeof(x)) is provided for convenience so
+that instances can be passed instead of types. However the form that
+accepts a type argument should be defined for new types.<br>
+      </td>
+      <td style="vertical-align: top;">eltype(typeof(:a)) </td>
+      <td style="vertical-align: top;">Any<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">indexin(a, b)<br>
+      </td>
+      <td style="vertical-align: top;">Returns a vector containing the
+highest index in b for each value in a that is a member of b . The
+output vector contains 0 wherever a is not a member of b.<br>
+      </td>
+      <td style="vertical-align: top;">indexin([1,2],[3,5]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;0<br>
+&nbsp;0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findin(a, b)<br>
+      </td>
+      <td style="vertical-align: top;">Returns the indices of elements
+in collection a that appear in collection b<br>
+      </td>
+      <td style="vertical-align: top;">findin([2,1],[3,4]) </td>
+      <td style="vertical-align: top;">0-element Array{Int64,1}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unique(itr[, dim]) </td>
+      <td style="vertical-align: top;">Returns an array containing only
+the unique elements
+of the iterable itr, in the order that the first of each set of
+equivalent elements originally appears. If dim is specified, returns
+unique regions of the array itr along dim.<br>
+      </td>
+      <td style="vertical-align: top;">unique([1,2],1) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reduce(op, v0, itr) </td>
+      <td style="vertical-align: top;">Reduce the given collection &#236;tr
+with the given
+binary operator op. v0 must be a neutral element for op that will be
+returned for empty collections. It is unspecified whether v0 is used
+for non-empty collections.<br>
+Reductions for certain commonly-used operators have
+special implementations which should be used instead: maximum(itr),
+minimum(itr), sum(itr), prod(itr), any(itr), all(itr).<br>
+The associativity of the reduction is implementation
+dependent. This means that you can’t use non-associative operations
+like - because it is undefined whether reduce(-,[1,2,3]) should be
+evaluated as (1-2)-3 or 1-(2-3). Use foldl or foldr instead for
+guaranteed left or right associativity.<br>
+Some operations accumulate error, and parallelism
+will also be easier if the reduction can be executed in groups. Future
+versions of Julia might change the algorithm. Note that the elements
+are not reordered if you use an ordered collection.<br>
+      </td>
+      <td style="vertical-align: top;">reduce(+, vec([2,3]), [1,2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;5<br>
+&nbsp;6<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reduce(op, itr) </td>
+      <td style="vertical-align: top;">Like reduce(op, v0, itr). This
+cannot be used with
+empty collections, except for some special cases (e.g. when op is one
+of +, *, max, min, &amp;, |) when Julia can determine the neutral
+element of op.<br>
+      </td>
+      <td style="vertical-align: top;">reduce(+,[1,2]) </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">foldl(op, v0, itr) </td>
+      <td style="vertical-align: top;">Like reduce(), but with
+guaranteed left
+associativity. v0 will be used exactly once.<br>
+      </td>
+      <td style="vertical-align: top;">foldl(+,vec([1,2]),(3,1)) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;5<br>
+&nbsp;6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">foldl(op, itr) </td>
+      <td style="vertical-align: top;">Like foldl(op, v0, itr), but
+using the first element
+of itr as v0. In general, this cannot be used with empty collections
+(see reduce(op, itr)).<br>
+      </td>
+      <td style="vertical-align: top;">foldl(+ ,(2,5)) </td>
+      <td style="vertical-align: top;">7<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">foldr(op, v0, itr) </td>
+      <td style="vertical-align: top;">Like reduce(), but with
+guaranteed right
+associativity. v0 will be used exactly once.<br>
+      </td>
+      <td style="vertical-align: top;">foldr(+, vec([1,3]), (2,5)) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp; 8<br>
+&nbsp;10<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">foldr(op, itr) </td>
+      <td style="vertical-align: top;">Like foldr(op, v0, itr), but
+using the last element
+of itr as v0. In general, this cannot be used with empty collections
+(see reduce(op, itr)).<br>
+      </td>
+      <td style="vertical-align: top;">foldr(*,(2,5)) </td>
+      <td style="vertical-align: top;">10<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maximum(itr) </td>
+      <td style="vertical-align: top;">要素の最大値を求める<br>
+      </td>
+      <td style="vertical-align: top;"> maximum((2,3,4))<br>
+      </td>
+      <td style="vertical-align: top;">4 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maximum(A, dims) </td>
+      <td style="vertical-align: top;">Compute the maximum value of an
+array over the given
+dimensions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maximum!(r, A) </td>
+      <td style="vertical-align: top;">Compute the maximum value of A
+over the singleton
+dimensions of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minimum(itr)</td>
+      <td style="vertical-align: top;">Returns the smallest element in
+a collection.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minimum(A, dims)</td>
+      <td style="vertical-align: top;">Compute the minimum value of an
+array over the given
+dimensions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minimum!(r, A)</td>
+      <td style="vertical-align: top;">Compute the minimum value of A
+over the singleton
+dimensions of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">extrema(itr)</td>
+      <td style="vertical-align: top;">Compute both the minimum and
+maximum element in a
+single pass, and return them as a 2-tuple.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">indmax(itr) <br>
+→ Integer</td>
+      <td style="vertical-align: top;">Returns the index of the maximum
+element in a
+collection.<br>
+      </td>
+      <td style="vertical-align: top;">indmax((5,1,3)) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">indmin(itr) <br>
+→ Integer</td>
+      <td style="vertical-align: top;">Returns the index of the minimum
+element in a
+collection.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmax(itr) <br>
+-&gt; (x, index)</td>
+      <td style="vertical-align: top;">Returns the maximum element and
+its index.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmax(A, dims)<br>
+&nbsp;-&gt; (maxval, index)</td>
+      <td style="vertical-align: top;">For an array input, returns the
+value and index of
+the maximum over the given dimensions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmin(itr)<br>
+&nbsp;-&gt; (x, index)</td>
+      <td style="vertical-align: top;">Returns the minimum element and
+its index.<br>
+      </td>
+      <td style="vertical-align: top;">findmin(2) </td>
+      <td style="vertical-align: top;">(2,1)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmin(A, dims)<br>
+&nbsp;-&gt; (minval, index)</td>
+      <td style="vertical-align: top;">For an array input, returns the
+value and index of
+the minimum over the given dimensions.<br>
+in rval and rind.</td>
+      <td style="vertical-align: top;">findmin([2 3;4 6], 2) </td>
+      <td style="vertical-align: top;">(<br>
+2x1 Array{Int64,2}:<br>
+&nbsp;2<br>
+&nbsp;4,<br>
+      <br>
+2x1 Array{Int64,2}:<br>
+&nbsp;1<br>
+&nbsp;2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmax!(rval, rind, A,
+[init=true]) <br>
+-&gt; (maxval, index)</td>
+      <td style="vertical-align: top;">Find the maximum of A and the
+corresponding linear
+index along singleton dimensions of rval and rind, and store the
+results </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findmin!(rval, rind, A,
+[init=true]) <br>
+-&gt; (minval, index)</td>
+      <td style="vertical-align: top;">Find the minimum of A and the
+corresponding linear
+index along singleton dimensions of rval and rind, and store the
+results in rval and rind.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maxabs(itr)</td>
+      <td style="vertical-align: top;">Compute the maximum absolute
+value of a collection
+of values.</td>
+      <td style="vertical-align: top;">maxabs(2) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maxabs(A, dims)</td>
+      <td style="vertical-align: top;">Compute the maximum absolute
+values over given
+dimensions.</td>
+      <td style="vertical-align: top;">maxabs([2 3;4 1], 2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;3<br>
+&nbsp;4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maxabs!(r, A)</td>
+      <td style="vertical-align: top;">Compute the maximum absolute
+values over the
+singleton dimensions of r, and write values to r.<br>
+      </td>
+      <td style="vertical-align: top;">minabs(2) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minabs(itr)</td>
+      <td style="vertical-align: top;">Compute the minimum absolute
+value of a collection
+of values.<br>
+      </td>
+      <td style="vertical-align: top;">minabs((2,1,4)) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minabs(A, dims)</td>
+      <td style="vertical-align: top;">Compute the minimum absolute
+values over given
+dimensions.</td>
+      <td style="vertical-align: top;">minabs([1 3;4 2], 2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">minabs!(r, A)</td>
+      <td style="vertical-align: top;">Compute the minimum absolute
+values over the
+singleton dimensions of r, and write values to r.</td>
+      <td style="vertical-align: top;">minabs!([2,4], [4 1;4 2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sum(itr)</td>
+      <td style="vertical-align: top;">Returns the sum of all elements
+in a collection.</td>
+      <td style="vertical-align: top;">sum((2,3)) </td>
+      <td style="vertical-align: top;">5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sum(A, dims)</td>
+      <td style="vertical-align: top;">Sum elements of an array over
+the given dimensions.</td>
+      <td style="vertical-align: top;">sum([2 3;4 1], 2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;5<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sum!(r, A)</td>
+      <td style="vertical-align: top;">Sum elements of A over the
+singleton dimensions of
+r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;">sum!([2,4], [1 3;4 2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;4<br>
+&nbsp;6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sum(f, itr)</td>
+      <td style="vertical-align: top;">Sum the results of calling
+function f on each
+element of itr.</td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+sum(f, [2,4]) </td>
+      <td style="vertical-align: top;">20<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs(itr)</td>
+      <td style="vertical-align: top;">Sum absolute values of all
+elements in a collection.
+This is equivalent to sum(abs(itr)) but faster</td>
+      <td style="vertical-align: top;">sumabs([1,2]) </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs(A, dims)</td>
+      <td style="vertical-align: top;">Sum absolute values of elements
+of an array over the
+given dimensions.</td>
+      <td style="vertical-align: top;">sumabs([1 5;4 1], 2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;6<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs!(r, A)</td>
+      <td style="vertical-align: top;">Sum absolute values of elements
+of A over the
+singleton dimensions of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;">sumabs!([2,3] ,[4 1;5 7]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp; 5<br>
+&nbsp;12<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs2(itr)</td>
+      <td style="vertical-align: top;">Sum squared absolute values of
+all elements in a
+collection. This is equivalent to sum(abs2(itr)) but faster.<br>
+      </td>
+      <td style="vertical-align: top;">sumabs2([2,3]) </td>
+      <td style="vertical-align: top;">13<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs2(A, dims)</td>
+      <td style="vertical-align: top;">Sum squared absolute values of
+elements of an array
+over the given dimensions.</td>
+      <td style="vertical-align: top;">sumabs2([2 1;4 2] ,2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp; 5<br>
+&nbsp;20<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sumabs2!(r, A)</td>
+      <td style="vertical-align: top;">Sum squared absolute values of
+elements of A over
+the singleton dimensions of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;">sumabs2!([2,1], [5 1;2 6]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;26<br>
+&nbsp;40<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prod(itr)</td>
+      <td style="vertical-align: top;">Returns the product of all
+elements of a collection.</td>
+      <td style="vertical-align: top;">prod([3,4]) </td>
+      <td style="vertical-align: top;">12<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prod(A, dims)</td>
+      <td style="vertical-align: top;">Multiply elements of an array
+over the given
+dimensions.</td>
+      <td style="vertical-align: top;">prod([2 1;2 3],2) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;2<br>
+&nbsp;6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prod!(r, A)</td>
+      <td style="vertical-align: top;">Multiply elements of A over the
+singleton dimensions
+of r, and write results to r.<br>
+      </td>
+      <td style="vertical-align: top;">prod!([2,3], [2 1;1 5]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;2<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">any(itr)<br>
+&nbsp;→ Bool</td>
+      <td style="vertical-align: top;">Test whether any elements of a
+boolean collection
+are true.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">any(A, dims)</td>
+      <td style="vertical-align: top;">Test whether any values along
+the given dimensions
+of an array are true.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">any!(r, A)</td>
+      <td style="vertical-align: top;">Test whether any values in A
+along the singleton
+dimensions of r are true, and write results to r.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">all(itr) <br>
+→ Bool</td>
+      <td style="vertical-align: top;">Test whether all elements of a
+boolean collection
+are true.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">all(A, dims)</td>
+      <td style="vertical-align: top;">Test whether all values along
+the given dimensions
+of an array are true.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">all!(r, A)</td>
+      <td style="vertical-align: top;">Test whether all values in A
+along the singleton
+dimensions of r are true, and write results to r.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">count(p, itr) <br>
+→ Integer</td>
+      <td style="vertical-align: top;">Count the number of elements in
+itr for which
+predicate p returns true.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">any(p, itr)<br>
+→ Bool</td>
+      <td style="vertical-align: top;">Determine whether predicate p
+returns true for any
+elements of itr.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">all(p, itr) <br>
+→ Bool</td>
+      <td style="vertical-align: top;">Determine whether predicate p
+returns true for all
+elements of itr.<br>
+      </td>
+      <td style="vertical-align: top;">all(i-&gt;(4&lt;=i&lt;=6),
+[4,5,6])<br>
+      </td>
+      <td style="vertical-align: top;">true</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">map(f, c...) <br>
+→ collection</td>
+      <td style="vertical-align: top;">&nbsp;Transform collection c by
+applying f to each
+element. For multiple collection arguments, apply f elementwise.<br>
+&nbsp; function(f(x))<br>
+x^2<br>
+end<br>
+&nbsp;map(f,1:10)</td>
+      <td style="vertical-align: top;">map((x) -&gt; x * 2, [1, 2, 3])<br>
+      <br>
+      <br>
+map(+, [1, 2, 3], [10, 20, 30])</td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+2<br>
+4<br>
+6<br>
+3-element Array{Int64,1}:<br>
+11<br>
+22<br>
+33</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">map!(function, collection)</td>
+      <td style="vertical-align: top;">In-place version of map().</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">map!(function, destination,
+collection...)</td>
+      <td style="vertical-align: top;">Like map(), but stores the
+result in destination
+rather than a new collection. destination must be at least as large as
+the first collection.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapreduce(f, op, v0, itr)</td>
+      <td style="vertical-align: top;">&nbsp;Apply function f to each
+element in itr, and then
+reduce the result using the binary function op. v0 must be a neutral
+element for op that will be returned for empty collections. It is
+unspecified whether v0 is used for non-empty collections.<br>
+&nbsp;mapreduce() is functionally equivalent to calling
+reduce(op, v0, map(f, itr)), but will in general execute faster since
+no intermediate collection needs to be created. See documentation for
+reduce() and map().<br>
+&nbsp;julia&gt; mapreduce(x-&gt;x^2, +, [1:3;]) # == 1 + 4
++ 9<br>
+&nbsp;14<br>
+&nbsp;The associativity of the reduction is
+implementation-dependent. Additionally, some implementations may reuse
+the return value of f for elements that appear multiple times in itr.
+Use mapfoldl() or mapfoldr() instead for guaranteed left or right
+associativity and invocation of f for every value.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapreduce(f, op, itr)</td>
+      <td style="vertical-align: top;">Like mapreduce(f, op, v0, itr).
+In general, this
+cannot be used with empty collections (see reduce(op, itr)).</td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+mapreduce(f, +, (2,5)) </td>
+      <td style="vertical-align: top;">29<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapfoldl(f, op, v0, itr)</td>
+      <td style="vertical-align: top;">Like mapreduce(), but with
+guaranteed left
+associativity. v0 will be used exactly once.</td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+mapfoldl(f, +, vec([1,3]), (2,5)) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;30<br>
+&nbsp;32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapfoldl(f, op, itr)</td>
+      <td style="vertical-align: top;">Like mapfoldl(f, op, v0, itr),
+but using the first
+element of itr as v0. In general, this cannot be used with empty
+collections (see reduce(op, itr)).</td>
+      <td style="vertical-align: top;">mapfoldl(f, +, (2,3)) </td>
+      <td style="vertical-align: top;">13<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapfoldr(f, op, v0, itr)</td>
+      <td style="vertical-align: top;">Like mapreduce(), but with
+guaranteed right
+associativity. v0 will be used exactly once.</td>
+      <td style="vertical-align: top;">mapfoldr(f, +, vec([1,4]),
+(2,3)) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;14<br>
+&nbsp;17<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapfoldr(f, op, itr)</td>
+      <td style="vertical-align: top;">Like mapfoldr(f, op, v0, itr),
+but using the first
+element of itr as v0. In general, this cannot be used with empty
+collections (see reduce(op, itr)).</td>
+      <td style="vertical-align: top;">mapfoldr(f, +, (2,3)) </td>
+      <td style="vertical-align: top;">13<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">first(coll)</td>
+      <td style="vertical-align: top;">Get the first element of an
+iterable collection.
+Returns the start point of a Range even if it is empty.<br>
+コレクションの関数の最初の結果の値<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+first(map(f,1:10)) </td>
+      <td style="vertical-align: top;">1<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">last(coll)</td>
+      <td style="vertical-align: top;">Get the last element of an
+ordered collection, if it
+can be computed in O(1) time. This is accomplished by calling endof()
+to get the last index. Returns the end point of a Range even if it is
+empty.<br>
+コレクションの関数の最後の結果の値を<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+last(map(f,1:10))<br>
+      </td>
+      <td style="vertical-align: top;">100<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">step(r)</td>
+      <td style="vertical-align: top;">Get the step size of a Range
+object.</td>
+      <td style="vertical-align: top;">step(1:4) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">collect(collection)</td>
+      <td style="vertical-align: top;">Return an array of all items in
+a collection. For
+associative collections, returns Pair{KeyType, ValType}.<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+collect(map(f,1:3))<br>
+      </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;&nbsp; 1<br>
+&nbsp;&nbsp; 4<br>
+&nbsp;&nbsp; 9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">collect(element_type, collection)</td>
+      <td style="vertical-align: top;">Return an array of type
+Array{element_type,1} of all
+items in a collection.<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+collect(Real, map(f,1:3)) </td>
+      <td style="vertical-align: top;">3-element Array{Real,1}:<br>
+&nbsp;1<br>
+&nbsp;4<br>
+&nbsp;9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issubset(a, b)<br>
+⊆(a, b) → Bool<br>
+&#8840;(a, b) → Bool<br>
+&#8842;(a, b) → Bool</td>
+      <td style="vertical-align: top;">Determine whether every element
+of a is also in b,
+using in().</td>
+      <td style="vertical-align: top;">issubset((1,2), (1,2,3))<br>
+issubset((1,2,5), (1,2,3))<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filter(function, collection)</td>
+      <td style="vertical-align: top;">Return a copy of collection,
+removing elements for
+which function is false. For associative collections, the function is
+passed two arguments (key and value).</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filter!(function, collection)</td>
+      <td style="vertical-align: top;">Update collection, removing
+elements for which
+function is false. For associative collections, the function is passed
+two arguments (key and value).</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Indexable
+Collections<br>
+      <span style="font-weight: normal;">Fully implemented by:</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; Array</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; BitArray</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+AbstractArray</span><br style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; SubArray</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; ObjectIdDict</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; Dict</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; WeakKeyDict</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+AbstractString</span><br style="font-weight: normal;">
+      <span style="font-weight: normal;">Partially implemented by:</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; Range</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; UnitRange</span><br
+ style="font-weight: normal;">
+      <span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; Tuple</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getindex(collection, key...) </td>
+      <td style="vertical-align: top;">Retrieve the value(s) stored at
+the given key or
+index within a collection. The syntax a[i,j,...] is converted by the
+compiler to getindex(a, i, j, ...).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setindex!(collection, value,
+key...) </td>
+      <td style="vertical-align: top;">Store the given value at the
+given key or index
+within a collection. The syntax a[i,j,...] = x is converted by the
+compiler to (setindex!(a, x, i, j, ...); x). </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Associative Collections</span><br>
+Dict is the standard associative collection. Its implementation uses
+hash() as the hashing function for the key, and isequal() to determine
+equality. Define these two functions for custom types to override how
+they are stored in a hash table.<br>
+ObjectIdDict is a special hash table where the keys are always object
+identities.<br>
+WeakKeyDict is a hash table implementation where the keys are weak
+references to objects, and thus may be garbage collected even when
+referenced in a hash table.<br>
+Dicts can be created by passing pair objects constructed with =&gt;()
+to a Dict constructor: Dict("A"=&gt;1, "B"=&gt;2). This call will
+attempt to infer type information from the keys and values (i.e. this
+example creates a Dict{ASCIIString, Int64}). To explicitly specify
+types use the syntax Dict{KeyType,ValueType}(...). For example,
+Dict{ASCIIString,Int32}("A"=&gt;1, "B"=&gt;2).<br>
+As with Arrays, Dicts may be created with comprehensions. For example,
+[i =&gt; f(i) for i = 1:10].<br>
+Given a dictionary D, the syntax D[x] returns the value of key x (if it
+exists) or throws an error, and D[x] = y stores the key-value pair x
+=&gt; y in D (replacing any existing value for the key x). Multiple
+arguments to D[...] are converted to tuples; for example, the syntax
+D[x,y] is equivalent to D[(x,y)], i.e. it refers to the value keyed by
+the tuple (x,y).<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Dict([itr]) </td>
+      <td style="vertical-align: top;">Dict{K,V}() constructs a hash
+table with keys of
+type K and values of type V.<br>
+Given a single iterable argument, constructs a Dict
+whose key-value pairs are taken from 2-tuples (key,value) generated by
+the argument.<br>
+Alternatively, a sequence of pair arguments may be
+passed.<br>
+&nbsp; <br>
+      </td>
+      <td style="vertical-align: top;">Dict()<br>
+      <br>
+Dict([("A", 1), ("B", 2)])<br>
+      <br>
+      <br>
+      <br>
+Dict("A"=&gt;1, "B"=&gt;2)<br>
+      </td>
+      <td style="vertical-align: top;">Dict{Any,Any} with 0 entries<br>
+      <br>
+Dict{ASCIIString,Int64} with 2 entries:<br>
+&nbsp;"B" =&gt; 2<br>
+&nbsp;"A" =&gt; 1<br>
+      <br>
+Dict{ASCIIString,Int64} with 2 entries:<br>
+&nbsp;"B" =&gt; 2<br>
+&nbsp;"A" =&gt; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">haskey(collection, key) <br>
+→ Bool</td>
+      <td style="vertical-align: top;">Determine whether a collection
+has a mapping for a
+given key.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get(collection, key, default)</td>
+      <td style="vertical-align: top;">Return the value stored for the
+given key, or the
+given default value if no mapping for the key is present.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get(f::Function, collection, key)</td>
+      <td style="vertical-align: top;">Return the value stored for the
+given key, or if no
+mapping for the key is present, return f(). Use get!() to also store
+the default value in the dictionary.<br>
+This is intended to be called using do block syntax:</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get(dict, key)</td>
+      <td style="vertical-align: top;">&nbsp;do<br>
+# default value calculated
+here<br>
+&nbsp;time()<br>
+&nbsp;end<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get!(collection, key, default)</td>
+      <td style="vertical-align: top;">Return the value stored for the
+given key, or if no
+mapping for the key is present, store key =&gt; default, and return
+default.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get!(f::Function, collection,
+key)</td>
+      <td style="vertical-align: top;">Return the value stored for the
+given key, or if no
+mapping for the key is present, store key =&gt; f(), and return f().<br>
+This is intended to be called using do block syntax:</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get!(dict, key) </td>
+      <td style="vertical-align: top;">do<br>
+&nbsp;# default value calculated
+here<br>
+&nbsp;time()<br>
+&nbsp;end</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getkey(collection, key, default)</td>
+      <td style="vertical-align: top;">Return the key matching argument
+key if one exists
+in collection, otherwise return default.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">delete!(collection, key)</td>
+      <td style="vertical-align: top;">Delete the mapping for the given
+key in a
+collection, and return the collection.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pop!(collection, key[, default])</td>
+      <td style="vertical-align: top;">Delete and return the mapping
+for key if it exists
+in collection, otherwise return default, or throw an error if default
+is not specified.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">keys(collection)</td>
+      <td style="vertical-align: top;">Return an iterator over all keys
+in a collection.
+collect(keys(d)) returns an array of keys.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">values(collection)</td>
+      <td style="vertical-align: top;">Return an iterator over all
+values in a collection.
+collect(values(d)) returns an array of values.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">merge(collection, others...) </td>
+      <td style="vertical-align: top;">Construct a merged collection
+from the given
+collections. If necessary, the types of the resulting collection will
+be promoted to accommodate the types of the merged collections. If the
+same key is present in another collection, the value for that key will
+be the value it has in the last collection listed.<br>
+julia&gt; a = Dict("foo" =&gt; 0.0, "bar" =&gt; 42.0)<br>
+&nbsp;Dict{ASCIIString,Float64} with 2 entries:<br>
+&nbsp;"bar" =&gt; 42.0<br>
+&nbsp;"foo" =&gt; 0.0<br>
+julia&gt; b = Dict(utf8("baz") =&gt; 17, utf8("bar")
+=&gt; 4711)<br>
+&nbsp;Dict{UTF8String,Int64} with 2 entries:<br>
+&nbsp;"bar" =&gt; 4711<br>
+&nbsp;"baz" =&gt; 17<br>
+julia&gt; merge(a, b)<br>
+&nbsp;Dict{UTF8String,Float64} with 3 entries:<br>
+&nbsp;"bar" =&gt; 4711.0<br>
+&nbsp;"baz" =&gt; 17.0<br>
+&nbsp;"foo" =&gt; 0.0<br>
+julia&gt; merge(b, a)<br>
+&nbsp;Dict{UTF8String,Float64} with 3 entries:<br>
+&nbsp;"bar" =&gt; 42.0<br>
+&nbsp;"baz" =&gt; 17.0<br>
+&nbsp;"foo" =&gt; 0.0<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">merge!(collection, others...) </td>
+      <td style="vertical-align: top;">Update collection with pairs
+from the other
+collections </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sizehint!(s, n) </td>
+      <td style="vertical-align: top;">Suggest that collection s
+reserve capacity for at
+least n elements. This can improve performance. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">keytype(collection) </td>
+      <td style="vertical-align: top;">For associative collection
+types, this will be the
+type of the Key, This is not defined for non-associative collections </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">valtype(collection) </td>
+      <td style="vertical-align: top;">For associative collection
+types, this will be the
+type of the Value, This is not defined for non-associative collections<br>
+Fully implemented by:<br>
+ObjectIdDict<br>
+&nbsp;Dict<br>
+&nbsp;WeakKeyDict<br>
+Partially implemented by:<br>
+IntSet<br>
+&nbsp;Set<br>
+&nbsp;EnvHash<br>
+&nbsp;Array<br>
+&nbsp;BitArray </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4">
+      <h2>Set-Like Collections</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Set([itr]) </td>
+      <td style="vertical-align: top;">Construct a Set of the values
+generated by the given
+iterable object, or an empty set. Should be used instead of IntSet for
+sparse integer sets, or for sets of arbitrary objects.<br>
+      </td>
+      <td style="vertical-align: top;">Set() </td>
+      <td style="vertical-align: top;">Set{Any}()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">IntSet([itr])</td>
+      <td style="vertical-align: top;">Construct a sorted set of
+positive Ints generated by
+the given iterable object, or an empty set. Implemented as a bit
+string, and therefore designed for dense integer sets. Only Ints
+greater than 0 can be stored. If the set will be sparse (for example
+holding a few very large integers), use Set instead.</td>
+      <td style="vertical-align: top;">IntSet() </td>
+      <td style="vertical-align: top;">IntSet([])<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">union(s1, s2...)<br>
+∪(s1, s2...)</td>
+      <td style="vertical-align: top;">Construct the union of two or
+more sets. Maintains
+order with arrays.<br>
+      </td>
+      <td style="vertical-align: top;">union([1, 2],[3,1]) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">union!(s,iterable)</td>
+      <td style="vertical-align: top;">Union each element of iterable
+into set s in-place.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">intersect(s1, s2...)<br>
+∩(s1, s2)</td>
+      <td style="vertical-align: top;">Construct the intersection of
+two or more sets.
+Maintains order and multiplicity of the first argument for arrays and
+ranges.<br>
+      </td>
+      <td style="vertical-align: top;">intersect([1,2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setdiff(s1, s2)</td>
+      <td style="vertical-align: top;">Construct the set of elements in
+s1 but not s2.
+Maintains order with arrays. Note that both arguments must be
+collections, and both will be iterated over. In particular,
+setdiff(set,element) where element is a potential member of set, will
+not work in general.<br>
+      </td>
+      <td style="vertical-align: top;">setdiff([1,2],[2,4]) </td>
+      <td style="vertical-align: top;">1-element Array{Int64,1}:<br>
+&nbsp;1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setdiff!(s, iterable)</td>
+      <td style="vertical-align: top;">Remove each element of iterable
+from set s in-place.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symdiff(s1, s2...)</td>
+      <td style="vertical-align: top;">Construct the symmetric
+difference of elements in
+the passed in sets or arrays. Maintains order with arrays.<br>
+      </td>
+      <td style="vertical-align: top;">symdiff([1,2],[3,4]) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symdiff!(s, n)</td>
+      <td style="vertical-align: top;">The set s is destructively
+modified to toggle the
+inclusion of integer n.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symdiff!(s, itr)</td>
+      <td style="vertical-align: top;">For each element in itr,
+destructively toggle its
+inclusion in set s.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symdiff!(s1, s2) </td>
+      <td style="vertical-align: top;">Construct the symmetric
+difference of sets s1 and
+s2, storing the result in s1. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">complement(s) </td>
+      <td style="vertical-align: top;">Returns the set-complement of
+IntSet s. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">complement!(s) </td>
+      <td style="vertical-align: top;">Mutates IntSet s into its
+set-complement. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">intersect!(s1, s2) </td>
+      <td style="vertical-align: top;">Intersects sets s1 and s2 and
+overwrites the set s1
+with the result. If needed, s1 will be expanded to the size of s2. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issubset(A, S) <br>
+→ Bool<br>
+⊆(A, S) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Return true if A is a subset of
+or equal to S.<br>
+Fully implemented by:<br>
+&nbsp;IntSet<br>
+&nbsp;Set<br>
+Partially implemented by:<br>
+&nbsp;Array </td>
+      <td style="vertical-align: top;">issubset([1 2],[3 4])<br>
+issubset([1 2],[1 2])<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Dequeues<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">push!(collection, items...) <br>
+→ collection </td>
+      <td style="vertical-align: top;">Insert one or more items at the
+end of collection.<br>
+Use append!() to add all the elements of another
+collection to collection. The result of the preceding example is
+equivalent to append!([1, 2, 3], [4, 5, 6]).<br>
+      </td>
+      <td style="vertical-align: top;">push!([1, 2, 3], 4, 5, 6) </td>
+      <td style="vertical-align: top;">6-element Array{Int64,1}:<br>
+1<br>
+2<br>
+3<br>
+4<br>
+5<br>
+6 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pop!(collection) → item</td>
+      <td style="vertical-align: top;">Remove the last item in
+collection and return it.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">A=[1, 2, 3, 4, 5, 6]<br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+pop!(A)<br>
+A<br>
+      </td>
+      <td style="vertical-align: top;">6-element Array{Int64,1}:<br>
+1<br>
+2<br>
+3<br>
+4<br>
+5<br>
+6<br>
+&nbsp;6<br>
+5-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unshift!(collection, items...) →
+collection</td>
+      <td style="vertical-align: top;">Insert one or more items at the
+beginning of
+collection.<br>
+      </td>
+      <td style="vertical-align: top;">unshift!([1, 2, 3, 4], 5, 6)</td>
+      <td style="vertical-align: top;">6-element Array{Int64,1}:<br>
+&nbsp;5<br>
+&nbsp;6<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">shift!(collection) → item</td>
+      <td style="vertical-align: top;">Remove the first item from
+collection.<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;A = [1, 2, 3, 4, 5, 6]<br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+shift!(A)<br>
+      <br>
+A</td>
+      <td style="vertical-align: top;">6-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+&nbsp;5<br>
+&nbsp;6<br>
+1<br>
+&nbsp;5-element Array{Int64,1}:<br>
+2<br>
+3<br>
+4<br>
+5<br>
+6</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">insert!(collection, index, item)</td>
+      <td style="vertical-align: top;">Insert an item into collection
+at the given index.
+index is the index of item in the resulting collection.<br>
+      </td>
+      <td style="vertical-align: top;"> insert!([6, 5, 4, 2, 1], 4, 3)</td>
+      <td style="vertical-align: top;">&nbsp;6-element Array{Int64,1}:<br>
+&nbsp;6<br>
+&nbsp;5<br>
+&nbsp;4<br>
+&nbsp;3<br>
+&nbsp;2<br>
+&nbsp;1</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deleteat!(collection, index)</td>
+      <td style="vertical-align: top;">Remove the item at the given
+index and return the
+modified collection. Subsequent items are shifted to fill the resulting
+gap.<br>
+      </td>
+      <td style="vertical-align: top;">deleteat!([6, 5, 4, 3, 2, 1], 2)</td>
+      <td style="vertical-align: top;"> 5-element Array{Int64,1}:<br>
+&nbsp;6<br>
+&nbsp;4<br>
+&nbsp;3<br>
+&nbsp;2<br>
+&nbsp;1</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deleteat!(collection, index)</td>
+      <td style="vertical-align: top;">Remove the item at the given
+index and return the
+modified collection. Subsequent items are shifted to fill the resulting
+gap.<br>
+      </td>
+      <td style="vertical-align: top;">deleteat!([6, 5, 4, 3, 2, 1], 2)</td>
+      <td style="vertical-align: top;">5-element Array{Int64,1}:<br>
+6<br>
+4<br>
+3<br>
+2<br>
+1</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deleteat!(collection, itr) </td>
+      <td style="vertical-align: top;">Remove the items at the indices
+given by itr, and
+return the modified collection. Subsequent items are shifted to fill
+the resulting gap. itr must be sorted and unique.<br>
+&nbsp;julia&gt;<br>
+julia&gt; </td>
+      <td style="vertical-align: top;"> deleteat!([6, 5, 4, 3, 2, 1],
+1:2:5)<br>
+      <br>
+      <br>
+deleteat!([6, 5, 4, 3, 2, 1], (2, 2)) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;5<br>
+&nbsp;3<br>
+&nbsp;1<br>
+ERROR: ArgumentError: indices must be unique and
+sorted<br>
+&nbsp;in deleteat! at array.jl:546<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">splice!(collection, index[,
+replacement]) <br>
+→ item </td>
+      <td style="vertical-align: top;">Remove the item at the given
+index, and return the
+removed item. Subsequent items are shifted down to fill the resulting
+gap. If specified, replacement values from an ordered collection will
+be spliced in place of the removed item.<br>
+&nbsp;To insert replacement before an index n without
+removing any items, use splice!(collection, n:n-1, replacement).<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">A = [6, 5, 4, 3, 2, 1];
+splice!(A, 5)<br>
+A<br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+&nbsp;splice!(A, 5, -1)<br>
+A<br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+splice!(A, 1, [-1, -2, -3])<br>
+A<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      <br>
+5-element Array{Int64,1}:<br>
+&nbsp;6<br>
+&nbsp;5<br>
+&nbsp;4<br>
+&nbsp;3<br>
+&nbsp;1<br>
+1<br>
+5-element Array{Int64,1}:<br>
+6<br>
+5<br>
+4<br>
+3<br>
+&nbsp;-1<br>
+6<br>
+7-element Array{Int64,1}:<br>
+&nbsp;-1<br>
+&nbsp;-2<br>
+&nbsp;-3<br>
+5<br>
+4<br>
+3<br>
+&nbsp;-1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">splice!(collection, range[,
+replacement]) → items</td>
+      <td style="vertical-align: top;">Remove items in the specified
+index range, and
+return a collection containing the removed items. Subsequent items are
+shifted down to fill the resulting gap. If specified, replacement
+values from an ordered collection will be spliced in place of the
+removed items.<br>
+To insert replacement before an index n without
+removing any items, use splice!(collection, n:n-1, replacement).<br>
+      </td>
+      <td style="vertical-align: top;">splice!(A, 4:3, 2)<br>
+      <br>
+A</td>
+      <td style="vertical-align: top;">0-element Array{Int64,1}<br>
+8-element Array{Int64,1}:<br>
+-1<br>
+-2<br>
+-3<br>
+&nbsp;2<br>
+&nbsp;5<br>
+&nbsp;4<br>
+&nbsp;3<br>
+-1</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">resize!(collection, n) →
+collection </td>
+      <td style="vertical-align: top;">Resize collection to contain n
+elements. If n is
+smaller than the current collection length, the first n elements will
+be retained. If n is larger, the new elements are not guaranteed to be
+initialized. </td>
+      <td style="vertical-align: top;">resize!([6, 5, 4, 3, 2, 1], 3)<br>
+      <br>
+      <br>
+      <br>
+      <br>
+resize!([6, 5, 4, 3, 2, 1], 8) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+6<br>
+5<br>
+4&nbsp;<br>
+8-element Array{Int64,1}:<br>
+6<br>
+5<br>
+4<br>
+3<br>
+2<br>
+1<br>
+0<br>
+0&nbsp;</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">append!(collection, collection2)
+→ collection. </td>
+      <td style="vertical-align: top;">Add the elements of collection2
+to the end of
+collection.<br>
+&nbsp;Use push!() to add individual items to collection
+which are not already themselves in another collection. The result is
+of the preceding example is equivalent to push!([1, 2, 3], 4, 5, 6).<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">append!([1],[2,3])<br>
+      <br>
+      <br>
+      <br>
+      <br>
+append!([1, 2, 3], [4, 5, 6])<br>
+      </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+6-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+&nbsp;5<br>
+&nbsp;6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prepend!(collection, items) <br>
+→ collection </td>
+      <td style="vertical-align: top;">Insert the elements of items to
+the beginning of
+collection.<br>
+Fully implemented by:<br>
+Vector (a.k.a. 1-dimensional Array)<br>
+&nbsp;BitVector (a.k.a. 1-dimensional BitArray) </td>
+      <td style="vertical-align: top;">prepend!([3],[1,2]) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+1<br>
+2<br>
+3 </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">PriorityQueue</span><br>
+プライオリティキューのタイプは、コレクションモジュールから利用可能です。これは、任意のキーと優先順位のタイプを可能にする基本的なプライオリティ
+キューの実装を提供します。複数の同一のキーが許可されていないが、既存のキーの優先順位を効率的に変更することができます。<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">PriorityQueue(K, V[, ord]) </td>
+      <td style="vertical-align: top;">Construct a new PriorityQueue,
+with keys of type K
+and values/priorites of type V. If an order is not given, the priority
+queue is min-ordered using the default comparison for V.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">enqueue!(pq, k, v) </td>
+      <td style="vertical-align: top;">Insert the a key k into a
+priority queue pq with
+priority v. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dequeue!(pq) </td>
+      <td style="vertical-align: top;">Remove and return the lowest
+priority key from a
+priority queue. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">peek(pq) </td>
+      <td style="vertical-align: top;">Return the lowest priority key
+from a priority queue
+without removing that key from the queue.<br>
+PriorityQueue also behaves similarly to a Dict in that keys can be
+inserted and priorities accessed or changed using indexing notation.<br>
+julia&gt; # Julia code<br>
+pq = Collections.PriorityQueue();<br>
+julia&gt; # Insert keys with associated priorities<br>
+pq["a"] = 10; pq["b"] = 5; pq["c"]
+= 15; pq<br>
+Base.Collections.PriorityQueue{Any,Any,Base.Order.ForwardOrdering} with
+3 entries:<br>
+&nbsp;"c" =&gt; 15<br>
+&nbsp;"b" =&gt; 5<br>
+&nbsp;"a" =&gt; 10<br>
+julia&gt; # Change the priority of an existing key<br>
+pq["a"] = 0; pq<br>
+Base.Collections.PriorityQueue{Any,Any,Base.Order.ForwardOrdering} with
+3 entries:<br>
+&nbsp;"c" =&gt; 15<br>
+&nbsp;"b" =&gt; 5<br>
+&nbsp;"a" =&gt; 0 </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Heap Functions</span><br>
+      <span id="result_box" class="" lang="ja"><span>プライオリティキュー</span><span>の
+種類</span><span>と共に</span><span>、</span><span>コレクション</span><span>モジュール</span><span>は、</span><span>ア
+レイ</span><span>上の</span><span>バイナリ</span><span>ヒープ</span><span>の</span><span>動
+作を実行するための</span><span>低レベル</span><span>の</span><span>機能を提供します</span><span>。</span><span>各
+機能は</span><span>、オプションの</span><span>順序</span><span>の</span><span>引数を取りま
+す。</span><span>与えられ</span><span>ていない</span><span>場合は</span><span>、ヒープ</span><span>か
+らポップ</span><span>の要素</span><span>が</span><span>昇順</span><span>に与えられている</span><span>よ
+うに</span><span>、</span><span>デフォルトの順序</span><span>は</span><span>、</span><span
+ class="">使用されています</span><span class="">。</span></span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">heapify(v[, ord]) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>必要に応じて</span><span>与えられた</span><span>順
+序付けを</span><span>使用して</span><span>、</span><span class="">バイナリ</span><span
+ class="">ヒープ</span><span>順に</span><span>新しいベクトル</span><span class="">を返
+します</span><span>。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">heapify!(v[, ord]) </td>
+      <td style="vertical-align: top;">In-place heapify(). </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isheap(v[, ord]) </td>
+      <td style="vertical-align: top;">Return true iff an array is
+heap-ordered according to the given order.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">heappush!(v, x[, ord]) </td>
+      <td style="vertical-align: top;">Given a binary heap-ordered
+array, push a new element x, preserving
+the heap property. For efficiency, this function does not check that
+the array is indeed heap-ordered. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">heappop!(v[, ord]) </td>
+      <td style="vertical-align: top;">Given a binary heap-ordered
+array, remove and return the lowest
+ordered element. For efficiency, this function does not check that the
+array is indeed heap-ordered. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>ダイナミックリンカー</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">ダイナミックリン
+カー</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlopen(libfile::AbstractString[,
+flags::Integer]) </td>
+      <td style="vertical-align: top;">Load a shared library, returning
+an opaque handle.<br>
+&nbsp;&nbsp;&nbsp; The optional flags argument is a bitwise-or of zero
+or more of RTLD_LOCAL, RTLD_GLOBAL, RTLD_LAZY, RTLD_NOW, RTLD_NODELETE,
+RTLD_NOLOAD, RTLD_DEEPBIND, and RTLD_FIRST. These are converted to the
+corresponding flags of the POSIX (and/or GNU libc and/or MacOS) dlopen
+command, if possible, or are ignored if the specified functionality is
+not available on the current platform. The default flags are platform
+specific. On MacOS the default dlopen flags are
+RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL while on other platforms the
+defaults are RTLD_LAZY|RTLD_DEEPBIND|RTLD_LOCAL. An important usage of
+these flags is to specify non default behavior for when the dynamic
+library loader binds library references to exported symbols and if the
+bound references are put into process local or global scope. For
+instance RTLD_LAZY|RTLD_DEEPBIND|RTLD_GLOBAL allows the library’s
+symbols to be available for usage in other shared libraries, addressing
+situations where there are dependencies between shared libraries.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlopen_e(libfile::AbstractString[,
+flags::Integer]) </td>
+      <td style="vertical-align: top;">Similar to dlopen(), except
+returns a NULL pointer instead of raising errors.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_DEEPBIND </td>
+      <td style="vertical-align: top;">dlopenのための列挙型定数（）。該当する場合は、詳細について
+は、ご使用のプラットフォームのマニュアルページを参照してください。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_FIRST </td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_GLOBAL </td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_LAZY </td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_LOCAL</td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_NODELETE</td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_NOLOAD</td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RTLD_NOW</td>
+      <td style="vertical-align: top;">Enum constant for dlopen(). See
+your platform man page for details, if applicable.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlsym(handle, sym)</td>
+      <td style="vertical-align: top;">Look up a symbol from a shared
+library handle, return callable function pointer on success.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlsym_e(handle, sym)</td>
+      <td style="vertical-align: top;">Look up a symbol from a shared
+library handle, silently return NULL pointer on lookup failure.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlclose(handle)</td>
+      <td style="vertical-align: top;">ハンドラによって参照閉じる共有ライブラリ。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dlext</td>
+      <td style="vertical-align: top;">現在のプラットフォーム上での動的ライブラリのファイル拡張子（例：
+DLL、dylib、そう）。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">find_library(names, locations)</td>
+      <td style="vertical-align: top;">Searches for the first library
+in names in the paths in the locations list, DL_LOAD_PATH, or system
+library paths (in that order) which can successfully be dlopen’d. On
+success, the return value will be one of the names (potentially
+prefixed by one of the paths in locations). This string can be assigned
+to a global const and used as the library name in future ccall‘s. On
+failure, it returns the empty string.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DL_LOAD_PATH</td>
+      <td style="vertical-align: top;">&nbsp;When calling dlopen, the
+paths in this list will be searched first, in order, before searching
+the system locations for a valid library handle.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Julia ASTs — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="More about types" href="types.html">
+  <link rel="prev" title="Eval of Julia code" href="eval.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="julia-asts">
+<h1>Julia ASTs<a class="headerlink" href="#julia-asts"
+ title="Permalink to this headline">¶</a></h1>
+<p>Julia has two AST representations. First there is a surface syntax
+AST returned
+by the parser (e.g. the <a class="reference internal"
+ href="../stdlib/numbers.html#Base.parse" title="Base.parse"><code
+ class="xref jl jl-func docutils literal"><span class="pre">parse()</span></code></a>
+function), and manipulated by macros.
+It is a structured representation of code as it is written,
+constructed by <code class="docutils literal"><span class="pre">julia-parser.scm</span></code>
+from a character stream.
+Next there is a lowered AST which is used by type inference and code
+generation.
+In the lowered form, there are generally fewer types of nodes, all
+macros
+are expanded, and all control flow is converted to explicit branches
+and sequences
+of statements. The lowered form is constructed by <code
+ class="docutils literal"><span class="pre">julia-syntax.scm</span></code>.</p>
+<p>First we will focus on the lowered form, since it is more important
+to the
+compiler. It is also less obvious to the human, since it results from a
+significant rearrangement of the input syntax.</p>
+<div class="section" id="lowered-form">
+<h2>Lowered form<a class="headerlink" href="#lowered-form"
+ title="Permalink to this headline">¶</a></h2>
+<p>The following data types exist in lowered ASTs:</p>
+<dl class="docutils">
+  <dt><code class="docutils literal"><span class="pre">Expr</span></code></dt>
+  <dd>has a node type indicated by the <code class="docutils literal"><span
+ class="pre">head</span></code> field, and an <code
+ class="docutils literal"><span class="pre">args</span></code> field
+which is a <code class="docutils literal"><span class="pre">Vector{Any}</span></code>
+of subexpressions.</dd>
+  <dt><code class="docutils literal"><span class="pre">Symbol</span></code></dt>
+  <dd>used to name local variables and static parameters within a
+function.</dd>
+  <dt><code class="docutils literal"><span class="pre">LambdaStaticData</span></code></dt>
+  <dd>wraps the AST of each function, including inner functions.</dd>
+  <dt><code class="docutils literal"><span class="pre">LineNumberNode</span></code></dt>
+  <dd>line number metadata</dd>
+  <dt><code class="docutils literal"><span class="pre">LabelNode</span></code></dt>
+  <dd>branch target, a consecutively-numbered integer starting at 0</dd>
+  <dt><code class="docutils literal"><span class="pre">GotoNode</span></code></dt>
+  <dd>unconditional branch</dd>
+  <dt><code class="docutils literal"><span class="pre">QuoteNode</span></code></dt>
+  <dd>wraps an arbitrary value to reference as data. For example, the
+function
+    <code class="docutils literal"><span class="pre">f()</span> <span
+ class="pre">=</span> <span class="pre">:a</span></code> contains a <code
+ class="docutils literal"><span class="pre">QuoteNode</span></code>
+whose <code class="docutils literal"><span class="pre">value</span></code>
+field is the symbol
+    <code class="docutils literal"><span class="pre">a</span></code>,
+in order to return the symbol itself instead of evaluating it.</dd>
+  <dt><code class="docutils literal"><span class="pre">GlobalRef</span></code></dt>
+  <dd>refers to global variable <code class="docutils literal"><span
+ class="pre">name</span></code> in module <code
+ class="docutils literal"><span class="pre">mod</span></code></dd>
+  <dt><code class="docutils literal"><span class="pre">TopNode</span></code></dt>
+  <dd>forces a name to be resolved as a global in Base. This is now
+mostly
+redundant with <code class="docutils literal"><span class="pre">GlobalRef(Base,</span>
+    <span class="pre">:x)</span></code>.</dd>
+  <dt><code class="docutils literal"><span class="pre">SymbolNode</span></code></dt>
+  <dd>used to annotate a local variable with a type</dd>
+  <dt><code class="docutils literal"><span class="pre">GenSym</span></code></dt>
+  <dd>refers to a consecutively-numbered (starting at 0) static single
+assignment
+(SSA) variable inserted by the compiler.</dd>
+  <dt><code class="docutils literal"><span class="pre">NewvarNode</span></code></dt>
+  <dd>marks a point where a closed variable needs to have a new box
+allocated.</dd>
+</dl>
+<div class="section" id="expr-types">
+<h3>Expr types<a class="headerlink" href="#expr-types"
+ title="Permalink to this headline">¶</a></h3>
+<p>These symbols appear in the <code class="docutils literal"><span
+ class="pre">head</span></code> field of <code class="docutils literal"><span
+ class="pre">Expr</span></code>s in lowered form.</p>
+<dl class="docutils">
+  <dt><code class="docutils literal"><span class="pre">call</span></code></dt>
+  <dd>function call. <code class="docutils literal"><span class="pre">args[1]</span></code>
+is the function to call, <code class="docutils literal"><span
+ class="pre">args[2:end]</span></code> are the
+arguments.</dd>
+  <dt><code class="docutils literal"><span class="pre">line</span></code></dt>
+  <dd>line number and file name metadata. Unlike a <code
+ class="docutils literal"><span class="pre">LineNumberNode</span></code>,
+can also
+contain a file name.</dd>
+  <dt><code class="docutils literal"><span class="pre">gotoifnot</span></code></dt>
+  <dd>conditional branch. If <code class="docutils literal"><span
+ class="pre">args[1]</span></code> is false, goes to label identified
+in <code class="docutils literal"><span class="pre">args[2]</span></code>.</dd>
+  <dt><code class="docutils literal"><span class="pre">=</span></code></dt>
+  <dd>assignment</dd>
+  <dt><code class="docutils literal"><span class="pre">method</span></code></dt>
+  <dd>
+    <p class="first">adds a method to a generic function and assigns
+the result if necessary.</p>
+    <p><code class="docutils literal"><span class="pre">args[1]</span></code>
+- function name (symbol), or a <code class="docutils literal"><span
+ class="pre">GlobalRef</span></code>, or an <code
+ class="docutils literal"><span class="pre">Expr</span></code>
+with head <code class="docutils literal"><span class="pre">kw</span></code>.
+In the <code class="docutils literal"><span class="pre">(kw</span> <span
+ class="pre">f)</span></code> case, the method is actually a keyword
+argument sorting function for <code class="docutils literal"><span
+ class="pre">f</span></code>. It will be stored instead in
+    <code class="docutils literal"><span class="pre">generic_function-&gt;env-&gt;kwsorter</span></code>.</p>
+    <p>If <code class="docutils literal"><span class="pre">method</span></code>
+has only one argument, it corresponds to the form <code
+ class="docutils literal"><span class="pre">function</span>
+    <span class="pre">foo</span> <span class="pre">end</span></code>
+and only creates a function without adding any methods.</p>
+    <p><code class="docutils literal"><span class="pre">args[2]</span></code>
+- a <code class="docutils literal"><span class="pre">SimpleVector</span></code>
+of argument type data. <code class="docutils literal"><span class="pre">args[2][1]</span></code>
+is
+a <code class="docutils literal"><span class="pre">Tuple</span> <span
+ class="pre">type</span></code> of the argument types, and <code
+ class="docutils literal"><span class="pre">args[2][2]</span></code> is
+a
+    <code class="docutils literal"><span class="pre">SimpleVector</span></code>
+of type variables corresponding to the method’s static
+parameters.</p>
+    <p><code class="docutils literal"><span class="pre">args[3]</span></code>
+- a <code class="docutils literal"><span class="pre">LambdaStaticData</span></code>
+of the method itself.</p>
+    <p class="last"><code class="docutils literal"><span class="pre">args[4]</span></code>
+- <code class="docutils literal"><span class="pre">true</span></code>
+or <code class="docutils literal"><span class="pre">false</span></code>,
+identifying whether the method is
+staged (<code class="docutils literal"><span class="pre">@generated</span>
+    <span class="pre">function</span></code>)</p>
+  </dd>
+  <dt><code class="docutils literal"><span class="pre">const</span></code></dt>
+  <dd>declares a (global) variable as constant</dd>
+  <dt><code class="docutils literal"><span class="pre">null</span></code></dt>
+  <dd>has no arguments; simply yields the value <code
+ class="docutils literal"><span class="pre">nothing</span></code></dd>
+  <dt><code class="docutils literal"><span class="pre">static_typeof</span></code></dt>
+  <dd>a horrible misfeature used to determine the result type of array
+comprehensions. Planned to be removed.</dd>
+  <dt><code class="docutils literal"><span class="pre">type_goto</span></code></dt>
+  <dd>a virtual control flow edge used to convey type data to <code
+ class="docutils literal"><span class="pre">static_typeof</span></code>,
+also to be removed.</dd>
+  <dt><code class="docutils literal"><span class="pre">new</span></code></dt>
+  <dd>allocates a new struct-like object. First argument is the type.
+The <code class="docutils literal"><span class="pre">new</span></code>
+pseudo-function is lowered to this, and the type is always inserted by
+the
+compiler. This is very much an internal-only feature, and does no
+checking. Evaluating arbitrary <code class="docutils literal"><span
+ class="pre">new</span></code> expressions can easily segfault.</dd>
+  <dt><code class="docutils literal"><span class="pre">return</span></code></dt>
+  <dd>returns its argument as the value of the enclosing function.</dd>
+  <dt><code class="docutils literal"><span class="pre">the_exception</span></code></dt>
+  <dd>yields the caught exception inside a <code
+ class="docutils literal"><span class="pre">catch</span></code> block.
+This is the value of
+the run time system variable <code class="docutils literal"><span
+ class="pre">jl_exception_in_transit</span></code>.</dd>
+  <dt><code class="docutils literal"><span class="pre">enter</span></code></dt>
+  <dd>enters an exception handler (<code class="docutils literal"><span
+ class="pre">setjmp</span></code>). <code class="docutils literal"><span
+ class="pre">args[1]</span></code> is the label of the
+catch block to jump to on error.</dd>
+  <dt><code class="docutils literal"><span class="pre">leave</span></code></dt>
+  <dd>pop exception handlers. <code class="docutils literal"><span
+ class="pre">args[1]</span></code> is the number of handlers to pop.</dd>
+  <dt><code class="docutils literal"><span class="pre">boundscheck</span></code></dt>
+  <dd>controls turning bounds checks on or off. A stack is maintained;
+if the
+first argument of this expression is true or false (<code
+ class="docutils literal"><span class="pre">true</span></code> means
+bounds
+checks are enabled), it is pushed onto the stack. If the first argument
+is
+    <code class="docutils literal"><span class="pre">:pop</span></code>,
+the stack is popped.</dd>
+  <dt><code class="docutils literal"><span class="pre">copyast</span></code></dt>
+  <dd>part of the implementation of quasi-quote. The argument is a
+surface syntax
+AST that is simply copied recursively and returned at run time.</dd>
+  <dt><code class="docutils literal"><span class="pre">meta</span></code></dt>
+  <dd>metadata. Currently used for inlining hints, represented by the
+symbols
+    <code class="docutils literal"><span class="pre">:inline</span></code>
+and <code class="docutils literal"><span class="pre">:noinline</span></code>.</dd>
+</dl>
+</div>
+<div class="section" id="lambdastaticdata">
+<h3>LambdaStaticData<a class="headerlink" href="#lambdastaticdata"
+ title="Permalink to this headline">¶</a></h3>
+<p>Has an <code class="docutils literal"><span class="pre">-&gt;ast</span></code>
+field pointing to an <code class="docutils literal"><span class="pre">Expr</span></code>
+with head <code class="docutils literal"><span class="pre">lambda</span></code>.
+This
+<code class="docutils literal"><span class="pre">Expr</span></code> has
+the following layout:</p>
+<dl class="docutils">
+  <dt><code class="docutils literal"><span class="pre">args[1]</span></code></dt>
+  <dd><code class="docutils literal"><span class="pre">Vector{Any}</span></code>
+of argument name symbols. For varargs functions, the last
+element is actually an <code class="docutils literal"><span class="pre">Expr</span></code>
+with head <code class="docutils literal"><span class="pre">...</span></code>.
+The argument of this
+    <code class="docutils literal"><span class="pre">Expr</span></code>
+is an <code class="docutils literal"><span class="pre">Expr</span></code>
+with head <code class="docutils literal"><span class="pre">::</span></code>.
+The first argument of <code class="docutils literal"><span class="pre">::</span></code>
+is a
+symbol (the argument name), and the second argument is a type
+declaration.</dd>
+  <dt><code class="docutils literal"><span class="pre">args[2]</span></code></dt>
+  <dd>
+    <p class="first">A <code class="docutils literal"><span class="pre">Vector{Any}</span></code>
+with variable information:</p>
+    <p><code class="docutils literal"><span class="pre">args[2][1]</span></code>
+- An array of 3-element <code class="docutils literal"><span
+ class="pre">varinfo</span></code> arrays, one for each
+argument or local variable. A <code class="docutils literal"><span
+ class="pre">varinfo</span></code> array has the form <code
+ class="docutils literal"><span class="pre">Any[:name,</span>
+    <span class="pre">type,</span> <span class="pre">bits]</span></code>.
+The <code class="docutils literal"><span class="pre">bits</span></code>
+field is an integer
+describing variable properties as follows:
+- 1 - captured (closed over)
+- 2 - assigned (only false if there are <em>no</em> assignment
+statements with this var on the left)
+- 4 - assigned by an inner function
+- 8 - const (currently unused for local variables)
+- 16 - statically assigned once
+- 32 - might be used before assigned. This flag is only valid after
+type inference.</p>
+    <p><code class="docutils literal"><span class="pre">args[2][2]</span></code>
+- An array of <code class="docutils literal"><span class="pre">varinfo</span></code>
+triples for each outer variable
+this function captures.</p>
+    <p><code class="docutils literal"><span class="pre">args[2][3]</span></code>
+- The types of variables represented by <code class="docutils literal"><span
+ class="pre">GenSym</span></code> objects.
+Given <code class="docutils literal"><span class="pre">GenSym</span></code>
+    <code class="docutils literal"><span class="pre">g</span></code>,
+its type will be at <code class="docutils literal"><span class="pre">args[2][3][g.id+1]</span></code>.</p>
+    <p class="last"><code class="docutils literal"><span class="pre">args[2][4]</span></code>
+- The names (symbols) of static parameters.</p>
+  </dd>
+  <dt><code class="docutils literal"><span class="pre">args[3]</span></code></dt>
+  <dd>an <code class="docutils literal"><span class="pre">Expr</span></code>
+with head <code class="docutils literal"><span class="pre">body</span></code>
+whose arguments are the statements
+comprising the function body.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="surface-syntax-ast">
+<h2>Surface syntax AST<a class="headerlink" href="#surface-syntax-ast"
+ title="Permalink to this headline">¶</a></h2>
+<p>Front end ASTs consist entirely of <code class="docutils literal"><span
+ class="pre">Expr</span></code>s and atoms (e.g. symbols, numbers).
+There is generally a different expression head for each visually
+distinct
+syntactic form.
+Examples will be given in s-expression syntax. Each parenthesized list
+corresponds
+to an Expr, where the first element is the head.
+For example <code class="docutils literal"><span class="pre">(call</span>
+<span class="pre">f</span> <span class="pre">x)</span></code>
+corresponds to <code class="docutils literal"><span class="pre">Expr(:call,</span>
+<span class="pre">:f,</span> <span class="pre">:x)</span></code> in
+julia.</p>
+<div class="section" id="calls">
+<h3>Calls<a class="headerlink" href="#calls"
+ title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="39%"><col width="61%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>f(x)</td>
+      <td>(call f x)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>f(x, y=1, z=2)</td>
+      <td>(call f x (kw y 1) (kw z 2))</td>
+    </tr>
+    <tr class="row-even">
+      <td>f(x; y=1)</td>
+      <td>(call f (parameters (kw y 1)) x)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>f(x...)</td>
+      <td>(call f (... x))</td>
+    </tr>
+  </tbody>
+</table>
+<p><code class="docutils literal"><span class="pre">Do</span></code>
+syntax:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="k">do</span> <span class="n">a</span><span
+ class="p">,</span><span class="n">b</span>
+    <span class="n">body</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>parses as <code class="docutils literal"><span class="pre">(call</span>
+<span class="pre">f</span> <span class="pre">(-&gt;</span> <span
+ class="pre">(tuple</span> <span class="pre">a</span> <span
+ class="pre">b)</span> <span class="pre">(block</span> <span
+ class="pre">body))</span> <span class="pre">x)</span></code>.</p>
+</div>
+<div class="section" id="operators">
+<h3>Operators<a class="headerlink" href="#operators"
+ title="Permalink to this headline">¶</a></h3>
+<p>Most uses of operators are just function calls, so they are parsed
+with the
+head <code class="docutils literal"><span class="pre">call</span></code>.
+However some operators are special forms (not necessarily function
+calls),
+and in those cases the operator itself is the expression head.
+In julia-parser.scm these are referred to as “syntactic operators”.
+Some operators (<code class="docutils literal"><span class="pre">+</span></code>
+and <code class="docutils literal"><span class="pre">*</span></code>)
+use N-ary parsing; chained calls are parsed as
+a single N-argument call.
+Finally, chains of comparisons have their own special expression
+structure.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="39%"><col width="61%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>x+y</td>
+      <td>(call + x y)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a+b+c+d</td>
+      <td>(call + a b c d)</td>
+    </tr>
+    <tr class="row-even">
+      <td>2x</td>
+      <td>(call * 2 x)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a&amp;&amp;b</td>
+      <td>(&amp;&amp; a b)</td>
+    </tr>
+    <tr class="row-even">
+      <td>x += 1</td>
+      <td>(+= x 1)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a ? 1 : 2</td>
+      <td>(if a 1 2)</td>
+    </tr>
+    <tr class="row-even">
+      <td>a:b</td>
+      <td>(: a b)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a:b:c</td>
+      <td>(: a b c)</td>
+    </tr>
+    <tr class="row-even">
+      <td>a,b</td>
+      <td>(tuple a b)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a==b</td>
+      <td>(comparison a == b)</td>
+    </tr>
+    <tr class="row-even">
+      <td>1&lt;i&lt;=n</td>
+      <td>(comparison 1 &lt; i &lt;= n)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a.b</td>
+      <td>(. a (quote b))</td>
+    </tr>
+    <tr class="row-even">
+      <td>a.(b)</td>
+      <td>(. a b)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="bracketed-forms">
+<h3>Bracketed forms<a class="headerlink" href="#bracketed-forms"
+ title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="31%"><col width="69%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>a[i]</td>
+      <td>(ref a i)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>t[i;j]</td>
+      <td>(typed_vcat t i j)</td>
+    </tr>
+    <tr class="row-even">
+      <td>t[i j]</td>
+      <td>(typed_hcat t i j)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>t[a b; c d]</td>
+      <td>(typed_vcat t (row a b) (row c d))</td>
+    </tr>
+    <tr class="row-even">
+      <td>a{b}</td>
+      <td>(curly a b)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>a{b;c}</td>
+      <td>(curly a (parameters c) b)</td>
+    </tr>
+    <tr class="row-even">
+      <td>[x]</td>
+      <td>(vect x)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>[x,y]</td>
+      <td>(vect x y)</td>
+    </tr>
+    <tr class="row-even">
+      <td>[x;y]</td>
+      <td>(vcat x y)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>[x y]</td>
+      <td>(hcat x y)</td>
+    </tr>
+    <tr class="row-even">
+      <td>[x y; z t]</td>
+      <td>(vcat (row x y) (row z t))</td>
+    </tr>
+    <tr class="row-odd">
+      <td>[x for y in z, a in b]</td>
+      <td>(comprehension x (= y z) (= a b))</td>
+    </tr>
+    <tr class="row-even">
+      <td>T[x for y in z]</td>
+      <td>(typed_comprehension T x (= y z))</td>
+    </tr>
+    <tr class="row-odd">
+      <td>[a=&gt;b for x in y]</td>
+      <td>(dict_comprehension (=&gt; a b) (= x y))</td>
+    </tr>
+    <tr class="row-even">
+      <td>(k=&gt;v)[a=&gt;b for x in y]</td>
+      <td>(typed_dict_comprehension (=&gt; k v) (=&gt; a b) (= x y))</td>
+    </tr>
+    <tr class="row-odd">
+      <td>(a, b, c)</td>
+      <td>(tuple a b c)</td>
+    </tr>
+    <tr class="row-even">
+      <td>(a; b; c)</td>
+      <td>(block a (block b c))</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="macros">
+<h3>Macros<a class="headerlink" href="#macros"
+ title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="39%"><col width="61%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>@m x y</td>
+      <td>(macrocall @m x y)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>Base.@m x y</td>
+      <td>(macrocall (. Base (quote @m)) x y)</td>
+    </tr>
+    <tr class="row-even">
+      <td>@Base.m x y</td>
+      <td>(macrocall (. Base (quote @m)) x y)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="strings">
+<h3>Strings<a class="headerlink" href="#strings"
+ title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="39%"><col width="61%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>“a”</td>
+      <td>“a”</td>
+    </tr>
+    <tr class="row-odd">
+      <td>x”y”</td>
+      <td>(macrocall @x_str “y”)</td>
+    </tr>
+    <tr class="row-even">
+      <td>x”y”z</td>
+      <td>(macrocall @x_str “y” “z”)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>“x = $x”</td>
+      <td>(string “x = ” x)</td>
+    </tr>
+    <tr class="row-even">
+      <td>`a b c`</td>
+      <td>(macrocall @cmd “a b c”)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>x ~ distr</td>
+      <td>(macrocall @~ x distr)</td>
+    </tr>
+  </tbody>
+</table>
+<p>Doc string syntax:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="s">"some docs"</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span>
+</pre>
+</div>
+</div>
+<p>parses as <code class="docutils literal"><span class="pre">(macrocall</span>
+<span class="pre">(|.|</span> <span class="pre">Base</span> <span
+ class="pre">'@doc)</span> <span class="pre">"some</span> <span
+ class="pre">docs"</span> <span class="pre">(=</span> <span
+ class="pre">(call</span> <span class="pre">f</span> <span class="pre">x)</span>
+<span class="pre">(block</span> <span class="pre">x)))</span></code></p>
+</div>
+<div class="section" id="imports-and-such">
+<h3>Imports and such<a class="headerlink" href="#imports-and-such"
+ title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="35%"><col width="65%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>import a</td>
+      <td>(import a)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>import a.b.c</td>
+      <td>(import a b c)</td>
+    </tr>
+    <tr class="row-even">
+      <td>import ...a</td>
+      <td>(import . . . a)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>import a.b, c.d</td>
+      <td>(toplevel (import a b) (import c d))</td>
+    </tr>
+    <tr class="row-even">
+      <td>import Base: x</td>
+      <td>(import Base x)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>import Base: x, y</td>
+      <td>(toplevel (import Base x) (import Base y))</td>
+    </tr>
+    <tr class="row-even">
+      <td>export a, b</td>
+      <td>(export a b)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="numbers">
+<h3>Numbers<a class="headerlink" href="#numbers"
+ title="Permalink to this headline">¶</a></h3>
+<p>Julia supports more number types than many scheme implementations,
+so not all numbers are represented directly as scheme numbers in the
+AST.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="33%"><col width="67%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Input</th>
+    <th class="head">AST</th>
+  </tr>
+  </thead>
+  <tbody valign="top">
+    <tr class="row-even">
+      <td>11111111111111111111</td>
+      <td>(macrocall @int128_str “11111111111111111111”)</td>
+    </tr>
+    <tr class="row-odd">
+      <td>0xfffffffffffffffff</td>
+      <td>(macrocall @uint128_str “0xfffffffffffffffff”)</td>
+    </tr>
+    <tr class="row-even">
+      <td>1111...many digits...</td>
+      <td>(macrocall @big_str “1111....”)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="block-forms">
+<h3>Block forms<a class="headerlink" href="#block-forms"
+ title="Permalink to this headline">¶</a></h3>
+<p>A block of statements is parsed as <code class="docutils literal"><span
+ class="pre">(block</span> <span class="pre">stmt1</span> <span
+ class="pre">stmt2</span> <span class="pre">...)</span></code>.</p>
+<p>If statement:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="n">a</span>
+    <span
+ class="n">b</span>
+<span class="k">elseif</span> <span class="n">c</span>
+    <span
+ class="n">d</span>
+<span class="k">else</span> <span class="n">e</span>
+    <span
+ class="n">f</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>parses as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="k">if</span> <span class="n">a</span> <span
+ class="p">(</span><span class="n">block</span> <span class="p">(</span><span
+ class="n">line</span> <span class="mi">2</span><span class="p">)</span> <span
+ class="n">b</span><span class="p">)</span>
+    <span class="p">(</span><span
+ class="n">block</span> <span class="p">(</span><span class="n">line</span> <span
+ class="mi">3</span><span class="p">)</span> <span class="p">(</span><span
+ class="k">if</span> <span class="n">c</span> <span class="p">(</span><span
+ class="n">block</span> <span class="p">(</span><span class="n">line</span> <span
+ class="mi">4</span><span class="p">)</span> <span class="n">d</span><span
+ class="p">)</span>
+                        <span class="p">(</span><span
+ class="n">block</span> <span class="p">(</span><span class="n">line</span> <span
+ class="mi">5</span><span class="p">)</span> <span class="n">e</span> <span
+ class="p">(</span><span class="n">line</span> <span class="mi">6</span><span
+ class="p">)</span> <span class="n">f</span><span class="p">))))</span>
+</pre>
+</div>
+</div>
+<p>A <code class="docutils literal"><span class="pre">while</span></code>
+loop parses as <code class="docutils literal"><span class="pre">(while</span>
+<span class="pre">condition</span> <span class="pre">body)</span></code>.</p>
+<p>A <code class="docutils literal"><span class="pre">for</span></code>
+loop parses as <code class="docutils literal"><span class="pre">(for</span>
+<span class="pre">(=</span> <span class="pre">var</span> <span
+ class="pre">iter)</span> <span class="pre">body)</span></code>.
+If there is more than one iteration specification, they are parsed as a
+block:
+<code class="docutils literal"><span class="pre">(for</span> <span
+ class="pre">(block</span> <span class="pre">(=</span> <span
+ class="pre">v1</span> <span class="pre">iter1)</span> <span
+ class="pre">(=</span> <span class="pre">v2</span> <span class="pre">iter2))</span>
+<span class="pre">body)</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">break</span></code>
+and <code class="docutils literal"><span class="pre">continue</span></code>
+are parsed as 0-argument expressions
+<code class="docutils literal"><span class="pre">(break)</span></code>
+and <code class="docutils literal"><span class="pre">(continue)</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">let</span></code>
+is parsed as <code class="docutils literal"><span class="pre">(let</span>
+<span class="pre">body</span> <span class="pre">(=</span> <span
+ class="pre">var1</span> <span class="pre">val1)</span> <span
+ class="pre">(=</span> <span class="pre">var2</span> <span class="pre">val2)</span>
+<span class="pre">...)</span></code>.</p>
+<p>A basic function definition is parsed as <code
+ class="docutils literal"><span class="pre">(function</span> <span
+ class="pre">(call</span> <span class="pre">f</span> <span class="pre">x)</span>
+<span class="pre">body)</span></code>.
+A more complex example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> f</span><span
+ class="p">{</span><span class="n">T</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">T</span><span
+ class="p">;</span> <span class="n">k</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span
+ class="n">x</span><span class="o">+</span><span class="mi">1</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>parses as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="k">function</span><span
+ class="nf"> </span><span class="o">(</span><span class="n">call</span> <span
+ class="p">(</span><span class="n">curly</span> <span class="n">f</span> <span
+ class="n">T</span><span class="p">)</span> <span class="p">(</span><span
+ class="n">parameters</span> <span class="p">(</span><span class="n">kw</span> <span
+ class="n">k</span> <span class="mi">1</span><span class="p">))</span>
+                <span
+ class="p">(::</span> <span class="n">x</span> <span class="n">T</span><span
+ class="p">))</span>
+          <span class="p">(</span><span class="n">block</span> <span
+ class="p">(</span><span class="n">line</span> <span class="mi">2</span> <span
+ class="n">file</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">)</span> <span class="p">(</span><span class="k">return</span> <span
+ class="p">(</span><span class="n">call</span> <span class="o">+</span> <span
+ class="n">x</span> <span class="mi">1</span><span class="p">))))</span>
+</pre>
+</div>
+</div>
+<p>Type definition:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">type</span><span class="nc"> Foo</span><span
+ class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span
+ class="n">S</span><span class="p">}</span>
+    <span class="n">x</span><span
+ class="p">::</span><span class="n">T</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>parses as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>(type #t (curly Foo (&lt;: T S))<br>      (block (line 2 none) (:: x T)))<br></pre>
+</div>
+</div>
+<p>The first argument is a boolean telling whether the type is mutable.</p>
+<p><code class="docutils literal"><span class="pre">try</span></code>
+blocks parse as <code class="docutils literal"><span class="pre">(try</span>
+<span class="pre">try_block</span> <span class="pre">var</span> <span
+ class="pre">catch_block</span> <span class="pre">finally_block)</span></code>.
+If no variable is present after <code class="docutils literal"><span
+ class="pre">catch</span></code>, <code class="docutils literal"><span
+ class="pre">var</span></code> is <code class="docutils literal"><span
+ class="pre">#f</span></code>.
+If there is no <code class="docutils literal"><span class="pre">finally</span></code>
+clause, then the last argument is not present.</p>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="types.html"
+ class="btn btn-neutral float-right" title="More about types">Next </a>
+<a href="eval.html" class="btn btn-neutral" title="Eval of Julia code">
+Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+<div class="wy-nav-content"> </div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

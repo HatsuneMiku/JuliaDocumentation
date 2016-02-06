@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>演算</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Mathematics
+(数学関数)　　単項演算子，二項演算子，多項演算子</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">書式<br>
+      </td>
+      <td style="vertical-align: top;">機能<br>
+      </td>
+      <td style="vertical-align: top;">例題<br>
+      </td>
+      <td style="vertical-align: top;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">\</code><span
+ class="sig-paren">(</span><em>x</em>, <em>y</em><span
+ class="sig-paren">)</span></td>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">二項での除算の逆数</span></code><em></em><em></em><br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">\(5,3)</span></code><em></em><em></em><br>
+      </td>
+      <td style="vertical-align: top;">0.6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">..+(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の足し算<br>
+      <span class="sig-paren"></span></td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 3.0 2.0];<br>
+.+(A,B) </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;2.0&nbsp; 3.0<br>
+&nbsp;6.0&nbsp; 6.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.-(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の<code class="descname">引き算</code></td>
+      <td style="vertical-align: top;"><code class="descname"></code><em></em><em></em><em></em>A=[1.0
+2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 3.0 2.0];<br>
+.-(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;0.0&nbsp; 1.0<br>
+&nbsp;0.0&nbsp; 2.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.*(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の掛け算<br>
+ドットがないと行列AB<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 1.0 1.0];<br>
+.*(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;1.0&nbsp; 2.0<br>
+&nbsp;3.0&nbsp; 4.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">/(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の割り算<br>
+ドットがないと行列A/B(det B≠0)<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 3.0 2.0];<br>
+&nbsp;./(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;1.0&nbsp; 2.0<br>
+&nbsp;1.0&nbsp; 2.0 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.\(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の割り算の逆数<br>
+ドットがないと行列A/B(det B≠0)<br>
+ただし整数の商<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 3.0 2.0];<br>
+.\(A.B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;1.0&nbsp; 0.5<br>
+&nbsp;1.0&nbsp; 0.5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">.^(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">行列の成分の乗数<br>
+ドットがないとエラー<br>
+      </td>
+      <td style="vertical-align: top;">A=[1.0 2.0; 3.0 4.0];<br>
+B=[1.0 1.0; 3.0 2.0];<br>
+.^(A,B)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp; 1.0&nbsp;&nbsp; 2.0<br>
+&nbsp;27.0&nbsp; 16.0 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">fma</code><span
+ class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span
+ class="sig-paren">)</span></td>
+      <td style="vertical-align: top;">x*y+zを計算する<br>
+      </td>
+      <td style="vertical-align: top;">fma(2,3,4)<br>
+      </td>
+      <td style="vertical-align: top;">10<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">muladd</code><span
+ class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span
+ class="sig-paren">)</span></td>
+      <td style="vertical-align: top;">x*y+zを計算する互換性のためfmaと同じ<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname">muladd</code>（2,3,4）<span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">10<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fld(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">x÷yの商で小数以下切り捨て<br>
+      </td>
+      <td style="vertical-align: top;">fld(20,3)<br>
+      </td>
+      <td style="vertical-align: top;">6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cld(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">x÷yの商で小数以下切上げ<br>
+      </td>
+      <td style="vertical-align: top;">cld(20,3)<br>
+      </td>
+      <td style="vertical-align: top;">7<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">mod2pi</code><span
+ class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span></td>
+      <td style="vertical-align: top;">弾性力0から2π<br>
+      </td>
+      <td style="vertical-align: top;">mod2pi(9)<br>
+      </td>
+      <td style="vertical-align: top;">2.7168146928204133</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">mod1(x, m)</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">x÷mの(0,m]の範囲のあまりを求めます<br>
+      </td>
+      <td style="vertical-align: top;">mod1(5,4)<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">rem1(x, m)</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">範囲が(0,m]の剰余<br>
+      </td>
+      <td style="vertical-align: top;">rem1(11,3)<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+</body>
+</html>

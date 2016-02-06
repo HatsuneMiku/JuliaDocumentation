@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>論理演算子</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">論理演算子</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">~(x)<br>
+      </td>
+      <td style="vertical-align: top;">符号を変えて1を引く<br>
+      </td>
+      <td style="vertical-align: top;">~(7)<br>
+~(0b01)<br>
+      </td>
+      <td style="vertical-align: top;">-8<br>
+0xfe<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&amp;(x, y)<br>
+      </td>
+      <td style="vertical-align: top;">Bitwise and<br>
+エラー<br>
+      </td>
+      <td style="vertical-align: top;">&amp;(1,2)<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">ERROR: unsupported or misplaced
+expression &amp;<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">|(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">論理和 </td>
+      <td style="vertical-align: top;">|(8,2)<br>
+      </td>
+      <td style="vertical-align: top;">10<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">$(x,y)<br>
+      </td>
+      <td style="vertical-align: top;">Bitwise exclusive or<br>
+エラー<br>
+      </td>
+      <td style="vertical-align: top;">$(1,2)<br>
+      </td>
+      <td style="vertical-align: top;">ERROR: unsupported or misplaced
+expression $<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">!(x)<br>
+      </td>
+      <td style="vertical-align: top;">true とfalseを逆にする<br>
+      </td>
+      <td style="vertical-align: top;">!(true)<br>
+!(false)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">x &amp;&amp; y<br>
+      </td>
+      <td style="vertical-align: top;">論理和<br>
+      </td>
+      <td style="vertical-align: top;">true &amp;&amp; true<br>
+false &amp;&amp; false<br>
+true &amp;&amp; false<br>
+false &amp;&amp; true<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+false<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">x || y<br>
+      </td>
+      <td style="vertical-align: top;">論理積<br>
+      </td>
+      <td style="vertical-align: top;">true || true<br>
+false || false<br>
+false || true<br>
+true || false<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+true<br>
+true<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

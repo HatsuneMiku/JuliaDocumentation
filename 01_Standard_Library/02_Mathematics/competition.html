@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>競技プログラミング</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">競技プログラミング<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">clamp(x, lo, hi)<br>
+      </td>
+      <td style="vertical-align: top;">loからhiの間ならx上限下限を超えると極限が適用<br>
+      </td>
+      <td style="vertical-align: top;">clamp(0,1,5)<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">invmod(x, m)<br>
+      </td>
+      <td style="vertical-align: top;">x*a = 1 (mod m)を満たすaを求める<br>
+      </td>
+      <td style="vertical-align: top;">invmod(5, 12)<br>
+invmod(10, 7)<br>
+      </td>
+      <td style="vertical-align: top;">5<br>
+5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">frexp(val)<br>
+      </td>
+      <td style="vertical-align: top;">val=x*2^expをみたすx実数　expは整数を求める(x,
+exp) xは実数　expは整数<br>
+      </td>
+      <td style="vertical-align: top;">frexp(0.002)<br>
+      </td>
+      <td style="vertical-align: top;">(0.512,-8)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ldexp(x, n)</td>
+      <td style="vertical-align: top;">x*2^nを求める (x &#8714; Float)<br>
+      </td>
+      <td style="vertical-align: top;">ldexp(3.0, 8) </td>
+      <td style="vertical-align: top;">768.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ispow2(n)<br>
+      </td>
+      <td style="vertical-align: top;">2^n　ただしnは整数で表せるかtrue,false<br>
+      </td>
+      <td style="vertical-align: top;">ispow2(16)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">abs2(x)<br>
+      </td>
+      <td style="vertical-align: top;">二乗して正の数にする<br>
+複素数も正の数値になる<br>
+      </td>
+      <td style="vertical-align: top;">abs2(-2.2)<br>
+abs2(2+2im)<br>
+      </td>
+      <td style="vertical-align: top;">4.840000000000001<br>
+8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextpow2(n)<br>
+      </td>
+      <td style="vertical-align: top;">nが収まる2^pの最小の値<br>
+      </td>
+      <td style="vertical-align: top;">nextpow2(31)<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevpow2(n)<br>
+      </td>
+      <td style="vertical-align: top;">nが収まる2^pの最小の値から2^(p-1)の値<br>
+      </td>
+      <td style="vertical-align: top;">prevpow2(31)<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextpow(a, x)<br>
+      </td>
+      <td style="vertical-align: top;">ｘが収まる最小のa^n nは自然数<br>
+      </td>
+      <td style="vertical-align: top;">nextpow(5, 24)<br>
+      </td>
+      <td style="vertical-align: top;">25 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevpow(a, x)<br>
+      </td>
+      <td style="vertical-align: top;">ｘが収まる最小のa^n nは自然数a^(n-1)の値 </td>
+      <td style="vertical-align: top;">prevpow(5, 120)<br>
+      </td>
+      <td style="vertical-align: top;">25 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lfact(x)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの</span><span>対数</span><span
+ class="">階乗</span><span>を計算</span></span> </td>
+      <td style="vertical-align: top;">lfact(5)<br>
+      </td>
+      <td style="vertical-align: top;">4.787491742782046<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isapprox(x, y;
+rtol::Real=sqrt(eps), atol::Real=0)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>不正確</span><span>等価比較</span><span>：</span><span>trueの場合</span><span>ノ
+ルム</span><span>（</span><span>X</span><span class="atn">-</span><span>Y</span><span>）</span><span
+ class="atn">&lt;</span><span>=</span><span>アトル</span><span>+</span> <span
+ class="hps">RTOL</span><span>*</span><span>最大</span><span>（</span><span>ノ
+ルム</span><span>（</span><span>x）は</span><span>、</span><span>ノルム</span><span>（</span><span>Y</span><span>）</span><span>）</span><span>。</span><span>デ
+フォルト</span><span>アトル</span><span>はゼロであり、</span><span>デフォルトの</span><span>RTOL</span><span>は、
+x</span><span>とyの</span><span>種類</span><span>によって異なります</span><span>。</span><br>
+      <span>実数または</span><span>複素数</span><span>浮動小数点値</span><span>について</span><span>、</span><span>RTOL</span><span>の
+デフォルトは</span><span>SQRT</span><span>する</span><span>（</span><span>EPS</span><span>（</span><span>typeof
+演算</span><span>（</span><span>実数</span><span>（</span><span>X</span><span
+ class="atn">-</span><span>Y</span><span>）</span><span>）</span><span>）</span><span>）</span><span>。</span><span>こ
+れは</span><span>仮数</span><span>桁</span><span>の</span><span>約半分</span><span>の</span><span>平
+等</span><span>を要求</span><span>に対応しています。</span><span>他のタイプ</span><span>の場
+合は</span><span>、</span><span>ゼロに</span><span>デフォルトを</span><span class="">RTOL</span><span>。</span><br>
+      <span>xと</span><span>yは</span><span>、ケース</span><span>ノルム</span><span
+ class="">のデフォルトは</span><span>vecnorm</span><span>する</span><span>が、</span><span>ノ
+ルム</span><span>::</span> <span class="hps">Functionキーワード</span><span>引数</span><span>を</span><span
+ class="">渡すことで変更</span><span>することが可能な</span><span>数値の配列</span><span>であっ
+てもよいです</span><span>。</span> <span class="hps">（</span><span>数値の場合</span><span>、</span><span>ノ
+ルムは</span><span>腹筋</span><span>と同じ</span><span>ものです</span><span>。</span><span>）</span><br>
+      <span>二項演算子</span><span>の</span><span>&#8776;</span><span>は</span><span
+ class="">デフォルト引数</span><span>と</span><span class="">isapprox</span><span>に
+相当し、</span><span>&#8777;</span><span>yは</span><span>！</span><span>の</span><span>isapprox</span><span>の
+（x、y</span><span class="">）と等価</span><span class="">である</span><span
+ class="">xは</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_trunc(T, x)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>危険な</span><span>TRUNC</span><span>（税込</span><span>）</span><span>絶
+対</span><span>値</span><span>x以下</span><span>である</span><span>T型の</span><span>最
+も近い整数</span><span>値を返します</span><span>。</span><span class="">値が</span><span>T
+で</span><span>表現できない</span><span>場合は</span><span>、</span><span>任意の値</span><span>が
+返されます</span><span>。</span></span><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">signif(x, digits[, base])<br>
+      </td>
+      <td style="vertical-align: top;">数字は基本ベース表現の下で、有効桁数が存在するようにX（ラウンドの
+意味での）ラウンド、signifデフォルト10.例えば、（123.456、2）120.0、およびsignifである（357.913、4、2）
+352.0です。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextpow(a, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>最小</span><span>A</span><span>^</span> <span
+ class="hps">nは</span><span>非負の整数</span><span>である</span><span>X</span><span>、</span><span>以
+上</span><span>を</span><span>cを</span><span>。</span> <span class="hps">a
+が</span><span>1</span><span>よりも大きくする必要があり</span><span>、xは</span><span>0</span><span
+ class="">より大きくなければなりません</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">nextpow(2, 5)<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextprod([k_1, k_2, ..., ]n)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>次の</span><span>整数ではありません</span><span>\</span><span>（</span><span>\</span><span>の
+prod</span> <span class="hps">P_I</span><span>^</span><span class="atn">{</span><span>P_I</span><span>}</span><span>\</span><span>）</span><span>整
+数の</span><span>\</span><span>（</span><span>P_1</span><span>の</span><span>\</span><span>）</span><span>、</span><span>\</span><span>（</span><span>P_2</span><span>\</span><span>）</span><span>な
+ど</span><span class="">のように書くことができる</span><span>nよりも</span><span
+ class="">小さいです</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevprod([k_1, k_2, ..., ]n)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>など</span><span>整数の</span><span>\</span><span>（</span><span>\</span><span>の
+prod</span> <span class="hps">P_I</span><span>^</span><span class="atn">{</span><span>P_I</span><span>}</span><span>\</span><span>）</span><span>\</span><span>（</span><span>P_1</span><span>の</span><span>\</span><span>）</span><span>、</span><span>\</span><span>（</span><span>P_2</span><span>の</span><span>\</span><span>）</span><span>、</span><span>の
+ように書くことができる</span><span>nより</span><span>前の</span><span>整数</span><span
+ class="">大きくありません</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">powermod(x, p, m)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>計算</span><span>\</span><span>（</span><span>X</span><span>^</span>
+      <span class="hps">nは</span><span>\</span><span>モッズ</span><span
+ class="">メートル</span><span class="">の</span><span class="">\</span><span
+ class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">powermod(2, 5, 7)<br>
+      </td>
+      <td style="vertical-align: top;">4</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airy(k, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>エアリー</span><span>関数\</span><span>の</span><span>n
+番目の</span><span>誘導体（</span><span>\</span> <span class="hps">operatorname</span><span
+ class="atn">{</span><span>愛</span><span>}</span><span>（</span><span
+ class="">x）が</span><span class="">\</span><span class="">）</span><span>。</span><span>（</span><span
+ class="">0</span><span class="atn">&lt;</span><span class="">K</span><span
+ class="atn">&lt;</span><span class="">3</span><span class="">）</span></span>
+      </td>
+      <td style="vertical-align: top;">airy(2, 2)<br>
+      </td>
+      <td style="vertical-align: top;">3.2980949999782134</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyai(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>エアリー</span><span>関数\</span><span>（</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>愛</span><span>}</span><span>（</span><span>x）
+が</span><span>\</span><span>）</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">airyai(5)</td>
+      <td style="vertical-align: top;">0.00010834442813607444</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyprime(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>エアリー</span><span>関数</span><span>の</span><span>導
+関数</span><span>の</span><span>\</span><span>（</span><span>\</span><span>演
+算子名</span><span class="atn">{</span><span>エク</span><span>）</span><span>\</span><span>）</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;">airyprime(5)<br>
+      </td>
+      <td style="vertical-align: top;">-0.00024741389086846253</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyaiprime(x)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">エアリー</span><span>関数</span><span>の</span><span>導
+関数</span><span>の</span><span>\</span><span>（</span><span>\</span><span>演
+算子名</span><span class="atn">{</span><span>エク</span><span>）</span><span>\</span><span>）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">airyaiprime(5)</td>
+      <td style="vertical-align: top;">-0.00024741389086846253</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airybi(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>エアリー</span><span>関数\</span><span>（</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>バ
+イ</span><span>}</span><span>（</span><span>x）が</span><span>\</span><span>）</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;">airybi(5)</td>
+      <td style="vertical-align: top;"> 657.7920441711684</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airybiprime(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>エアリー</span><span>関数</span><span>の</span><span>導
+関数</span><span>の</span><span>\</span><span>（</span><span>\</span> <span
+ class="hps">operatorname</span><span class="atn">{</span><span class="">バ
+イ</span><span class="">}</span><span class="">'（x）が</span><span class="">\</span><span
+ class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">airybiprime(2.5) </td>
+      <td style="vertical-align: top;">9.421423317334321<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">airyx(k, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>エアリー関数</span><span>の</span><span>スケーリングされた</span><span>k
+番目</span><span>誘導体</span><span>、</span><span>リターン</span><span>\</span><span>（</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>エ
+ク</span><span>）</span><span>電子</span><span>^</span><span>{\</span> <span
+ class="hps">FRAC</span><span class="atn">{</span><span>2</span><span>}</span><span
+ class="atn">{</span><span>3</span><span>}</span><span>のx</span><span>\</span>
+      <span class="hps">sqrtの</span><span class="atn">{</span><span>X</span><span>}</span><span>}</span><span>\</span><span>）</span><span>の
+k</span><span>==</span><span>0</span><span>||</span><span>用</span><span>K</span><span>==
+1</span><span>、</span><span class="">および</span><span>\</span><span>（</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>エ
+ク</span><span>）</span><span>電子</span><span>^</span><span class="atn">{</span><span>
+- </span><span>\</span><span>左</span><span>|</span> <span class="hps">k
+個の</span><span>==</span><span>2</span><span>||</span><span>用</span><span>}</span><span>\</span><span>）</span><span>|</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>再</span><span
+ class="">}</span><span class="">\</span><span class="">左</span><span>（</span><span>\</span>
+      <span class="hps">FRAC</span><span class="atn">{</span><span>2</span><span>}</span><span
+ class="atn">{</span><span>3</span><span>}</span><span>のx</span><span>\</span>
+      <span class="hps">sqrtの</span><span class="atn">{</span><span>X</span><span>}</span><span>\</span><span>右</span><span>）</span><span>\</span><span>右
+側</span><span>k個の</span><span>==</span><span>3</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">airyx(3, 5)</td>
+      <td style="vertical-align: top;">0.831878259124798<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj0(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>0次</span><span>の</span><span
+ class="">第1種ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>J_0</span><span>（</span><span>X</span><span>）</span><span>\</span><span>）</span></span></td>
+      <td style="vertical-align: top;">&nbsp;besselj0(5)<br>
+      </td>
+      <td style="vertical-align: top;">-0.1775967713143383</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj1(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">オーダー</span><span>1</span><span>の</span><span>第
+1種ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>J_1</span><span>（</span><span
+ class="">x）が</span><span class="">\</span><span class="">）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">besselj1(5)</td>
+      <td style="vertical-align: top;">-0.32757913759146523<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselj(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第
+一種</span><span>、</span><span>\</span><span>（</span><span>J_</span><span>\</span>
+      <span class="hps">NU</span><span>（</span><span>x）が</span><span>\</span><span>）</span><span>の</span><span
+ class="">ベッセル関数</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">besselj(2,5)</td>
+      <td style="vertical-align: top;">0.0465651162777522<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besseljx(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第一種</span><span>の
+スケーリングされた</span><span>ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>J_</span><span>\</span>
+      <span class="hps">NU</span><span>（</span><span>XE</span><span>^</span><span
+ class="atn">{</span><span> - </span><span>|</span><span>\</span> <span
+ class="hps">operatorname</span><span class="atn">{</span><span>イム</span><span>}</span><span>（</span><span
+ class="">x）が</span><span>|</span><span class="">}</span><span class="">\</span><span
+ class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">besseljx(2,5)</td>
+      <td style="vertical-align: top;">0.046565116277752346<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely0(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>0次</span><span>の第二</span><span
+ class="">種ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>Y_0</span><span>（</span><span>x）
+が</span><span>\</span><span>）</span><span>。</span></span></td>
+      <td style="vertical-align: top;">bessely0(5)</td>
+      <td style="vertical-align: top;">-0.30851762524903376<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely1(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>オーダー</span><span>1の第2</span><span>種
+ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>Y_1</span><span>（</span><span>x）
+が</span><span>\</span><span>）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">bessely1(5)</td>
+      <td style="vertical-align: top;">0.1478631433912268<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bessely(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第
+二種</span><span>、</span><span>\</span><span>（</span><span>Y_</span><span>\</span>
+      <span class="hps">NU</span><span>（</span><span>x）が</span><span>\</span><span>）</span><span>の</span><span
+ class="">ベッセル関数</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"> bessely(2,5)</td>
+      <td style="vertical-align: top;">0.3676628826055245<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselyx(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>、</span><span>\</span><span>の</span><span>第
+二種</span><span>のスケーリングされた</span><span>ベッセル関数</span><span>（</span><span>Y</span><span>\</span><span>の</span><span>ニュ
+クス</span><span>^</span><span class="atn">{</span><span> - </span><span>|</span><span>\</span>
+      <span class="hps">operatorname</span><span class="atn">{</span><span>イ
+ム</span><span>}</span><span>（</span><span>x）が</span><span>|</span><span>}</span><span>\</span><span>）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">besselyx(2,5)</td>
+      <td style="vertical-align: top;">0.3676628826055246<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh1(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>、</span><span>\</span><span>の</span><span>第
+三</span><span>種ベッセル関数</span><span>（</span><span>H</span><span>^</span><span
+ class="atn">{</span><span class="">（</span><span class="">1</span><span
+ class="">）</span><span class="">}</span><span class="">_</span><span
+ class="">\</span><span class="">ν</span><span>（</span><span class="">x）
+の</span><span>\</span><span>）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">hankelh1(2,5)</td>
+      <td style="vertical-align: top;">0.04656511627775225 +
+0.36766288260552465im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh1x(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>、</span><span>\</span><span>の</span><span>三</span><span>種
+類</span><span>のスケーリングされた</span><span>ベッセル関数</span><span>（</span><span>H</span><span>^</span><span
+ class="atn">{</span><span>（</span><span>1</span><span>）</span><span>}</span><span>_</span><span>\</span><span>ν</span><span>（</span><span>x）
+の</span><span>電子</span><span>^</span><span class="atn">{</span><span
+ class=""> - </span> <span class="hps">X I</span><span>}</span><span>\</span><span>）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">hankelh1x(2,5)</td>
+      <td style="vertical-align: top;">-0.33935210037336483 +
+0.14894447714484096im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh2(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>、</span><span>\</span><span>（</span><span>H2</span><span>）</span><span>}</span><span>の</span><span>第
+三</span><span>種ベッセル関数</span><span>_</span><span>\</span><span class="">ν</span><span
+ class="">（</span><span class="">x）の</span><span class="">\</span><span
+ class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">hankelh2(2,5)</td>
+      <td style="vertical-align: top;">0.04656511627775225 -
+0.36766288260552465im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hankelh2x(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>、</span><span>\</span><span>の</span><span>三</span><span>種
+類</span><span>のスケーリングされた</span><span>ベッセル関数</span><span>（</span><span>H</span><span>^</span><span
+ class="atn">{</span><span>（</span><span>2</span><span>）</span><span>}</span><span>_</span><span>\</span><span>ν</span><span>（</span><span>x）
+の</span><span>電子</span><span>^</span><span class="atn">{</span><span>x
+iは</span><span>}</span><span>\</span><span>）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">hankelh2x(2,5)</td>
+      <td style="vertical-align: top;">-0.33935210037336483 -
+0.14894447714484096im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselh(nu, k, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第三種</span><span>（</span><span>ハ
+ンケル関数</span><span>）</span><span>の</span><span>ベッセル関数</span><span>。</span>
+      <span class="hps">kは</span><span>それぞれ</span><span class="">ハンケル</span><span>さ
+h1</span><span>または</span><span>ハンケル</span><span>さh2</span><span>を</span><span>、</span><span>選
+択し</span><span>、</span><span>1</span><span>または</span><span>2のいずれか</span><span>で
+す</span><span>。</span></span></td>
+      <td style="vertical-align: top;">besselh(2,2,5)</td>
+      <td style="vertical-align: top;">0.04656511627775225 -
+0.36766288260552465im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besseli(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第
+一種</span><span>の</span><span>変形ベッセル関数</span><span>\</span><span>（</span><span>I</span><span>\</span>
+      <span class="hps">NU</span><span class="">（</span><span class="">x）
+が</span><span class="">\</span><span class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">besseli(2,5)</td>
+      <td style="vertical-align: top;">17.50561496662424</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselix(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第一種</span><span>の
+スケーリングされた</span><span>変形ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>I</span><span>\</span>
+      <span class="hps">NU</span><span>（</span><span>x）は</span><span>電子</span><span>^</span><span
+ class="atn">{</span><span> - </span><span>|</span><span>\</span> <span
+ class="hps">operatorname</span><span class="atn">{</span><span>リ</span><span>}</span><span>（</span><span
+ class="">x）が</span><span>|</span><span>}</span><span class="">\</span><span>）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">besselix(2,5)</td>
+      <td style="vertical-align: top;">0.11795190583151142<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselk(nu, x)</td>
+      <td style="vertical-align: top;">注文NUの第二種の変形ベッセル関数\（K_\ NU（x）が\）。</td>
+      <td style="vertical-align: top;">besselk(2,5)</td>
+      <td style="vertical-align: top;">0.00530894371222346<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">besselkx(nu, x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>注文</span><span>NU</span><span>の</span><span>第
+二種</span><span>のスケーリングされた</span><span class="">変形ベッセル関数</span><span>、</span><span>\</span><span>（</span><span>K_</span><span>\</span>
+      <span class="hps">NU</span><span>（</span><span>x）は</span><span>電子</span><span>^</span>
+      <span class="hps">X</span><span>\</span><span class="">）</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">besselkx(2,5)</td>
+      <td style="vertical-align: top;">0.7879171078288439<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

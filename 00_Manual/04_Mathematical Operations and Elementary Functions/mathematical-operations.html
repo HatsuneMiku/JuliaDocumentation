@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematical Operations and Elementary Functions — Julia
+Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Complex and Rational Numbers"
+ href="complex-and-rational-numbers.html">
+  <link rel="prev" title="Integers and Floating-Point Numbers"
+ href="integers-and-floating-point-numbers.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="navigation" aria-label="breadcrumbs navigation"><br>
+</div>
+<div role="main" class="document">
+<div class="section"
+ id="mathematical-operations-and-elementary-functions">
+<h2>数学の演算と初等関数</h2>
+<p>Julia provides a complete collection of basic arithmetic and bitwise
+operators across all of its numeric primitive types, as well as
+providing portable, efficient implementations of a comprehensive
+collection of standard mathematical functions.</p>
+<div class="section" id="arithmetic-operators">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">算術
+演算子</span></span></h2>
+<p>The following <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Arithmetic#Arithmetic_operations">arithmetic
+operators</a>
+are supported on all primitive numeric types:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="16%"><col width="23%"><col width="61%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Expression</th>
+    <th class="head">Name</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">+x</span></code></td>
+      <td>unary plus</td>
+      <td>the identity operation</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">-x</span></code></td>
+      <td>unary minus</td>
+      <td>maps values to their additive inverses</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">+</span> <span class="pre">y</span></code></td>
+      <td>binary plus</td>
+      <td>performs addition</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">-</span> <span class="pre">y</span></code></td>
+      <td>binary minus</td>
+      <td>performs subtraction</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">*</span> <span class="pre">y</span></code></td>
+      <td>times</td>
+      <td>performs multiplication</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">/</span> <span class="pre">y</span></code></td>
+      <td>divide</td>
+      <td>performs division</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">\</span> <span class="pre">y</span></code></td>
+      <td>inverse divide</td>
+      <td>equivalent to <code class="docutils literal"><span
+ class="pre">y</span> <span class="pre">/</span> <span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">^</span> <span class="pre">y</span></code></td>
+      <td>power</td>
+      <td>raises <code class="docutils literal"><span class="pre">x</span></code>
+to the <code class="docutils literal"><span class="pre">y</span></code>th
+power</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">%</span> <span class="pre">y</span></code></td>
+      <td>remainder</td>
+      <td>equivalent to <code class="docutils literal"><span
+ class="pre">rem(x,y)</span></code></td>
+    </tr>
+  </tbody>
+</table>
+<p>as well as the negation on <code class="docutils literal"><span
+ class="pre">Bool</span></code> types:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="15%"><col width="21%"><col width="65%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Expression</th>
+    <th class="head">Name</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">!x</span></code></td>
+      <td>negation</td>
+      <td>changes <code class="docutils literal"><span class="pre">true</span></code>
+to <code class="docutils literal"><span class="pre">false</span></code>
+and vice versa</td>
+    </tr>
+  </tbody>
+</table>
+<p>Julia’s promotion system makes arithmetic operations on mixtures of
+argument
+types “just work” naturally and automatically. See <a
+ class="reference internal"
+ href="conversion-and-promotion.html#man-conversion-and-promotion"><span>Conversion
+and Promotion</span></a>
+for details of the promotion system.</p>
+<p>Here are some simple examples using arithmetic operators:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span
+ class="o">+</span> <span class="mi">3</span>
+<span class="mi">6</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">-</span> <span class="mi">2</span>
+<span class="o">-</span><span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="o">*</span><span class="mi">2</span><span class="o">/</span><span
+ class="mi">12</span>
+<span class="mf">0.5</span>
+</pre>
+</div>
+</div>
+<p>(By convention, we tend to space less tightly binding operators less
+tightly, but there are no syntactic constraints.)</p>
+</div>
+<div class="section" id="bitwise-operators">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">ビッ
+ト演算子</span></span></h2>
+<p>The following <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bitwise_operation#Bitwise_operators">bitwise
+operators</a>
+are supported on all primitive integer types:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="13%"><col width="87%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Expression</th>
+    <th class="head">Name</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">~x</span></code></td>
+      <td>bitwise not</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">&amp;</span> <span class="pre">y</span></code></td>
+      <td>bitwise and</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">|</span> <span class="pre">y</span></code></td>
+      <td>bitwise or</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">$</span> <span class="pre">y</span></code></td>
+      <td>bitwise xor (exclusive or)</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">&gt;&gt;&gt;</span> <span class="pre">y</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Logical_shift">logical shift</a>
+right</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">&gt;&gt;</span> <span class="pre">y</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Arithmetic_shift">arithmetic shift</a>
+right</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">&lt;&lt;</span> <span class="pre">y</span></code></td>
+      <td>logical/arithmetic shift left</td>
+    </tr>
+  </tbody>
+</table>
+<p>Here are some examples with bitwise operators:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="o">~</span><span class="mi">123</span>
+<span class="o">-</span><span class="mi">124</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">123</span> <span
+ class="o">&amp;</span> <span class="mi">234</span>
+<span class="mi">106</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">123</span> <span
+ class="o">|</span> <span class="mi">234</span>
+<span class="mi">251</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">123</span> <span
+ class="o">$</span> <span class="mi">234</span>
+<span class="mi">145</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">~</span><span
+ class="n">UInt32</span><span class="p">(</span><span class="mi">123</span><span
+ class="p">)</span>
+<span class="mh">0xffffff84</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">~</span><span
+ class="n">UInt8</span><span class="p">(</span><span class="mi">123</span><span
+ class="p">)</span>
+<span class="mh">0x84</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="updating-operators">
+<h2><span id="mt17" class="sentence"
+ data-guid="c9808bd1bf67ebacff1da8170e326b7c"
+ data-source="&lt;span class=&quot;mtpsTagOuterHtml&quot; &gt;&lt;span&gt;x++&lt;/span&gt;&lt;/span&gt; – postfix increment."
+ xml:space="preserve">インクリメント，</span><span id="mt19" class="sentence"
+ data-guid="22fa358fc7f0a713d4359973a6c20cb9"
+ data-source="&lt;span class=&quot;mtpsTagOuterHtml&quot; &gt;&lt;span&gt;x--&lt;/span&gt;&lt;/span&gt;  –  postfix decrement."
+ xml:space="preserve">デクリメント</span>演算子</h2>
+<p>Every binary arithmetic and bitwise operator also has an updating
+version that assigns the result of the operation back into its left
+operand. The updating version of the binary operator is formed by
+placing a
+<code class="docutils literal"><span class="pre">=</span></code>
+immediately after the operator. For example, writing <code
+ class="docutils literal"><span class="pre">x</span> <span class="pre">+=</span>
+<span class="pre">3</span></code> is
+equivalent to writing <code class="docutils literal"><span class="pre">x</span>
+<span class="pre">=</span> <span class="pre">x</span> <span
+ class="pre">+</span> <span class="pre">3</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">+=</span> <span class="mi">3</span>
+<span class="mi">4</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="mi">4</span>
+</pre>
+</div>
+</div>
+<p>The updating versions of all the binary arithmetic and bitwise
+operators
+are:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre>+=  -=  *=  /=  \=  ÷=  %=  ^=  &amp;=  |=  $=  &gt;&gt;&gt;=  &gt;&gt;=  &lt;&lt;=<br></pre>
+</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>An updating operator rebinds the variable on the left-hand side.
+As a result, the type of the variable may change.</p>
+<div class="last highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">x</span> <span class="o">=</span> <span class="mh">0x01</span><span
+ class="p">;</span> <span class="nb">typeof</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span>
+<span class="n">UInt8</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">x</span> <span
+ class="o">*=</span> <span class="mi">2</span> <span class="c">#Same as x = x * 2</span>
+<span class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="nb">isa</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="kt">Int</span><span class="p">)</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="numeric-comparisons">
+<span id="man-numeric-comparisons"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">比較
+演算子</span></span></h2>
+<p>Standard comparison operations are defined for all the primitive
+numeric
+types:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="44%"><col width="56%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Operator</th>
+    <th class="head">Name</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.==" title="Base.=="><code
+ class="xref jl jl-obj docutils literal"><span class="pre">==</span></code></a></td>
+      <td>equality</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.%21=" title="Base.!="><code
+ class="xref jl jl-obj docutils literal"><span class="pre">!=</span></code></a>
+      <a class="reference internal"
+ href="../stdlib/math.html#Base.%E2%89%A0" title="Base.≠"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">≠</span></code></a></td>
+      <td>inequality</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.%3C" title="Base.&lt;"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">&lt;</span></code></a></td>
+      <td>less than</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.%3C=" title="Base.&lt;="><code
+ class="xref jl jl-obj docutils literal"><span class="pre">&lt;=</span></code></a>
+      <a class="reference internal"
+ href="../stdlib/math.html#Base.%E2%89%A4" title="Base.≤"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">≤</span></code></a></td>
+      <td>less than or equal to</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.%3E" title="Base.&gt;"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">&gt;</span></code></a></td>
+      <td>greater than</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.%3E=" title="Base.&gt;="><code
+ class="xref jl jl-obj docutils literal"><span class="pre">&gt;=</span></code></a>
+      <a class="reference internal"
+ href="../stdlib/math.html#Base.%E2%89%A5" title="Base.≥"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">≥</span></code></a></td>
+      <td>greater than or equal to</td>
+    </tr>
+  </tbody>
+</table>
+<p>Here are some simple examples:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">1</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">==</span> <span class="mi">2</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">!=</span> <span class="mi">2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">==</span> <span class="mf">1.0</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">&lt;</span> <span class="mi">2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mf">1.0</span> <span
+ class="o">&gt;</span> <span class="mi">3</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">&gt;=</span> <span class="mf">1.0</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">1</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">1</span> <span class="o">&lt;=</span> <span class="o">-</span><span
+ class="mi">1</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">1</span> <span class="o">&lt;=</span> <span class="o">-</span><span
+ class="mi">2</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span> <span
+ class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span>
+<span class="n">false</span>
+</pre>
+</div>
+</div>
+<p>Integers are compared in the standard manner — by comparison of
+bits.
+Floating-point numbers are compared according to the <a
+ class="reference external"
+ href="https://en.wikipedia.org/wiki/IEEE_754-2008">IEEE 754
+standard</a>:</p>
+<ul class="simple">
+  <li>Finite numbers are ordered in the usual manner.</li>
+  <li>Positive zero is equal but not greater than negative zero.</li>
+  <li><code class="docutils literal"><span class="pre">Inf</span></code>
+is equal to itself and greater than everything else except <code
+ class="docutils literal"><span class="pre">NaN</span></code>.</li>
+  <li><code class="docutils literal"><span class="pre">-Inf</span></code>
+is equal to itself and less then everything else except <code
+ class="docutils literal"><span class="pre">NaN</span></code>.</li>
+  <li><code class="docutils literal"><span class="pre">NaN</span></code>
+is not equal to, not less than, and not greater than anything,
+including itself.</li>
+</ul>
+<p>The last point is potentially surprising and thus worth noting:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">NaN</span> <span class="o">==</span> <span class="n">NaN</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">NaN</span> <span
+ class="o">!=</span> <span class="n">NaN</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">NaN</span> <span
+ class="o">&lt;</span> <span class="n">NaN</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">NaN</span> <span
+ class="o">&gt;</span> <span class="n">NaN</span>
+<span class="n">false</span>
+</pre>
+</div>
+</div>
+<p>and can cause especial headaches with <a class="reference internal"
+ href="arrays.html#man-arrays"><span>Arrays</span></a>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">[</span><span class="mi">1</span> <span class="n">NaN</span><span
+ class="p">]</span> <span class="o">==</span> <span class="p">[</span><span
+ class="mi">1</span> <span class="n">NaN</span><span class="p">]</span>
+<span class="n">false</span>
+</pre>
+</div>
+</div>
+<p>Julia provides additional functions to test numbers for special
+values,
+which can be useful in situations like hash key comparisons:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="48%"><col width="52%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Tests if</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/base.html#Base.isequal" title="Base.isequal"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isequal(x,</span>
+      <span class="pre">y)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">y</span></code>
+are identical</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/numbers.html#Base.isfinite" title="Base.isfinite"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isfinite(x)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+is a finite number</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/numbers.html#Base.isinf" title="Base.isinf"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isinf(x)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+is infinite</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/numbers.html#Base.isnan" title="Base.isnan"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isnan(x)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">x</span></code>
+is not a number</td>
+    </tr>
+  </tbody>
+</table>
+<p><a class="reference internal" href="../stdlib/base.html#Base.isequal"
+ title="Base.isequal"><code class="xref jl jl-func docutils literal"><span
+ class="pre">isequal()</span></code></a> considers <code
+ class="docutils literal"><span class="pre">NaN</span></code>s equal to
+each other:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="nb">isequal</span><span class="p">(</span><span class="n">NaN</span><span
+ class="p">,</span><span class="n">NaN</span><span class="p">)</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="nb">isequal</span><span
+ class="p">([</span><span class="mi">1</span> <span class="n">NaN</span><span
+ class="p">],</span> <span class="p">[</span><span class="mi">1</span> <span
+ class="n">NaN</span><span class="p">])</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="nb">isequal</span><span
+ class="p">(</span><span class="n">NaN</span><span class="p">,</span><span
+ class="n">NaN32</span><span class="p">)</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+<p><a class="reference internal" href="../stdlib/base.html#Base.isequal"
+ title="Base.isequal"><code class="xref jl jl-func docutils literal"><span
+ class="pre">isequal()</span></code></a> can also be used to
+distinguish signed zeros:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="o">-</span><span class="mf">0.0</span> <span class="o">==</span> <span
+ class="mf">0.0</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="nb">isequal</span><span
+ class="p">(</span><span class="o">-</span><span class="mf">0.0</span><span
+ class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">false</span>
+</pre>
+</div>
+</div>
+<p>Mixed-type comparisons between signed integers, unsigned integers,
+and
+floats can be tricky. A great deal of care has been taken to ensure
+that Julia does them correctly.</p>
+<p>For other types, <a class="reference internal"
+ href="../stdlib/base.html#Base.isequal" title="Base.isequal"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isequal()</span></code></a>
+defaults to calling <a class="reference internal"
+ href="../stdlib/math.html#Base.==" title="Base.=="><code
+ class="xref jl jl-func docutils literal"><span class="pre">==()</span></code></a>,
+so if you want to
+define equality for your own types then you only need to add a <a
+ class="reference internal" href="../stdlib/math.html#Base.=="
+ title="Base.=="><code class="xref jl jl-func docutils literal"><span
+ class="pre">==()</span></code></a>
+method. If you define your own equality function, you should probably
+define a corresponding <a class="reference internal"
+ href="../stdlib/base.html#Base.hash" title="Base.hash"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hash()</span></code></a>
+method to ensure that <code class="docutils literal"><span class="pre">isequal(x,y)</span></code>
+implies <code class="docutils literal"><span class="pre">hash(x)</span>
+<span class="pre">==</span> <span class="pre">hash(y)</span></code>.</p>
+<div class="section" id="chaining-comparisons">
+<h3><span id="result_box" class="short_text" lang="ja"><span>比較</span><span
+ class="">の連鎖</span></span></h3>
+<p>Unlike most languages, with the <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Python_syntax_and_semantics#Comparison_operators">notable
+exception of
+Python</a>,
+comparisons can be arbitrarily chained:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">1</span> <span class="o">&lt;</span> <span class="mi">2</span> <span
+ class="o">&lt;=</span> <span class="mi">2</span> <span class="o">&lt;</span> <span
+ class="mi">3</span> <span class="o">==</span> <span class="mi">3</span> <span
+ class="o">&gt;</span> <span class="mi">2</span> <span class="o">&gt;=</span> <span
+ class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span
+ class="o">&lt;</span> <span class="mi">3</span> <span class="o">!=</span> <span
+ class="mi">5</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+<p>Chaining comparisons is often quite convenient in numerical code.
+Chained comparisons use the <code
+ class="xref jl jl-obj docutils literal"><span class="pre">&amp;&amp;</span></code>
+operator for scalar comparisons,
+and the <a class="reference internal" href="../stdlib/math.html#Base.&amp;"
+ title="Base.&amp;"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">&amp;</span></code></a> operator for elementwise
+comparisons, which allows them to
+work on arrays. For example, <code class="docutils literal"><span
+ class="pre">0</span> <span class="pre">.&lt;</span> <span class="pre">A</span>
+<span class="pre">.&lt;</span> <span class="pre">1</span></code> gives
+a boolean array whose
+entries are true where the corresponding elements of <code
+ class="docutils literal"><span class="pre">A</span></code> are between
+0
+and 1.</p>
+<p>The operator <a class="reference internal"
+ href="../stdlib/math.html#Base.%3C" title="Base.&lt;"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">&lt;</span></code></a>
+is intended for array objects; the operation
+<code class="docutils literal"><span class="pre">A</span> <span
+ class="pre">.&lt;</span> <span class="pre">B</span></code> is valid
+only if <code class="docutils literal"><span class="pre">A</span></code>
+and <code class="docutils literal"><span class="pre">B</span></code>
+have the same dimensions. The
+operator returns an array with boolean entries and with the same
+dimensions
+as <code class="docutils literal"><span class="pre">A</span></code>
+and <code class="docutils literal"><span class="pre">B</span></code>.
+Such operators are called <em>elementwise</em>; Julia offers a
+suite of elementwise operators: <a class="reference internal"
+ href="../stdlib/strings.html#Base.*" title="Base.*"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">*</span></code></a>,
+<a class="reference internal" href="../stdlib/math.html#Base.+"
+ title="Base.+"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">+</span></code></a>, etc. Some of the elementwise
+operators can take a scalar operand such as the example <code
+ class="docutils literal"><span class="pre">0</span> <span class="pre">.&lt;</span>
+<span class="pre">A</span> <span class="pre">.&lt;</span> <span
+ class="pre">1</span></code> in
+the preceding paragraph.
+This notation means that the scalar operand should be replicated for
+each entry of
+the array.</p>
+<p>Note the evaluation behavior of chained comparisons:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">v</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="p">(</span><span
+ class="n">println</span><span class="p">(</span><span class="n">x</span><span
+ class="p">);</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">v</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span> <span
+ class="o">&lt;</span> <span class="n">v</span><span class="p">(</span><span
+ class="mi">2</span><span class="p">)</span> <span class="o">&lt;=</span> <span
+ class="n">v</span><span class="p">(</span><span class="mi">3</span><span
+ class="p">)</span>
+<span class="mi">2</span>
+<span class="mi">1</span>
+<span class="mi">3</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">v</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span> <span
+ class="o">&gt;</span> <span class="n">v</span><span class="p">(</span><span
+ class="mi">2</span><span class="p">)</span> <span class="o">&lt;=</span> <span
+ class="n">v</span><span class="p">(</span><span class="mi">3</span><span
+ class="p">)</span>
+<span class="mi">2</span>
+<span class="mi">1</span>
+<span class="n">false</span>
+</pre>
+</div>
+</div>
+<p>The middle expression is only evaluated once, rather than twice as
+it
+would be if the expression were written as
+<code class="docutils literal"><span class="pre">v(1)</span> <span
+ class="pre">&lt;</span> <span class="pre">v(2)</span> <span
+ class="pre">&amp;&amp;</span> <span class="pre">v(2)</span> <span
+ class="pre">&lt;=</span> <span class="pre">v(3)</span></code>.
+However, the order of evaluations in a
+chained comparison is undefined. It is strongly recommended not to use
+expressions with side effects (such as printing) in chained
+comparisons.
+If side effects are required, the short-circuit <code
+ class="xref jl jl-obj docutils literal"><span class="pre">&amp;&amp;</span></code>
+operator should
+be used explicitly (see <a class="reference internal"
+ href="control-flow.html#man-short-circuit-evaluation"><span>Short-Circuit
+Evaluation</span></a>).</p>
+</div>
+<div class="section" id="operator-precedence">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">演算
+子の</span><span class="">優先順位</span></span></h3>
+<p>Julia applies the following order of operations, from highest
+precedence
+to lowest:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="15%"><col width="85%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Category</th>
+    <th class="head">Operators</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td>Syntax</td>
+      <td><code class="docutils literal"><span class="pre">.</span></code>
+followed by <code class="docutils literal"><span class="pre">::</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Exponentiation</td>
+      <td><code class="docutils literal"><span class="pre">^</span></code>
+and its elementwise equivalent <code class="docutils literal"><span
+ class="pre">.^</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>Fractions</td>
+      <td><code class="docutils literal"><span class="pre">//</span></code>
+and <code class="docutils literal"><span class="pre">.//</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Multiplication</td>
+      <td><code class="docutils literal"><span class="pre">*</span> <span
+ class="pre">/</span> <span class="pre">%</span> <span class="pre">&amp;</span>
+      <span class="pre">\</span></code> and <code
+ class="docutils literal"><span class="pre">.*</span> <span class="pre">./</span>
+      <span class="pre">.%</span> <span class="pre">.\</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>Bitshifts</td>
+      <td><code class="docutils literal"><span class="pre">&lt;&lt;</span>
+      <span class="pre">&gt;&gt;</span> <span class="pre">&gt;&gt;&gt;</span></code>
+and <code class="docutils literal"><span class="pre">.&lt;&lt;</span> <span
+ class="pre">.&gt;&gt;</span> <span class="pre">.&gt;&gt;&gt;</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Addition</td>
+      <td><code class="docutils literal"><span class="pre">+</span> <span
+ class="pre">-</span> <span class="pre">|</span> <span class="pre">$</span></code>
+and <code class="docutils literal"><span class="pre">.+</span> <span
+ class="pre">.-</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>Syntax</td>
+      <td><code class="docutils literal"><span class="pre">:</span> <span
+ class="pre">..</span></code> followed by <code
+ class="docutils literal"><span class="pre">|&gt;</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Comparisons</td>
+      <td><code class="docutils literal"><span class="pre">&gt;</span> <span
+ class="pre">&lt;</span> <span class="pre">&gt;=</span> <span
+ class="pre">&lt;=</span> <span class="pre">==</span> <span
+ class="pre">===</span> <span class="pre">!=</span> <span class="pre">!==</span>
+      <span class="pre">&lt;:</span></code> and <code
+ class="docutils literal"><span class="pre">.&gt;</span> <span
+ class="pre">.&lt;</span> <span class="pre">.&gt;=</span> <span
+ class="pre">.&lt;=</span> <span class="pre">.==</span> <span
+ class="pre">.!=</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>Control flow</td>
+      <td><code class="docutils literal"><span class="pre">&amp;&amp;</span></code>
+followed by <code class="docutils literal"><span class="pre">||</span></code>
+followed by <code class="docutils literal"><span class="pre">?</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>Assignments</td>
+      <td><code class="docutils literal"><span class="pre">=</span> <span
+ class="pre">+=</span> <span class="pre">-=</span> <span class="pre">*=</span>
+      <span class="pre">/=</span> <span class="pre">//=</span> <span
+ class="pre">\=</span> <span class="pre">^=</span> <span class="pre">÷=</span>
+      <span class="pre">%=</span> <span class="pre">|=</span> <span
+ class="pre">&amp;=</span> <span class="pre">$=</span> <span
+ class="pre">&lt;&lt;=</span> <span class="pre">&gt;&gt;=</span> <span
+ class="pre">&gt;&gt;&gt;=</span></code> and <code
+ class="docutils literal"><span class="pre">.+=</span> <span
+ class="pre">.-=</span> <span class="pre">.*=</span> <span class="pre">./=</span>
+      <span class="pre">.//=</span> <span class="pre">.\=</span> <span
+ class="pre">.^=</span> <span class="pre">.÷=</span> <span class="pre">.%=</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="section" id="numerical-conversions">
+<span id="man-numerical-conversions"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span>数値</span><span
+ class="">の変換</span></span></h2>
+<p>Julia supports three forms of numerical conversion, which differ in
+their
+handling of inexact conversions.</p>
+<ul class="simple">
+  <li>The notation <code class="docutils literal"><span class="pre">T(x)</span></code>
+or <code class="docutils literal"><span class="pre">convert(T,x)</span></code>
+converts <code class="docutils literal"><span class="pre">x</span></code>
+to a value of type <code class="docutils literal"><span class="pre">T</span></code>.
+    <ul>
+      <li>If <code class="docutils literal"><span class="pre">T</span></code>
+is a floating-point type, the result is the nearest representable
+value, which could be positive or negative infinity.</li>
+      <li>If <code class="docutils literal"><span class="pre">T</span></code>
+is an integer type, an <code class="docutils literal"><span class="pre">InexactError</span></code>
+is raised if <code class="docutils literal"><span class="pre">x</span></code>
+is not representable by <code class="docutils literal"><span
+ class="pre">T</span></code>.</li>
+    </ul>
+  </li>
+  <li><code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">%</span> <span class="pre">T</span></code> converts an
+integer <code class="docutils literal"><span class="pre">x</span></code>
+to a value of integer type <code class="docutils literal"><span
+ class="pre">T</span></code>
+congruent to <code class="docutils literal"><span class="pre">x</span></code>
+modulo <code class="docutils literal"><span class="pre">2^n</span></code>,
+where <code class="docutils literal"><span class="pre">n</span></code>
+is the number of bits in <code class="docutils literal"><span
+ class="pre">T</span></code>.
+In other words, the binary representation is truncated to fit.</li>
+  <li>The <a class="reference internal" href="#man-rounding-functions"><span>Rounding
+functions</span></a> take a type <code class="docutils literal"><span
+ class="pre">T</span></code> as an optional argument.
+For example, <code class="docutils literal"><span class="pre">round(Int,x)</span></code>
+is a shorthand for <code class="docutils literal"><span class="pre">Int(round(x))</span></code>.</li>
+</ul>
+<p>The following examples show the different forms.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="kt">Int8</span><span class="p">(</span><span class="mi">127</span><span
+ class="p">)</span>
+<span class="mi">127</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="kt">Int8</span><span
+ class="p">(</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">InexactError</span><span
+ class="p">()</span>
+ <span class="k">in</span> <span class="n">call</span> <span
+ class="n">at</span> <span class="n">essentials</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">56</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="kt">Int8</span><span
+ class="p">(</span><span class="mf">127.0</span><span class="p">)</span>
+<span class="mi">127</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="kt">Int8</span><span
+ class="p">(</span><span class="mf">3.14</span><span class="p">)</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">InexactError</span><span
+ class="p">()</span>
+ <span class="k">in</span> <span class="n">call</span> <span
+ class="n">at</span> <span class="n">essentials</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">56</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="kt">Int8</span><span
+ class="p">(</span><span class="mf">128.0</span><span class="p">)</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">InexactError</span><span
+ class="p">()</span>
+ <span class="k">in</span> <span class="n">call</span> <span
+ class="n">at</span> <span class="n">essentials</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">56</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">127</span> <span
+ class="o">%</span> <span class="kt">Int8</span>
+<span class="mi">127</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">128</span> <span
+ class="o">%</span> <span class="kt">Int8</span>
+<span class="o">-</span><span class="mi">128</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">round</span><span
+ class="p">(</span><span class="kt">Int8</span><span class="p">,</span><span
+ class="mf">127.4</span><span class="p">)</span>
+<span class="mi">127</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">round</span><span
+ class="p">(</span><span class="kt">Int8</span><span class="p">,</span><span
+ class="mf">127.6</span><span class="p">)</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">InexactError</span><span
+ class="p">()</span>
+ <span class="k">in</span> <span class="n">trunc</span> <span
+ class="n">at</span> <span class="n">float</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">374</span>
+ <span
+ class="k">in</span> <span class="n">round</span> <span class="n">at</span> <span
+ class="n">float</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">:</span><span class="mi">181</span>
+</pre>
+</div>
+</div>
+<p>See <a class="reference internal"
+ href="conversion-and-promotion.html#man-conversion-and-promotion"><span>Conversion
+and Promotion</span></a> for how to define your own
+conversions and promotions.</p>
+</div>
+<div class="section" id="elementary-functions">
+<span id="man-elementary-functions"></span>
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">初等
+関数</span></span></h2>
+<p>Julia provides a comprehensive collection of mathematical functions
+and
+operators. These mathematical operations are defined over as broad a
+class of numerical values as permit sensible definitions, including
+integers, floating-point numbers, rationals, and complexes, wherever
+such definitions make sense.</p>
+<div class="section" id="rounding-functions">
+<span id="man-rounding-functions"></span>
+<h3><span style="text-decoration: underline;">丸め誤差関数</span></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="36%"><col width="46%"><col width="18%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Description</th>
+    <th class="head">Return type</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.round" title="Base.round"><code
+ class="xref jl jl-func docutils literal"><span class="pre">round(x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+to the nearest integer</td>
+      <td><code class="docutils literal"><span class="pre">typeof(x)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.round" title="Base.round"><code
+ class="xref jl jl-func docutils literal"><span class="pre">round(T,</span>
+      <span class="pre">x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+to the nearest integer</td>
+      <td><code class="docutils literal"><span class="pre">T</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.floor" title="Base.floor"><code
+ class="xref jl jl-func docutils literal"><span class="pre">floor(x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards <code class="docutils literal"><span class="pre">-Inf</span></code></td>
+      <td><code class="docutils literal"><span class="pre">typeof(x)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.floor" title="Base.floor"><code
+ class="xref jl jl-func docutils literal"><span class="pre">floor(T,</span>
+      <span class="pre">x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards <code class="docutils literal"><span class="pre">-Inf</span></code></td>
+      <td><code class="docutils literal"><span class="pre">T</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.ceil" title="Base.ceil"><code
+ class="xref jl jl-func docutils literal"><span class="pre">ceil(x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards <code class="docutils literal"><span class="pre">+Inf</span></code></td>
+      <td><code class="docutils literal"><span class="pre">typeof(x)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.ceil" title="Base.ceil"><code
+ class="xref jl jl-func docutils literal"><span class="pre">ceil(T,</span>
+      <span class="pre">x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards <code class="docutils literal"><span class="pre">+Inf</span></code></td>
+      <td><code class="docutils literal"><span class="pre">T</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.trunc" title="Base.trunc"><code
+ class="xref jl jl-func docutils literal"><span class="pre">trunc(x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards zero</td>
+      <td><code class="docutils literal"><span class="pre">typeof(x)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.trunc" title="Base.trunc"><code
+ class="xref jl jl-func docutils literal"><span class="pre">trunc(T,</span>
+      <span class="pre">x)</span></code></a></td>
+      <td>round <code class="docutils literal"><span class="pre">x</span></code>
+towards zero</td>
+      <td><code class="docutils literal"><span class="pre">T</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="division-functions">
+<h3>割り算の丸め方<a class="headerlink" href="#division-functions"
+ title="Permalink to this headline"></a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="28%"><col width="72%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.div" title="Base.div"><code
+ class="xref jl jl-func docutils literal"><span class="pre">div(x,y)</span></code></a></td>
+      <td><span id="result_box" class="short_text" lang="ja"><span>切り捨て</span><span>除
+算</span><span class="">;</span><span class="">商は</span><span class="">ゼロ
+に向かって</span><span class="">丸め</span></span></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.fld" title="Base.fld"><code
+ class="xref jl jl-func docutils literal"><span class="pre">fld(x,y)</span></code></a></td>
+      <td>floored division; quotient rounded towards <code
+ class="docutils literal"><span class="pre">-Inf</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.cld" title="Base.cld"><code
+ class="xref jl jl-func docutils literal"><span class="pre">cld(x,y)</span></code></a></td>
+      <td>ceiling division; quotient rounded towards <code
+ class="docutils literal"><span class="pre">+Inf</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.rem" title="Base.rem"><code
+ class="xref jl jl-func docutils literal"><span class="pre">rem(x,y)</span></code></a></td>
+      <td>remainder; satisfies <code class="docutils literal"><span
+ class="pre">x</span> <span class="pre">==</span> <span class="pre">div(x,y)*y</span>
+      <span class="pre">+</span> <span class="pre">rem(x,y)</span></code>;
+sign matches <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.mod" title="Base.mod"><code
+ class="xref jl jl-func docutils literal"><span class="pre">mod(x,y)</span></code></a></td>
+      <td>modulus; satisfies <code class="docutils literal"><span
+ class="pre">x</span> <span class="pre">==</span> <span class="pre">fld(x,y)*y</span>
+      <span class="pre">+</span> <span class="pre">mod(x,y)</span></code>;
+sign matches <code class="docutils literal"><span class="pre">y</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.mod2pi" title="Base.mod2pi"><code
+ class="xref jl jl-func docutils literal"><span class="pre">mod2pi(x)</span></code></a></td>
+      <td>modulus with respect to 2pi; <code class="docutils literal"><span
+ class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">mod2pi(x)</span>&nbsp;
+      <span class="pre">&lt;</span> <span class="pre">2pi</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.divrem" title="Base.divrem"><code
+ class="xref jl jl-func docutils literal"><span class="pre">divrem(x,y)</span></code></a></td>
+      <td>returns <code class="docutils literal"><span class="pre">(div(x,y),rem(x,y))</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.fldmod" title="Base.fldmod"><code
+ class="xref jl jl-func docutils literal"><span class="pre">fldmod(x,y)</span></code></a></td>
+      <td>returns <code class="docutils literal"><span class="pre">(fld(x,y),mod(x,y))</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.gcd" title="Base.gcd"><code
+ class="xref jl jl-func docutils literal"><span class="pre">gcd(x,y...)</span></code></a></td>
+      <td>greatest common divisor of <code class="docutils literal"><span
+ class="pre">x</span></code>, <code class="docutils literal"><span
+ class="pre">y</span></code>,...; sign matches <code
+ class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.lcm" title="Base.lcm"><code
+ class="xref jl jl-func docutils literal"><span class="pre">lcm(x,y...)</span></code></a></td>
+      <td>least common multiple of <code class="docutils literal"><span
+ class="pre">x</span></code>, <code class="docutils literal"><span
+ class="pre">y</span></code>,...; sign matches <code
+ class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="sign-and-absolute-value-functions">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">符号
+演算子</span><span class="">と</span><span class="">絶対値</span><span class="">関
+数</span></span></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="35%"><col width="65%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.abs" title="Base.abs"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs(x)</span></code></a></td>
+      <td>a positive value with the magnitude of <code
+ class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.abs2" title="Base.abs2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs2(x)</span></code></a></td>
+      <td>the squared magnitude of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.sign" title="Base.sign"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sign(x)</span></code></a></td>
+      <td>indicates the sign of <code class="docutils literal"><span
+ class="pre">x</span></code>, returning -1, 0, or +1</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.signbit" title="Base.signbit"><code
+ class="xref jl jl-func docutils literal"><span class="pre">signbit(x)</span></code></a></td>
+      <td>indicates whether the sign bit is on (true) or off (false)</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.copysign" title="Base.copysign"><code
+ class="xref jl jl-func docutils literal"><span class="pre">copysign(x,y)</span></code></a></td>
+      <td>a value with the magnitude of <code class="docutils literal"><span
+ class="pre">x</span></code> and the sign of <code
+ class="docutils literal"><span class="pre">y</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.flipsign" title="Base.flipsign"><code
+ class="xref jl jl-func docutils literal"><span class="pre">flipsign(x,y)</span></code></a></td>
+      <td>a value with the magnitude of <code class="docutils literal"><span
+ class="pre">x</span></code> and the sign of <code
+ class="docutils literal"><span class="pre">x*y</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="powers-logs-and-roots">
+<h3>指数，対数，根号，<a class="headerlink" href="#powers-logs-and-roots"
+ title="Permalink to this headline"></a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="32%"><col width="68%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.sqrt" title="Base.sqrt"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sqrt(x)</span></code></a>
+      <code class="docutils literal"><span class="pre">√x</span></code></td>
+      <td>square root of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.cbrt" title="Base.cbrt"><code
+ class="xref jl jl-func docutils literal"><span class="pre">cbrt(x)</span></code></a>
+      <code class="docutils literal"><span class="pre">∛x</span></code></td>
+      <td>cube root of <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.hypot" title="Base.hypot"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hypot(x,y)</span></code></a></td>
+      <td>hypotenuse of right-angled triangle with other sides of
+length <code class="docutils literal"><span class="pre">x</span></code>
+and <code class="docutils literal"><span class="pre">y</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.exp" title="Base.exp"><code
+ class="xref jl jl-func docutils literal"><span class="pre">exp(x)</span></code></a></td>
+      <td>natural exponential function at <code
+ class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.expm1" title="Base.expm1"><code
+ class="xref jl jl-func docutils literal"><span class="pre">expm1(x)</span></code></a></td>
+      <td>accurate <code class="docutils literal"><span class="pre">exp(x)-1</span></code>
+for <code class="docutils literal"><span class="pre">x</span></code>
+near zero</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.ldexp" title="Base.ldexp"><code
+ class="xref jl jl-func docutils literal"><span class="pre">ldexp(x,n)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">x*2^n</span></code>
+computed efficiently for integer values of <code
+ class="docutils literal"><span class="pre">n</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.log" title="Base.log"><code
+ class="xref jl jl-func docutils literal"><span class="pre">log(x)</span></code></a></td>
+      <td>natural logarithm of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.log" title="Base.log"><code
+ class="xref jl jl-func docutils literal"><span class="pre">log(b,x)</span></code></a></td>
+      <td>base <code class="docutils literal"><span class="pre">b</span></code>
+logarithm of <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.log2" title="Base.log2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">log2(x)</span></code></a></td>
+      <td>base 2 logarithm of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.log10" title="Base.log10"><code
+ class="xref jl jl-func docutils literal"><span class="pre">log10(x)</span></code></a></td>
+      <td>base 10 logarithm of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.log1p" title="Base.log1p"><code
+ class="xref jl jl-func docutils literal"><span class="pre">log1p(x)</span></code></a></td>
+      <td>accurate <code class="docutils literal"><span class="pre">log(1+x)</span></code>
+for <code class="docutils literal"><span class="pre">x</span></code>
+near zero</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/numbers.html#Base.exponent" title="Base.exponent"><code
+ class="xref jl jl-func docutils literal"><span class="pre">exponent(x)</span></code></a></td>
+      <td>binary exponent of <code class="docutils literal"><span
+ class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/numbers.html#Base.significand" title="Base.significand"><code
+ class="xref jl jl-func docutils literal"><span class="pre">significand(x)</span></code></a></td>
+      <td>binary significand (a.k.a. mantissa) of a floating-point
+number <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+  </tbody>
+</table>
+<p>For an overview of why functions like <a class="reference internal"
+ href="../stdlib/math.html#Base.hypot" title="Base.hypot"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hypot()</span></code></a>,
+<a class="reference internal" href="../stdlib/math.html#Base.expm1"
+ title="Base.expm1"><code class="xref jl jl-func docutils literal"><span
+ class="pre">expm1()</span></code></a>, and <a
+ class="reference internal" href="../stdlib/math.html#Base.log1p"
+ title="Base.log1p"><code class="xref jl jl-func docutils literal"><span
+ class="pre">log1p()</span></code></a>
+are necessary and useful, see John D. Cook’s excellent pair
+of blog posts on the subject: <a class="reference external"
+ href="http://www.johndcook.com/blog/2010/06/07/math-library-functions-that-seem-unnecessary/">expm1,
+log1p,
+erfc</a>,
+and
+<a class="reference external"
+ href="http://www.johndcook.com/blog/2010/06/02/whats-so-hard-about-finding-a-hypotenuse/">hypot</a>.</p>
+</div>
+<div class="section" id="trigonometric-and-hyperbolic-functions">
+<h3>三角関数と双曲線関数</h3>
+<p>All the standard trigonometric and hyperbolic functions are also
+defined:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">sin</span>    <span class="n">cos</span>    <span
+ class="n">tan</span>    <span class="n">cot</span>    <span class="n">sec</span>    <span
+ class="n">csc</span>
+<span class="n">sinh</span>   <span class="n">cosh</span>   <span
+ class="n">tanh</span>   <span class="n">coth</span>   <span class="n">sech</span>   <span
+ class="n">csch</span>
+<span class="n">asin</span>   <span class="n">acos</span>   <span
+ class="n">atan</span>   <span class="n">acot</span>   <span class="n">asec</span>   <span
+ class="n">acsc</span>
+<span class="n">asinh</span>  <span class="n">acosh</span>  <span
+ class="n">atanh</span>  <span class="n">acoth</span>  <span class="n">asech</span>  <span
+ class="n">acsch</span>
+<span class="n">sinc</span>   <span class="n">cosc</span>   <span
+ class="n">atan2</span>
+</pre>
+</div>
+</div>
+<p>These are all single-argument functions, with the exception of
+<a class="reference external" href="https://en.wikipedia.org/wiki/Atan2">atan2</a>,
+which gives the angle
+in <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Radian">radians</a> between the <em>x</em>-axis
+and the point specified by its arguments, interpreted as <em>x</em>
+and <em>y</em>
+coordinates.</p>
+<p>Additionally, <a class="reference internal"
+ href="../stdlib/math.html#Base.sinpi" title="Base.sinpi"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sinpi(x)</span></code></a>
+and <a class="reference internal" href="../stdlib/math.html#Base.cospi"
+ title="Base.cospi"><code class="xref jl jl-func docutils literal"><span
+ class="pre">cospi(x)</span></code></a> are provided for more accurate
+computations
+of <a class="reference internal" href="../stdlib/math.html#Base.sin"
+ title="Base.sin"><code class="xref jl jl-func docutils literal"><span
+ class="pre">sin(pi*x)</span></code></a> and <a
+ class="reference internal" href="../stdlib/math.html#Base.cos"
+ title="Base.cos"><code class="xref jl jl-func docutils literal"><span
+ class="pre">cos(pi*x)</span></code></a> respectively.</p>
+<p>In order to compute trigonometric functions with degrees
+instead of radians, suffix the function with <code
+ class="docutils literal"><span class="pre">d</span></code>. For
+example, <a class="reference internal"
+ href="../stdlib/math.html#Base.sind" title="Base.sind"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sind(x)</span></code></a>
+computes the sine of <code class="docutils literal"><span class="pre">x</span></code>
+where <code class="docutils literal"><span class="pre">x</span></code>
+is specified in degrees.
+The complete list of trigonometric functions with degree variants is:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">sind</span>   <span class="n">cosd</span>   <span
+ class="n">tand</span>   <span class="n">cotd</span>   <span class="n">secd</span>   <span
+ class="n">cscd</span>
+<span class="n">asind</span>  <span class="n">acosd</span>  <span
+ class="n">atand</span>  <span class="n">acotd</span>  <span class="n">asecd</span>  <span
+ class="n">acscd</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="special-functions">
+<h3 style="font-weight: bold;">超越関数</h3>
+<table border="1" class="docutils">
+  <colgroup><col width="23%"><col width="77%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Function</th>
+    <th class="head">Description</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.erf" title="Base.erf"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erf(x)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Error_function">error function</a>
+at <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.erfc" title="Base.erfc"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erfc(x)</span></code></a></td>
+      <td>complementary error function, i.e. the accurate version of <code
+ class="docutils literal"><span class="pre">1-erf(x)</span></code> for
+large <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.erfinv" title="Base.erfinv"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erfinv(x)</span></code></a></td>
+      <td>inverse function to <a class="reference internal"
+ href="../stdlib/math.html#Base.erf" title="Base.erf"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erf()</span></code></a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-func docutils literal"><span
+ class="pre">erfcinv(x)</span></code></td>
+      <td>inverse function to <a class="reference internal"
+ href="../stdlib/math.html#Base.erfc" title="Base.erfc"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erfc()</span></code></a></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.erfi" title="Base.erfi"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erfi(x)</span></code></a></td>
+      <td>imaginary error function defined as <code
+ class="docutils literal"><span class="pre">-im</span> <span
+ class="pre">*</span> <span class="pre">erf(x</span> <span class="pre">*</span>
+      <span class="pre">im)</span></code>, where <a
+ class="reference internal" href="../stdlib/numbers.html#Base.im"
+ title="Base.im"><code class="xref jl jl-const docutils literal"><span
+ class="pre">im</span></code></a> is the imaginary unit</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.erfcx" title="Base.erfcx"><code
+ class="xref jl jl-func docutils literal"><span class="pre">erfcx(x)</span></code></a></td>
+      <td>scaled complementary error function, i.e. accurate <code
+ class="docutils literal"><span class="pre">exp(x^2)</span> <span
+ class="pre">*</span> <span class="pre">erfc(x)</span></code> for
+large <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.dawson" title="Base.dawson"><code
+ class="xref jl jl-func docutils literal"><span class="pre">dawson(x)</span></code></a></td>
+      <td>scaled imaginary error function, a.k.a. Dawson function, i.e.
+accurate <code class="docutils literal"><span class="pre">exp(-x^2)</span>
+      <span class="pre">*</span> <span class="pre">erfi(x)</span> <span
+ class="pre">*</span> <span class="pre">sqrt(pi)</span> <span
+ class="pre">/</span> <span class="pre">2</span></code> for large <code
+ class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.gamma" title="Base.gamma"><code
+ class="xref jl jl-func docutils literal"><span class="pre">gamma(x)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Gamma_function">gamma function</a>
+at <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.lgamma" title="Base.lgamma"><code
+ class="xref jl jl-func docutils literal"><span class="pre">lgamma(x)</span></code></a></td>
+      <td>accurate <code class="docutils literal"><span class="pre">log(gamma(x))</span></code>
+for large <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.lfact" title="Base.lfact"><code
+ class="xref jl jl-func docutils literal"><span class="pre">lfact(x)</span></code></a></td>
+      <td>accurate <code class="docutils literal"><span class="pre">log(factorial(x))</span></code>
+for large <code class="docutils literal"><span class="pre">x</span></code>;
+same as <code class="docutils literal"><span class="pre">lgamma(x+1)</span></code>
+for <code class="docutils literal"><span class="pre">x</span> <span
+ class="pre">&gt;</span> <span class="pre">1</span></code>, zero
+otherwise</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.digamma" title="Base.digamma"><code
+ class="xref jl jl-func docutils literal"><span class="pre">digamma(x)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Digamma_function">digamma function</a>
+(i.e. the derivative of <a class="reference internal"
+ href="../stdlib/math.html#Base.lgamma" title="Base.lgamma"><code
+ class="xref jl jl-func docutils literal"><span class="pre">lgamma()</span></code></a>)
+at <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.beta" title="Base.beta"><code
+ class="xref jl jl-func docutils literal"><span class="pre">beta(x,y)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Beta_function">beta function</a>
+at <code class="docutils literal"><span class="pre">x,y</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.lbeta" title="Base.lbeta"><code
+ class="xref jl jl-func docutils literal"><span class="pre">lbeta(x,y)</span></code></a></td>
+      <td>accurate <code class="docutils literal"><span class="pre">log(beta(x,y))</span></code>
+for large <code class="docutils literal"><span class="pre">x</span></code>
+or <code class="docutils literal"><span class="pre">y</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.eta" title="Base.eta"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eta(x)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Dirichlet_eta_function">Dirichlet
+eta function</a> at <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.zeta" title="Base.zeta"><code
+ class="xref jl jl-func docutils literal"><span class="pre">zeta(x)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Riemann_zeta_function">Riemann
+zeta function</a> at <code class="docutils literal"><span class="pre">x</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.airy" title="Base.airy"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airy(z)</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/math.html#Base.airyai" title="Base.airyai"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airyai(z)</span></code></a>,
+      <code class="docutils literal"><span class="pre">airy(0,z)</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Airy_function">Airy Ai function</a>
+at <code class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.airyprime" title="Base.airyprime"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airyprime(z)</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/math.html#Base.airyaiprime" title="Base.airyaiprime"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airyaiprime(z)</span></code></a>,
+      <code class="docutils literal"><span class="pre">airy(1,z)</span></code></td>
+      <td>derivative of the Airy Ai function at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.airybi" title="Base.airybi"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airybi(z)</span></code></a>,
+      <code class="docutils literal"><span class="pre">airy(2,z)</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Airy_function">Airy Bi function</a>
+at <code class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.airybiprime" title="Base.airybiprime"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airybiprime(z)</span></code></a>,
+      <code class="docutils literal"><span class="pre">airy(3,z)</span></code></td>
+      <td>derivative of the Airy Bi function at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.airyx" title="Base.airyx"><code
+ class="xref jl jl-func docutils literal"><span class="pre">airyx(z)</span></code></a>,
+      <code class="docutils literal"><span class="pre">airyx(k,z)</span></code></td>
+      <td>scaled Airy AI function and <code class="docutils literal"><span
+ class="pre">k</span></code> th derivatives at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselj" title="Base.besselj"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselj(nu,z)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bessel_function">Bessel function</a>
+of the first kind of order <code class="docutils literal"><span
+ class="pre">nu</span></code> at <code class="docutils literal"><span
+ class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselj0" title="Base.besselj0"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselj0(z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">besselj(0,z)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselj1" title="Base.besselj1"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselj1(z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">besselj(1,z)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besseljx" title="Base.besseljx"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besseljx(nu,z)</span></code></a></td>
+      <td>scaled Bessel function of the first kind of order <code
+ class="docutils literal"><span class="pre">nu</span></code> at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.bessely" title="Base.bessely"><code
+ class="xref jl jl-func docutils literal"><span class="pre">bessely(nu,z)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bessel_function">Bessel function</a>
+of the second kind of order <code class="docutils literal"><span
+ class="pre">nu</span></code> at <code class="docutils literal"><span
+ class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.bessely0" title="Base.bessely0"><code
+ class="xref jl jl-func docutils literal"><span class="pre">bessely0(z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">bessely(0,z)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.bessely0" title="Base.bessely0"><code
+ class="xref jl jl-func docutils literal"><span class="pre">bessely1(z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">bessely(1,z)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselyx" title="Base.besselyx"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselyx(nu,z)</span></code></a></td>
+      <td>scaled Bessel function of the second kind of order <code
+ class="docutils literal"><span class="pre">nu</span></code> at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselh" title="Base.besselh"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselh(nu,k,z)</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bessel_function">Bessel function</a>
+of the third kind (a.k.a. Hankel function) of order <code
+ class="docutils literal"><span class="pre">nu</span></code> at <code
+ class="docutils literal"><span class="pre">z</span></code>; <code
+ class="docutils literal"><span class="pre">k</span></code> must be
+either <code class="docutils literal"><span class="pre">1</span></code>
+or <code class="docutils literal"><span class="pre">2</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.hankelh1" title="Base.hankelh1"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hankelh1(nu,z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">besselh(nu,</span>
+      <span class="pre">1,</span> <span class="pre">z)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.hankelh1x" title="Base.hankelh1x"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hankelh1x(nu,z)</span></code></a></td>
+      <td>scaled <code class="docutils literal"><span class="pre">besselh(nu,</span>
+      <span class="pre">1,</span> <span class="pre">z)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.hankelh2" title="Base.hankelh2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hankelh2(nu,z)</span></code></a></td>
+      <td><code class="docutils literal"><span class="pre">besselh(nu,</span>
+      <span class="pre">2,</span> <span class="pre">z)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.hankelh2x" title="Base.hankelh2x"><code
+ class="xref jl jl-func docutils literal"><span class="pre">hankelh2x(nu,z)</span></code></a></td>
+      <td>scaled <code class="docutils literal"><span class="pre">besselh(nu,</span>
+      <span class="pre">2,</span> <span class="pre">z)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besseli" title="Base.besseli"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besseli(nu,z)</span></code></a></td>
+      <td>modified <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bessel_function">Bessel function</a>
+of the first kind of order <code class="docutils literal"><span
+ class="pre">nu</span></code> at <code class="docutils literal"><span
+ class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselix" title="Base.besselix"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselix(nu,z)</span></code></a></td>
+      <td>scaled modified Bessel function of the first kind of order <code
+ class="docutils literal"><span class="pre">nu</span></code> at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselk" title="Base.besselk"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselk(nu,z)</span></code></a></td>
+      <td>modified <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bessel_function">Bessel function</a>
+of the second kind of order <code class="docutils literal"><span
+ class="pre">nu</span></code> at <code class="docutils literal"><span
+ class="pre">z</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base.besselkx" title="Base.besselkx"><code
+ class="xref jl jl-func docutils literal"><span class="pre">besselkx(nu,z)</span></code></a></td>
+      <td>scaled modified Bessel function of the second kind of order <code
+ class="docutils literal"><span class="pre">nu</span></code> at <code
+ class="docutils literal"><span class="pre">z</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

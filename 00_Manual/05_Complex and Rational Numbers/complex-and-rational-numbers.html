@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complex and Rational Numbers — Julia Language 0.4.3
+documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Strings" href="strings.html">
+  <link rel="prev"
+ title="Mathematical Operations and Elementary Functions"
+ href="mathematical-operations.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="navigation" aria-label="breadcrumbs navigation"><br>
+</div>
+<div role="main" class="document">
+<div class="section" id="complex-and-rational-numbers">
+<h2 style="font-weight: bold;">複素数と有理数Complex and Rational Numbers</h2>
+<p>Julia ships with predefined types representing both complex and
+rational
+numbers, and supports all <a class="reference internal"
+ href="mathematical-operations.html#man-mathematical-operations"><span>standard
+mathematical operations</span></a> on them. <a
+ class="reference internal"
+ href="conversion-and-promotion.html#man-conversion-and-promotion"><span>Conversion
+and Promotion</span></a>
+are defined so that operations on any combination of
+predefined numeric types, whether primitive or composite, behave as
+expected.</p>
+<div class="section" id="complex-numbers">
+<span id="man-complex-numbers"></span>
+<h2>複素数</h2>
+<p>The global constant <a class="reference internal"
+ href="../stdlib/numbers.html#Base.im" title="Base.im"><code
+ class="xref jl jl-const docutils literal"><span class="pre">im</span></code></a>
+is bound to the complex number <em>i</em>,
+representing the principal square root of -1. It was deemed harmful to
+co-opt the name <code class="docutils literal"><span class="pre">i</span></code>
+for a global constant, since it is such a popular
+index variable name. Since Julia allows numeric literals to be
+<a class="reference internal"
+ href="integers-and-floating-point-numbers.html#man-numeric-literal-coefficients"><span>juxtaposed
+with identifiers as coefficients</span></a>,
+this binding suffices to provide convenient syntax for complex numbers,
+similar to the traditional mathematical notation:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>You can perform all the standard arithmetic operations with complex
+numbers:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">*</span><span class="p">(</span><span class="mi">2</span> <span
+ class="o">-</span> <span class="mi">3</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span><span class="p">)</span><span class="o">/</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="o">-</span><span class="mf">0.6</span> <span class="o">+</span> <span
+ class="mf">0.8</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">+</span> <span
+ class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">2</span> <span class="o">+</span> <span class="mi">0</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="o">-</span><span class="mi">3</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span> <span
+ class="o">-</span> <span class="p">(</span><span class="mi">5</span> <span
+ class="o">-</span> <span class="mi">1</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="o">-</span><span class="mi">8</span> <span class="o">+</span> <span
+ class="mi">3</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">^</span><span class="mi">2</span>
+<span class="o">-</span><span class="mi">3</span> <span class="o">-</span> <span
+ class="mi">4</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">^</span><span class="mf">2.5</span>
+<span class="mf">2.7296244647840084</span> <span class="o">-</span> <span
+ class="mf">6.960664459571898</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">^</span><span class="p">(</span><span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">1</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="o">-</span><span class="mf">0.27910381075826657</span> <span
+ class="o">+</span> <span class="mf">0.08708053414102428</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span
+ class="mi">5</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">6</span> <span class="o">-</span> <span class="mi">15</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span
+ class="mi">5</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">^</span><span class="mi">2</span>
+<span class="o">-</span><span class="mi">63</span> <span class="o">-</span> <span
+ class="mi">60</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span
+ class="mi">5</span><span class="nb">im</span><span class="p">)</span><span
+ class="o">^-</span><span class="mf">1.0</span>
+<span class="mf">0.20689655172413796</span> <span class="o">+</span> <span
+ class="mf">0.5172413793103449</span><span class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>The promotion mechanism ensures that combinations of operands of
+different types just work:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">2</span><span class="p">(</span><span class="mi">1</span> <span
+ class="o">-</span> <span class="mi">1</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">-</span> <span
+ class="mi">1</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">3</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">+</span> <span
+ class="mf">0.5</span>
+<span class="mf">1.5</span> <span class="o">+</span> <span class="mf">2.0</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">-</span> <span
+ class="mf">0.5</span><span class="nb">im</span>
+<span class="mf">2.0</span> <span class="o">+</span> <span class="mf">2.5</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mf">0.75</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">0.75</span> <span class="o">+</span> <span class="mf">1.5</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">/</span> <span
+ class="mi">2</span>
+<span class="mf">1.0</span> <span class="o">+</span> <span class="mf">1.5</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="mi">1</span> <span class="o">-</span> <span class="mi">3</span><span
+ class="nb">im</span><span class="p">)</span> <span class="o">/</span> <span
+ class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="o">-</span><span class="mf">0.5</span> <span class="o">-</span> <span
+ class="mf">1.0</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">2</span><span
+ class="nb">im</span><span class="o">^</span><span class="mi">2</span>
+<span class="o">-</span><span class="mi">2</span> <span class="o">+</span> <span
+ class="mi">0</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">3</span><span class="o">/</span><span
+ class="mi">4</span><span class="nb">im</span>
+<span class="mf">1.0</span> <span class="o">-</span> <span class="mf">0.75</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>Note that <code class="docutils literal"><span class="pre">3/4im</span>
+<span class="pre">==</span> <span class="pre">3/(4*im)</span> <span
+ class="pre">==</span> <span class="pre">-(3/4*im)</span></code>,
+since a literal
+coefficient binds more tightly than division.</p>
+<p>Standard functions to manipulate complex values are provided:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">real</span><span class="p">(</span><span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">2</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">imag</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">conj</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">abs</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">2.23606797749979</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">abs2</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">angle</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">1.1071487177940904</span>
+</pre>
+</div>
+</div>
+<p>As usual, the absolute value (<a class="reference internal"
+ href="../stdlib/math.html#Base.abs" title="Base.abs"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs()</span></code></a>)
+of a complex number is its
+distance from zero. <a class="reference internal"
+ href="../stdlib/math.html#Base.abs2" title="Base.abs2"><code
+ class="xref jl jl-func docutils literal"><span class="pre">abs2()</span></code></a>
+gives the square of the
+absolute value, and is of particular use for complex numbers where it
+avoids taking a square root. <a class="reference internal"
+ href="../stdlib/math.html#Base.angle" title="Base.angle"><code
+ class="xref jl jl-func docutils literal"><span class="pre">angle()</span></code></a>
+returns the phase
+angle in radians (also known as the <em>argument</em> or <em>arg</em>
+function). The
+full gamut of other <a class="reference internal"
+ href="mathematical-operations.html#man-elementary-functions"><span>Elementary
+Functions</span></a> is also defined
+for complex numbers:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span
+ class="nb">im</span><span class="p">)</span>
+<span class="mf">0.7071067811865476</span> <span class="o">+</span> <span
+ class="mf">0.7071067811865475</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">sqrt</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">1.272019649514069</span> <span class="o">+</span> <span
+ class="mf">0.7861513777574233</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">cos</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">2.0327230070196656</span> <span class="o">-</span> <span
+ class="mf">3.0518977991518</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">exp</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="o">-</span><span class="mf">1.1312043837568135</span> <span
+ class="o">+</span> <span class="mf">2.4717266720048188</span><span
+ class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">sinh</span><span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="o">-</span><span class="mf">0.4890562590412937</span> <span
+ class="o">+</span> <span class="mf">1.4031192506220405</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>Note that mathematical functions typically return real values when
+applied
+to real numbers and complex values when applied to complex numbers.
+For example, <a class="reference internal"
+ href="../stdlib/math.html#Base.sqrt" title="Base.sqrt"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sqrt()</span></code></a>
+behaves differently when applied to <code class="docutils literal"><span
+ class="pre">-1</span></code>
+versus <code class="docutils literal"><span class="pre">-1</span> <span
+ class="pre">+</span> <span class="pre">0im</span></code> even though <code
+ class="docutils literal"><span class="pre">-1</span> <span class="pre">==</span>
+<span class="pre">-1</span> <span class="pre">+</span> <span
+ class="pre">0im</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span
+ class="mi">1</span><span class="p">)</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">DomainError</span><span
+ class="p">:</span>
+<span class="n">sqrt</span> <span class="n">will</span> <span class="n">only</span> <span
+ class="k">return</span> <span class="n">a</span> <span class="n">complex</span> <span
+ class="n">result</span> <span class="k">if</span> <span class="n">called</span> <span
+ class="n">with</span> <span class="n">a</span> <span class="n">complex</span> <span
+ class="n">argument</span><span class="o">.</span> <span class="n">Try</span> <span
+ class="n">sqrt</span><span class="p">(</span><span class="n">complex</span><span
+ class="p">(</span><span class="n">x</span><span class="p">))</span><span
+ class="o">.</span>
+ <span class="k">in</span> <span class="n">sqrt</span> <span
+ class="n">at</span> <span class="n">math</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">146</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">sqrt</span><span
+ class="p">(</span><span class="o">-</span><span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">0</span><span class="nb">im</span><span
+ class="p">)</span>
+<span class="mf">0.0</span> <span class="o">+</span> <span class="mf">1.0</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>The <a class="reference internal"
+ href="integers-and-floating-point-numbers.html#man-numeric-literal-coefficients"><span>literal
+numeric coefficient notation</span></a>
+does not work when constructing complex number from variables. Instead,
+the
+multiplication must be explicitly written out:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span
+ class="mi">2</span><span class="p">;</span> <span class="n">a</span> <span
+ class="o">+</span> <span class="n">b</span><span class="o">*</span><span
+ class="nb">im</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>However, this is <em>not</em> recommended; Use the <a
+ class="reference internal" href="../stdlib/numbers.html#Base.complex"
+ title="Base.complex"><code class="xref jl jl-func docutils literal"><span
+ class="pre">complex()</span></code></a> function instead to
+construct a complex value directly from its real and imaginary parts.:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">complex</span><span class="p">(</span><span class="n">a</span><span
+ class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span
+ class="nb">im</span>
+</pre>
+</div>
+</div>
+<p>This construction avoids the multiplication and addition operations.</p>
+<p><a class="reference internal" href="../stdlib/numbers.html#Base.Inf"
+ title="Base.Inf"><code class="xref jl jl-const docutils literal"><span
+ class="pre">Inf</span></code></a> and <a class="reference internal"
+ href="../stdlib/numbers.html#Base.NaN" title="Base.NaN"><code
+ class="xref jl jl-const docutils literal"><span class="pre">NaN</span></code></a>
+propagate through complex numbers in the real
+and imaginary parts of a complex number as described in the
+<a class="reference internal"
+ href="integers-and-floating-point-numbers.html#man-special-floats"><span>Special
+floating-point values</span></a> section:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">1</span> <span class="o">+</span> <span class="nb">Inf</span><span
+ class="o">*</span><span class="nb">im</span>
+<span class="mf">1.0</span> <span class="o">+</span> <span class="nb">Inf</span><span
+ class="o">*</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">+</span> <span class="n">NaN</span><span class="o">*</span><span
+ class="nb">im</span>
+<span class="mf">1.0</span> <span class="o">+</span> <span class="n">NaN</span><span
+ class="o">*</span><span class="nb">im</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="rational-numbers">
+<span id="man-rational-numbers"></span>
+<h2>有理数(分数)<a class="headerlink" href="#rational-numbers"
+ title="Permalink to this headline"></a></h2>
+<p>Julia has a rational number type to represent exact ratios of
+integers.
+Rationals are constructed using the <a class="reference internal"
+ href="../stdlib/math.html#Base.//" title="Base.//"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">//</span></code></a>
+operator:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">2</span><span class="o">//</span><span class="mi">3</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>If the numerator and denominator of a rational have common factors,
+they
+are reduced to lowest terms such that the denominator is non-negative:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">6</span><span class="o">//</span><span class="mi">9</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">4</span><span class="o">//</span><span class="mi">8</span>
+<span class="o">-</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">5</span><span
+ class="o">//-</span><span class="mi">15</span>
+<span class="o">-</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">4</span><span class="o">//-</span><span class="mi">12</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>This normalized form for a ratio of integers is unique, so equality
+of
+rational values can be tested by checking for equality of the numerator
+and denominator. The standardized numerator and denominator of a
+rational value can be extracted using the <a class="reference internal"
+ href="../stdlib/math.html#Base.num" title="Base.num"><code
+ class="xref jl jl-func docutils literal"><span class="pre">num()</span></code></a>
+and <a class="reference internal" href="../stdlib/math.html#Base.den"
+ title="Base.den"><code class="xref jl jl-func docutils literal"><span
+ class="pre">den()</span></code></a> functions:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">num</span><span class="p">(</span><span class="mi">2</span><span
+ class="o">//</span><span class="mi">3</span><span class="p">)</span>
+<span class="mi">2</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">den</span><span
+ class="p">(</span><span class="mi">2</span><span class="o">//</span><span
+ class="mi">3</span><span class="p">)</span>
+<span class="mi">3</span>
+</pre>
+</div>
+</div>
+<p>Direct comparison of the numerator and denominator is generally not
+necessary, since the standard arithmetic and comparison operations are
+defined for rational values:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">2</span><span class="o">//</span><span class="mi">3</span> <span
+ class="o">==</span> <span class="mi">6</span><span class="o">//</span><span
+ class="mi">9</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">2</span><span
+ class="o">//</span><span class="mi">3</span> <span class="o">==</span> <span
+ class="mi">9</span><span class="o">//</span><span class="mi">27</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="o">//</span><span class="mi">7</span> <span class="o">&lt;</span> <span
+ class="mi">1</span><span class="o">//</span><span class="mi">2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="o">//</span><span class="mi">4</span> <span class="o">&gt;</span> <span
+ class="mi">2</span><span class="o">//</span><span class="mi">3</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">2</span><span
+ class="o">//</span><span class="mi">4</span> <span class="o">+</span> <span
+ class="mi">1</span><span class="o">//</span><span class="mi">6</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">3</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">5</span><span
+ class="o">//</span><span class="mi">12</span> <span class="o">-</span> <span
+ class="mi">1</span><span class="o">//</span><span class="mi">4</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">6</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">5</span><span
+ class="o">//</span><span class="mi">8</span> <span class="o">*</span> <span
+ class="mi">3</span><span class="o">//</span><span class="mi">12</span>
+<span class="mi">5</span><span class="o">//</span><span class="mi">32</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">6</span><span
+ class="o">//</span><span class="mi">5</span> <span class="o">/</span> <span
+ class="mi">10</span><span class="o">//</span><span class="mi">7</span>
+<span class="mi">21</span><span class="o">//</span><span class="mi">25</span>
+</pre>
+</div>
+</div>
+<p>Rationals can be easily converted to floating-point numbers:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">float</span><span class="p">(</span><span class="mi">3</span><span
+ class="o">//</span><span class="mi">4</span><span class="p">)</span>
+<span class="mf">0.75</span>
+</pre>
+</div>
+</div>
+<p>Conversion from rational to floating-point respects the following
+identity for any integral values of <code class="docutils literal"><span
+ class="pre">a</span></code> and <code class="docutils literal"><span
+ class="pre">b</span></code>, with the exception
+of the case <code class="docutils literal"><span class="pre">a</span> <span
+ class="pre">==</span> <span class="pre">0</span></code> and <code
+ class="docutils literal"><span class="pre">b</span> <span class="pre">==</span>
+<span class="pre">0</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="nb">isequal</span><span class="p">(</span><span class="n">float</span><span
+ class="p">(</span><span class="n">a</span><span class="o">//</span><span
+ class="n">b</span><span class="p">),</span> <span class="n">a</span><span
+ class="o">/</span><span class="n">b</span><span class="p">)</span>
+<span class="n">true</span>
+</pre>
+</div>
+</div>
+<p>Constructing infinite rational values is acceptable:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">5</span><span class="o">//</span><span class="mi">0</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="o">-</span><span
+ class="mi">3</span><span class="o">//</span><span class="mi">0</span>
+<span class="o">-</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="nb">typeof</span><span
+ class="p">(</span><span class="n">ans</span><span class="p">)</span>
+<span class="n">Rational</span><span class="p">{</span><span class="kt">Int64</span><span
+ class="p">}</span>
+</pre>
+</div>
+</div>
+<p>Trying to construct a <a class="reference internal"
+ href="../stdlib/numbers.html#Base.NaN" title="Base.NaN"><code
+ class="xref jl jl-const docutils literal"><span class="pre">NaN</span></code></a>
+rational value, however, is not:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">0</span><span class="o">//</span><span class="mi">0</span>
+<span class="n">ERROR</span><span class="p">:</span> <span class="n">ArgumentError</span><span
+ class="p">:</span> <span class="n">invalid</span> <span class="n">rational</span><span
+ class="p">:</span> <span class="n">zero</span><span class="p">(</span><span
+ class="kt">Int64</span><span class="p">)</span><span class="o">//</span><span
+ class="n">zero</span><span class="p">(</span><span class="kt">Int64</span><span
+ class="p">)</span>
+ <span class="k">in</span> <span class="n">call</span> <span
+ class="n">at</span> <span class="n">rational</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">:</span><span class="mi">8</span>
+ <span
+ class="k">in</span> <span class="o">//</span> <span class="n">at</span> <span
+ class="n">rational</span><span class="o">.</span><span class="n">jl</span><span
+ class="p">:</span><span class="mi">22</span>
+</pre>
+</div>
+</div>
+<p>As usual, the promotion system makes interactions with other numeric
+types effortless:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="mi">3</span><span class="o">//</span><span class="mi">5</span> <span
+ class="o">+</span> <span class="mi">1</span>
+<span class="mi">8</span><span class="o">//</span><span class="mi">5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="o">//</span><span class="mi">5</span> <span class="o">-</span> <span
+ class="mf">0.5</span>
+<span class="mf">0.09999999999999998</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">2</span><span
+ class="o">//</span><span class="mi">7</span> <span class="o">*</span> <span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">7</span> <span
+ class="o">+</span> <span class="mi">4</span><span class="o">//</span><span
+ class="mi">7</span><span class="o">*</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">2</span><span
+ class="o">//</span><span class="mi">7</span> <span class="o">*</span> <span
+ class="p">(</span><span class="mf">1.5</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mf">0.42857142857142855</span> <span class="o">+</span> <span
+ class="mf">0.5714285714285714</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">3</span><span
+ class="o">//</span><span class="mi">2</span> <span class="o">/</span> <span
+ class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span><span class="p">)</span>
+<span class="mi">3</span><span class="o">//</span><span class="mi">10</span> <span
+ class="o">-</span> <span class="mi">3</span><span class="o">//</span><span
+ class="mi">5</span><span class="o">*</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span><span
+ class="o">//</span><span class="mi">2</span> <span class="o">+</span> <span
+ class="mi">2</span><span class="nb">im</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">2</span> <span
+ class="o">+</span> <span class="mi">2</span><span class="o">//</span><span
+ class="mi">1</span><span class="o">*</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span> <span
+ class="o">+</span> <span class="mi">2</span><span class="o">//</span><span
+ class="mi">3</span><span class="nb">im</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">1</span> <span
+ class="o">-</span> <span class="mi">2</span><span class="o">//</span><span
+ class="mi">3</span><span class="o">*</span><span class="nb">im</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mf">0.5</span> <span
+ class="o">==</span> <span class="mi">1</span><span class="o">//</span><span
+ class="mi">2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mf">0.33</span> <span
+ class="o">==</span> <span class="mi">1</span><span class="o">//</span><span
+ class="mi">3</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mf">0.33</span> <span
+ class="o">&lt;</span> <span class="mi">1</span><span class="o">//</span><span
+ class="mi">3</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="mi">1</span><span
+ class="o">//</span><span class="mi">3</span> <span class="o">-</span> <span
+ class="mf">0.33</span>
+<span class="mf">0.0033333333333332993</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<br>
+<a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

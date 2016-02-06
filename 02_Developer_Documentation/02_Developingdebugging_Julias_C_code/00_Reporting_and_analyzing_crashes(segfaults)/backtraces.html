@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporting and analyzing crashes (segfaults) — Julia Language
+0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Developing/debugging Julia’s C code"
+ href="C.html">
+  <link rel="next" title="gdb debugging tips" href="debuggingtips.html">
+  <link rel="prev" title="Developing/debugging Julia’s C code"
+ href="C.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> Reporting and analyzing crashes
+(segfaults)<a class="headerlink"
+ href="#reporting-and-analyzing-crashes-segfaults"
+ title="Permalink to this headline">¶</a>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="reporting-and-analyzing-crashes-segfaults">
+<p>So you managed to break Julia. Congratulations! Collected here are
+some general procedures you can undergo for common symptoms encountered
+when something goes awry. Including the information from these
+debugging steps can greatly help the maintainers when tracking down a
+segfault or trying to figure out why your script is running slower than
+expected.</p>
+<p>If you’ve been directed to this page, find the symptom that best
+matches what you’re experiencing and follow the instructions to
+generate the debugging information requested. Table of symptoms:</p>
+<ul class="simple">
+  <li><a class="reference internal"
+ href="#segfaults-during-bootstrap-sysimg-jl">Segfaults during
+bootstrap (sysimg.jl)</a></li>
+  <li><a class="reference internal"
+ href="#segfaults-when-running-a-script">Segfaults when running a script</a></li>
+  <li><a class="reference internal" href="#errors-during-julia-startup">Errors
+during julia startup</a></li>
+</ul>
+<div class="section" id="version-environment-info">
+<span id="version-info"></span>
+<h2>Version/Environment info<a class="headerlink"
+ href="#version-environment-info" title="Permalink to this headline">¶</a></h2>
+<p>No matter the error, we will always need to know what version of
+julia you are running. When julia first starts up, a header is printed
+out with a version number and date. If your version is <code
+ class="docutils literal"><span class="pre">0.2.0</span></code> or
+higher, please include the output of <code class="docutils literal"><span
+ class="pre">versioninfo()</span></code> in any report you create:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">versioninfo</span><span class="p">()</span>
+<span class="n">Julia</span> <span class="n">Version</span> <span
+ class="mf">0.3</span><span class="o">.</span><span class="mi">3</span><span
+ class="o">-</span><span class="n">pre</span><span class="o">+</span><span
+ class="mi">25</span>
+<span class="n">Commit</span> <span class="mi">417</span><span class="n">b50a</span><span
+ class="o">*</span> <span class="p">(</span><span class="mi">2014</span><span
+ class="o">-</span><span class="mi">11</span><span class="o">-</span><span
+ class="mi">03</span> <span class="mi">11</span><span class="p">:</span><span
+ class="mi">32</span> <span class="n">UTC</span><span class="p">)</span>
+<span class="n">Platform</span> <span class="n">Info</span><span
+ class="p">:</span>
+  <span class="n">System</span><span class="p">:</span> <span
+ class="n">Linux</span> <span class="p">(</span><span class="n">x86_64</span><span
+ class="o">-</span><span class="n">linux</span><span class="o">-</span><span
+ class="n">gnu</span><span class="p">)</span>
+  <span class="n">CPU</span><span
+ class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span
+ class="n">R</span><span class="p">)</span> <span class="n">Core</span><span
+ class="p">(</span><span class="n">TM</span><span class="p">)</span> <span
+ class="n">i7</span> <span class="n">CPU</span>       <span class="n">L</span> <span
+ class="mi">640</span>  <span class="p">@</span> <span class="mf">2.13</span><span
+ class="n">GHz</span>
+  <span class="n">WORD_SIZE</span><span class="p">:</span> <span
+ class="mi">64</span>
+  <span class="n">BLAS</span><span class="p">:</span> <span
+ class="n">libopenblas</span> <span class="p">(</span><span class="n">USE64BITINT</span> <span
+ class="n">DYNAMIC_ARCH</span> <span class="n">NO_AFFINITY</span> <span
+ class="n">Nehalem</span><span class="p">)</span>
+  <span class="n">LAPACK</span><span
+ class="p">:</span> <span class="n">libopenblas</span>
+  <span
+ class="n">LIBM</span><span class="p">:</span> <span class="n">libopenlibm</span>
+  <span
+ class="n">LLVM</span><span class="p">:</span> <span class="n">libLLVM</span><span
+ class="o">-</span><span class="mf">3.3</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="segfaults-during-bootstrap-sysimg-jl">
+<span id="id1"></span>
+<h2>Segfaults during bootstrap (sysimg.jl)<a class="headerlink"
+ href="#segfaults-during-bootstrap-sysimg-jl"
+ title="Permalink to this headline">¶</a></h2>
+<p>Segfaults toward the end of the <code class="docutils literal"><span
+ class="pre">make</span></code> process of building julia are a common
+symptom of something going wrong while julia is preparsing the corpus
+of code in the <code class="docutils literal"><span class="pre">base/</span></code>
+folder. Many factors can contribute toward this process dying
+unexpectedly, however it is as often as not due to an error in the
+C-code portion of julia, and as such must typically be debugged with a
+debug build inside of <code class="docutils literal"><span class="pre">gdb</span></code>.
+Explicitly:</p>
+<p>Create a debug build of julia:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">cd</span> <span class="o">&lt;</span><span
+ class="n">julia_root</span><span class="o">&gt;</span>
+<span class="o">$</span> <span class="n">make</span> <span class="n">debug</span>
+</pre>
+</div>
+</div>
+<p>Note that this process will likely fail with the same error as a
+normal <code class="docutils literal"><span class="pre">make</span></code>
+incantation, however this will create a debug executable that will
+offer <code class="docutils literal"><span class="pre">gdb</span></code>
+the debugging symbols needed to get accurate backtraces. Next, manually
+run the bootstrap process inside of <code class="docutils literal"><span
+ class="pre">gdb</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">cd</span> <span class="n">base</span><span
+ class="o">/</span>
+<span class="o">$</span> <span class="n">gdb</span> <span class="o">-</span><span
+ class="n">x</span> <span class="o">../</span><span class="n">contrib</span><span
+ class="o">/</span><span class="n">debug_bootstrap</span><span class="o">.</span><span
+ class="n">gdb</span>
+</pre>
+</div>
+</div>
+<p>This will start <code class="docutils literal"><span class="pre">gdb</span></code>,
+attempt to run the bootstrap process using the debug build of julia,
+and print out a backtrace if (when) it segfaults. You may need to hit <code
+ class="docutils literal"><span class="pre">&lt;enter&gt;</span></code>
+a few times to get the full backtrace. Create a <a
+ class="reference external" href="https://gist.github.com">gist</a>
+with the backtrace, the <a class="reference internal"
+ href="#version-info">version info</a>, and any other pertinent
+information you can think of and open a new <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/issues?state=open">issue</a>
+on Github with a link to the gist.</p>
+</div>
+<div class="section" id="segfaults-when-running-a-script">
+<span id="id2"></span>
+<h2>Segfaults when running a script<a class="headerlink"
+ href="#segfaults-when-running-a-script"
+ title="Permalink to this headline">¶</a></h2>
+<p>The procedure is very similar to <a class="reference internal"
+ href="#segfaults-during-bootstrap-sysimg-jl">Segfaults during
+bootstrap (sysimg.jl)</a>. Create a debug build of Julia, and run your
+script inside of a debugged julia process:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">cd</span> <span class="o">&lt;</span><span
+ class="n">julia_root</span><span class="o">&gt;</span>
+<span class="o">$</span> <span class="n">make</span> <span class="n">debug</span>
+<span class="o">$</span> <span class="n">gdb</span> <span class="o">--</span><span
+ class="n">args</span> <span class="n">usr</span><span class="o">/</span><span
+ class="n">bin</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">-</span><span class="n">debug</span> <span class="o">&lt;</span><span
+ class="n">path_to_your_script</span><span class="o">&gt;</span>
+</pre>
+</div>
+</div>
+<p>Note that <code class="docutils literal"><span class="pre">gdb</span></code>
+will sit there, waiting for instructions. Type <code
+ class="docutils literal"><span class="pre">r</span></code> to run the
+process, and <code class="docutils literal"><span class="pre">bt</span></code>
+to generate a backtrace once it segfaults:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">r</span>
+<span class="n">Starting</span> <span class="n">program</span><span
+ class="p">:</span> <span class="o">/</span><span class="n">home</span><span
+ class="o">/</span><span class="n">sabae</span><span class="o">/</span><span
+ class="n">src</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">/</span><span class="n">usr</span><span class="o">/</span><span
+ class="n">bin</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">-</span><span class="n">debug</span> <span class="o">./</span><span
+ class="n">test</span><span class="o">.</span><span class="n">jl</span>
+<span class="o">...</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">bt</span>
+</pre>
+</div>
+</div>
+<p>Create a <a class="reference external"
+ href="https://gist.github.com">gist</a> with the backtrace, the <a
+ class="reference internal" href="#version-info">version info</a>, and
+any other pertinent information you can think of and open a new <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/issues?state=open">issue</a>
+on Github with a link to the gist.</p>
+</div>
+<div class="section" id="errors-during-julia-startup">
+<span id="id3"></span>
+<h2>Errors during julia startup<a class="headerlink"
+ href="#errors-during-julia-startup" title="Permalink to this headline">¶</a></h2>
+<p>Occasionally errors occur during julia’s startup process (especially
+when using binary distributions, as opposed to compiling from source)
+such as the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="o">$</span> <span class="n">julia</span>
+<span class="n">exec</span><span class="p">:</span> <span class="nb">error</span> <span
+ class="o">-</span><span class="mi">5</span>
+</pre>
+</div>
+</div>
+<p>These errors typically indicate something is not getting loaded
+properly very early on in the bootup phase, and our best bet in
+determining what’s going wrong is to use external tools to audit the
+disk activity of the <code class="docutils literal"><span class="pre">julia</span></code>
+process:</p>
+<ul>
+  <li>
+    <p class="first">On Linux, use <code class="docutils literal"><span
+ class="pre">strace</span></code>:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="o">$</span> <span class="n">strace</span> <span
+ class="n">julia</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+  <li>
+    <p class="first">On OSX, use <code class="docutils literal"><span
+ class="pre">dtruss</span></code>:</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="o">$</span> <span class="n">dtruss</span> <span
+ class="o">-</span><span class="n">f</span> <span class="n">julia</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+</ul>
+<p>Create a <a class="reference external"
+ href="https://gist.github.com">gist</a> with the <code
+ class="docutils literal"><span class="pre">strace</span></code>/ <code
+ class="docutils literal"><span class="pre">dtruss</span></code> ouput,
+the <a class="reference internal" href="#version-info">version info</a>,
+and any other pertinent information and open a new <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/issues?state=open">issue</a>
+on Github with a link to the gist.</p>
+</div>
+<div class="section" id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary"
+ title="Permalink to this headline">¶</a></h2>
+<p>A few terms have been used as shorthand in this guide:</p>
+<ul class="simple">
+  <li><code class="docutils literal"><span class="pre">&lt;julia_root&gt;</span></code>
+refers to the root directory of the julia source tree; e.g. it should
+contain folders such as <code class="docutils literal"><span
+ class="pre">base</span></code>, <code class="docutils literal"><span
+ class="pre">deps</span></code>, <code class="docutils literal"><span
+ class="pre">src</span></code>, <code class="docutils literal"><span
+ class="pre">test</span></code>, etc.....</li>
+</ul>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="debuggingtips.html"
+ class="btn btn-neutral float-right" title="gdb debugging tips">Next <span
+ class="fa fa-arrow-circle-right"></span></a> <a href="C.html"
+ class="btn btn-neutral" title="Developing/debugging Julia’s C code"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

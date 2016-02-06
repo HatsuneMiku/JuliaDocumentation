@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linear algebra — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Networking and Streams"
+ href="networking-and-streams.html">
+  <link rel="prev" title="Multi-dimensional Arrays" href="arrays.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<h2>線形代数</h2>
+<a class="headerlink" href="#linear-algebra"
+ title="Permalink to this headline"></a>
+<div role="main" class="document">
+<div class="section" id="linear-algebra">
+<div class="section" id="matrix-factorizations">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">行列
+分解</span></span><a class="headerlink" href="#matrix-factorizations"
+ title="Permalink to this headline"></a></h2>
+<p><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Matrix_decomposition">Matrix
+factorizations (a.k.a. matrix decompositions)</a>
+compute the factorization of a matrix into a product of matrices, and
+are one of the central concepts in linear algebra.</p>
+<p>The following table summarizes the types of matrix factorizations
+that have been
+implemented in Julia. Details of their associated methods can be found
+in the <a class="reference internal"
+ href="../stdlib/linalg.html#stdlib-linalg"><span>Linear Algebra</span></a>
+section of the standard library documentation.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="18%"><col width="82%"></colgroup> <tbody
+ valign="top">
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Cholesky</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Cholesky_decomposition">Cholesky
+factorization</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">CholeskyPivoted</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Pivot_element">Pivoted</a>
+Cholesky factorization</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">LU</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/LU_decomposition">LU factorization</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">LUTridiagonal</span></code></td>
+      <td>LU factorization for Tridiagonal matrices</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UmfpackLU</span></code></td>
+      <td>LU factorization for sparse matrices (computed by UMFPack)</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">QR</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/QR_decomposition">QR factorization</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">QRCompactWY</span></code></td>
+      <td>Compact WY form of the QR factorization</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">QRPivoted</span></code></td>
+      <td>Pivoted <a class="reference external"
+ href="https://en.wikipedia.org/wiki/QR_decomposition">QR factorization</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Hessenberg</span></code></td>
+      <td><a class="reference external"
+ href="http://mathworld.wolfram.com/HessenbergDecomposition.html">Hessenberg
+decomposition</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Eigen</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Eigendecomposition_%28matrix%29">Spectral
+decomposition</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">SVD</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Singular_value_decomposition">Singular
+value decomposition</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">GeneralizedSVD</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Generalized_singular_value_decomposition#Higher_order_version">Generalized
+SVD</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="special-matrices">
+<h2><span id="result_box" class="short_text" lang="ja"><span>特別</span><span
+ class="">行列</span></span><a class="headerlink" href="#special-matrices"
+ title="Permalink to this headline"></a></h2>
+<p><a class="reference external"
+ href="http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=3274">Matrices
+with special symmetries and structures</a>
+arise often in linear algebra and are frequently associated with
+various matrix factorizations.
+Julia features a rich collection of special matrix types, which allow
+for fast
+computation with specialized routines that are specially developed for
+particular matrix types.</p>
+<p>The following tables summarize the types of special matrices that
+have been
+implemented in Julia, as well as whether hooks to various optimized
+methods
+for them in LAPACK are available.</p>
+<table border="1" class="docutils">
+  <colgroup><col width="23%"><col width="77%"></colgroup> <tbody
+ valign="top">
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Hermitian</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Hermitian_matrix">Hermitian matrix</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UpperTriangular</span></code></td>
+      <td>Upper <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Triangular_matrix">triangular
+matrix</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">LowerTriangular</span></code></td>
+      <td>Lower <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Triangular_matrix">triangular
+matrix</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Tridiagonal" title="Base.Tridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Tridiagonal</span></code></a></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Tridiagonal_matrix">Tridiagonal
+matrix</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.SymTridiagonal"
+ title="Base.SymTridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">SymTridiagonal</span></code></a></td>
+      <td>Symmetric tridiagonal matrix</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Bidiagonal" title="Base.Bidiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Bidiagonal</span></code></a></td>
+      <td>Upper/lower <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Bidiagonal_matrix">bidiagonal
+matrix</a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Diagonal</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Diagonal_matrix">Diagonal matrix</a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UniformScaling</span></code></td>
+      <td><a class="reference external"
+ href="https://en.wikipedia.org/wiki/Uniform_scaling">Uniform scaling
+operator</a></td>
+    </tr>
+  </tbody>
+</table>
+<div class="section" id="elementary-operations">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<div id="tts_button"><object type="application/x-shockwave-flash"
+ data="//ssl.gstatic.com/translate/sound_player2.swf" id="tts"
+ height="18" width="18"></object></div>
+<span id="result_box" class="short_text" lang="ja"
+ style="font-weight: bold;"><span class="">基本</span><span class="">操作</span></span></div>
+</div>
+<table border="1" class="docutils">
+  <colgroup><col width="29%"><col width="8%"><col width="8%"><col
+ width="8%"><col width="8%"><col width="38%"></colgroup> <thead
+ valign="bottom"><tr class="row-odd">
+    <th class="head">Matrix type</th>
+    <th class="head"><code class="docutils literal"><span class="pre">+</span></code></th>
+    <th class="head"><code class="docutils literal"><span class="pre">-</span></code></th>
+    <th class="head"><code class="docutils literal"><span class="pre">*</span></code></th>
+    <th class="head"><code class="docutils literal"><span class="pre">\</span></code></th>
+    <th class="head">Other functions with
+optimized methods</th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Hermitian</span></code></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>MV</td>
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.inv" title="Base.inv"><code
+ class="xref jl jl-func docutils literal"><span class="pre">inv()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.sqrtm" title="Base.sqrtm"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sqrtm()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.expm" title="Base.expm"><code
+ class="xref jl jl-func docutils literal"><span class="pre">expm()</span></code></a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UpperTriangular</span></code></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>MV</td>
+      <td>MV</td>
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.inv" title="Base.inv"><code
+ class="xref jl jl-func docutils literal"><span class="pre">inv()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.det" title="Base.det"><code
+ class="xref jl jl-func docutils literal"><span class="pre">det()</span></code></a></td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">LowerTriangular</span></code></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>MV</td>
+      <td>MV</td>
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.inv" title="Base.inv"><code
+ class="xref jl jl-func docutils literal"><span class="pre">inv()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.det" title="Base.det"><code
+ class="xref jl jl-func docutils literal"><span class="pre">det()</span></code></a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.SymTridiagonal"
+ title="Base.SymTridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">SymTridiagonal</span></code></a></td>
+      <td>M</td>
+      <td>M</td>
+      <td>MS</td>
+      <td>MV</td>
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.eigmax" title="Base.eigmax"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eigmax()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.eigmin" title="Base.eigmin"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eigmin()</span></code></a></td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Tridiagonal" title="Base.Tridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Tridiagonal</span></code></a></td>
+      <td>M</td>
+      <td>M</td>
+      <td>MS</td>
+      <td>MV</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Bidiagonal" title="Base.Bidiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Bidiagonal</span></code></a></td>
+      <td>M</td>
+      <td>M</td>
+      <td>MS</td>
+      <td>MV</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Diagonal</span></code></td>
+      <td>M</td>
+      <td>M</td>
+      <td>MV</td>
+      <td>MV</td>
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.inv" title="Base.inv"><code
+ class="xref jl jl-func docutils literal"><span class="pre">inv()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.det" title="Base.det"><code
+ class="xref jl jl-func docutils literal"><span class="pre">det()</span></code></a>,
+      <a class="reference internal"
+ href="../stdlib/linalg.html#Base.logdet" title="Base.logdet"><code
+ class="xref jl jl-func docutils literal"><span class="pre">logdet()</span></code></a>,
+      <a class="reference internal" href="../stdlib/math.html#Base./"
+ title="Base./"><code class="xref jl jl-func docutils literal"><span
+ class="pre">/()</span></code></a></td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UniformScaling</span></code></td>
+      <td>M</td>
+      <td>M</td>
+      <td>MVS</td>
+      <td>MVS</td>
+      <td><a class="reference internal"
+ href="../stdlib/math.html#Base./" title="Base./"><code
+ class="xref jl jl-func docutils literal"><span class="pre">/()</span></code></a></td>
+    </tr>
+  </tbody>
+</table>
+<p>Legend:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="16%"><col width="84%"></colgroup> <tbody
+ valign="top">
+    <tr class="row-odd">
+      <td>M (matrix)</td>
+      <td>An optimized method for matrix-matrix operations is available</td>
+    </tr>
+    <tr class="row-even">
+      <td>V (vector)</td>
+      <td>An optimized method for matrix-vector operations is available</td>
+    </tr>
+    <tr class="row-odd">
+      <td>S (scalar)</td>
+      <td>An optimized method for matrix-scalar operations is available</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="id3">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">行列
+分解</span></span><a class="headerlink" href="#id3"
+ title="Permalink to this headline"></a></h3>
+<table border="1" class="docutils">
+  <colgroup><col width="23%"><col width="7%"><col width="12%"><col
+ width="15%"><col width="15%"><col width="12%"><col width="15%"></colgroup>
+  <thead valign="bottom"><tr class="row-odd">
+    <th class="head">Matrix type</th>
+    <th class="head">LAPACK</th>
+    <th class="head"><a class="reference internal"
+ href="../stdlib/linalg.html#Base.eig" title="Base.eig"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eig()</span></code></a></th>
+    <th class="head"><a class="reference internal"
+ href="../stdlib/linalg.html#Base.eigvals" title="Base.eigvals"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eigvals()</span></code></a></th>
+    <th class="head"><a class="reference internal"
+ href="../stdlib/linalg.html#Base.eigvecs" title="Base.eigvecs"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eigvecs()</span></code></a></th>
+    <th class="head"><a class="reference internal"
+ href="../stdlib/linalg.html#Base.svd" title="Base.svd"><code
+ class="xref jl jl-func docutils literal"><span class="pre">svd()</span></code></a></th>
+    <th class="head"><a class="reference internal"
+ href="../stdlib/linalg.html#Base.svdvals" title="Base.svdvals"><code
+ class="xref jl jl-func docutils literal"><span class="pre">svdvals()</span></code></a></th>
+  </tr>
+  </thead> <tbody valign="top">
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Hermitian</span></code></td>
+      <td>HE</td>
+      <td>&nbsp;</td>
+      <td>ARI</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-odd">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">UpperTriangular</span></code></td>
+      <td>TR</td>
+      <td>A</td>
+      <td>A</td>
+      <td>A</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">LowerTriangular</span></code></td>
+      <td>TR</td>
+      <td>A</td>
+      <td>A</td>
+      <td>A</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.SymTridiagonal"
+ title="Base.SymTridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">SymTridiagonal</span></code></a></td>
+      <td>ST</td>
+      <td>A</td>
+      <td>ARI</td>
+      <td>AV</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-even">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Tridiagonal" title="Base.Tridiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Tridiagonal</span></code></a></td>
+      <td>GT</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr class="row-odd">
+      <td><a class="reference internal"
+ href="../stdlib/linalg.html#Base.Bidiagonal" title="Base.Bidiagonal"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Bidiagonal</span></code></a></td>
+      <td>BD</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>A</td>
+      <td>A</td>
+    </tr>
+    <tr class="row-even">
+      <td><code class="xref jl jl-class docutils literal"><span
+ class="pre">Diagonal</span></code></td>
+      <td>DI</td>
+      <td>&nbsp;</td>
+      <td>A</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </tbody>
+</table>
+<p>Legend:</p>
+<table border="1" class="docutils">
+  <colgroup><col width="8%"><col width="78%"><col width="14%"></colgroup>
+  <tbody valign="top">
+    <tr class="row-odd">
+      <td>A (all)</td>
+      <td>An optimized method to find all the characteristic values
+and/or vectors is available</td>
+      <td>e.g. <code class="docutils literal"><span class="pre">eigvals(M)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>R (range)</td>
+      <td>An optimized method to find the <code
+ class="docutils literal"><span class="pre">il</span></code><sup>th</sup>
+through the <code class="docutils literal"><span class="pre">ih</span></code><sup>th</sup>
+characteristic values are available</td>
+      <td><code class="docutils literal"><span class="pre">eigvals(M,</span>
+      <span class="pre">il,</span> <span class="pre">ih)</span></code></td>
+    </tr>
+    <tr class="row-odd">
+      <td>I (interval)</td>
+      <td>An optimized method to find the characteristic values in the
+interval [<code class="docutils literal"><span class="pre">vl</span></code>,
+      <code class="docutils literal"><span class="pre">vh</span></code>]
+is available</td>
+      <td><code class="docutils literal"><span class="pre">eigvals(M,</span>
+      <span class="pre">vl,</span> <span class="pre">vh)</span></code></td>
+    </tr>
+    <tr class="row-even">
+      <td>V (vectors)</td>
+      <td>An optimized method to find the characteristic vectors
+corresponding to the characteristic values <code
+ class="docutils literal"><span class="pre">x=[x1,</span> <span
+ class="pre">x2,...]</span></code> is available</td>
+      <td><code class="docutils literal"><span class="pre">eigvecs(M,</span>
+      <span class="pre">x)</span></code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="section" id="the-uniform-scaling-operator">
+<h3><span id="result_box" class="short_text" lang="ja"><span>均一な</span><span>ス
+ケーリング</span><span class="">演算子</span></span><a class="headerlink"
+ href="#the-uniform-scaling-operator" title="Permalink to this headline"></a></h3>
+<p>A <code class="xref jl jl-class docutils literal"><span class="pre">UniformScaling</span></code>
+operator represents a scalar times the identity operator, <code
+ class="docutils literal"><span class="pre">λ*I</span></code>. The
+identity operator <code class="xref jl jl-class docutils literal"><span
+ class="pre">I</span></code> is defined as a constant and is an
+instance of <code class="xref jl jl-class docutils literal"><span
+ class="pre">UniformScaling</span></code>. The size of these operators
+are generic and match the other matrix in the binary operations <a
+ class="reference internal" href="../stdlib/math.html#Base.+"
+ title="Base.+"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">+</span></code></a>, <a class="reference internal"
+ href="../stdlib/math.html#Base.-" title="Base.-"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">-</span></code></a>,
+<a class="reference internal" href="../stdlib/strings.html#Base.*"
+ title="Base.*"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">*</span></code></a> and <a class="reference internal"
+ href="../stdlib/math.html#Base.%5C" title="Base.\"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">\</span></code></a>.
+For <code class="docutils literal"><span class="pre">A+I</span></code>
+and <code class="docutils literal"><span class="pre">A-I</span></code>
+this means that <code class="docutils literal"><span class="pre">A</span></code>
+must be square. Multiplication with the identity operator <code
+ class="xref jl jl-class docutils literal"><span class="pre">I</span></code>
+is a noop (except for checking that the scaling factor is one) and
+therefore almost without overhead.</p>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

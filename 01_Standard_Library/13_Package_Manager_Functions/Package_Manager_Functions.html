@@ -1,0 +1,437 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>パッケージ管理</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">パッケージ管理関数</span><br>
+All package manager functions are defined in the Pkg module. None of
+the Pkg module’s functions are exported; to use them, you’ll need to
+prefix each function call with an explicit Pkg., e.g. Pkg.status() or
+Pkg.dir().<br>
+Pkg.status() の掃き出しは時間がかかる．<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Pkg.status()<br>
+      </td>
+      <td style="vertical-align: top;">パッケージの状態を表示する．<br>
+      </td>
+      <td style="vertical-align: top;">Pkg.status()</td>
+      <td style="vertical-align: top;">2 required packages:<br>
+&nbsp;-
+PyCall&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1.2.0<br>
+&nbsp;-
+SymPy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.2.35<br>
+15 additional packages:<br>
+&nbsp;-
+BinDeps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.3.20<br>
+&nbsp;-
+ColorTypes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.2.0<br>
+&nbsp;-
+Colors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.6.2<br>
+&nbsp;-
+Compat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.7.8<br>
+&nbsp;-
+Conda&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.1.8<br>
+&nbsp;-
+Dates&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.4.4<br>
+&nbsp;-
+Docile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.5.23<br>
+&nbsp;-
+FixedPointNumbers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.1.1<br>
+&nbsp;-
+JSON&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.5.0<br>
+&nbsp;-
+MacroTools&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.2.0<br>
+&nbsp;-
+Plots&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.5.1<br>
+&nbsp;-
+Reexport&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.0.3<br>
+&nbsp;-
+Requires&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.2.1<br>
+&nbsp;-
+SHA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.1.2<br>
+&nbsp;-
+URIParser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0.1.2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Pkg.dir()<br>
+      </td>
+      <td style="vertical-align: top;">パッケージのディレクトリのパスを表示する．<br>
+      </td>
+      <td style="vertical-align: top;">Pkg.dir()</td>
+      <td style="vertical-align: top;">"C:\\Users\\Saito\\.julia\\v0.4"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dir() <br>
+→ AbstractString<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">Returns the absolute path of the
+package directory. This defaults
+to joinpath(homedir(),".julia","v$(VERSION.major).$(VERSION.minor)") on
+all platforms (i.e. ~/.julia/v0.4 in UNIX shell syntax). If the
+JULIA_PKGDIR environment variable is set, then that path is used in the
+returned value as
+joinpath(ENV["JULIA_PKGDIR"],"v$(VERSION.major).$(VERSION.minor)"). If
+JULIA_PKGDIR is a relative path, it is interpreted relative to whatever
+the current working directory is. </td>
+      <td style="vertical-align: top;">dir()<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dir(names...) <br>
+→ AbstractString </td>
+      <td style="vertical-align: top;">Equivalent to
+normpath(Pkg.dir(),names...) &#8211; i.e. it appends path components to the
+package directory and normalizes the resulting path. In particular,
+Pkg.dir(pkg) returns the path to the package pkg.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">init(meta::AbstractString=DEFAULT_META,
+branch::AbstractString=META_BRANCH) </td>
+      <td style="vertical-align: top;">Initialize Pkg.dir() as a
+package directory. This will be done automatically when the
+JULIA_PKGDIR is not set and Pkg.dir() uses its default value. As part
+of this process, clones a local METADATA git repository from the site
+and branch specified by its arguments, which are typically not
+provided. Explicit (non-default) arguments can be used to support a
+custom METADATA setup.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">resolve() </td>
+      <td style="vertical-align: top;">Determines an optimal,
+consistent set of package versions to install or upgrade to. The
+optimal set of package versions is based on the contents of
+Pkg.dir("REQUIRE") and the state of installed packages in Pkg.dir(),
+Packages that are no longer required are moved into Pkg.dir(".trash").<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">edit() </td>
+      <td style="vertical-align: top;">Opens Pkg.dir("REQUIRE") in the
+editor specified by the VISUAL or EDITOR environment variables; when
+the editor command returns, it runs Pkg.resolve() to determine and
+install a new optimal set of installed package versions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">add(pkg, vers...) </td>
+      <td style="vertical-align: top;">Add a requirement entry for pkg
+to Pkg.dir("REQUIRE") and call Pkg.resolve(). If vers are given, they
+must be VersionNumber objects and they specify acceptable version
+intervals for pkg.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rm(pkg)</td>
+      <td style="vertical-align: top;">Remove all requirement entries
+for pkg from Pkg.dir("REQUIRE") and call Pkg.resolve().<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">clone(url[, pkg])</td>
+      <td style="vertical-align: top;">Clone a package directly from
+the git URL url. The package does not need to be a registered in
+Pkg.dir("METADATA"). The package repo is cloned by the name pkg if
+provided; if not provided, pkg is determined automatically from url.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">clone(pkg)</td>
+      <td style="vertical-align: top;">If pkg has a URL registered in
+Pkg.dir("METADATA"), clone it from that URL on the default branch. The
+package does not need to have any registered versions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">available() → Vector{ASCIIString}</td>
+      <td style="vertical-align: top;">Returns the names of available
+packages.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">available(pkg) <br>
+→ Vector{VersionNumber}</td>
+      <td style="vertical-align: top;">Returns the version numbers
+available for package pkg.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">installed() →
+Dict{ASCIIString,VersionNumber}</td>
+      <td style="vertical-align: top;">Returns a dictionary mapping
+installed package names to the installed version number of each package.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">installed(pkg) → Void |
+VersionNumber</td>
+      <td style="vertical-align: top;">If pkg is installed, return the
+installed version number, otherwise return nothing.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">status()</td>
+      <td style="vertical-align: top;">Prints out a summary of what
+packages are installed and what version and state they’re in.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">update()</td>
+      <td style="vertical-align: top;">Update package the metadata repo
+&#8211; kept in Pkg.dir("METADATA") &#8211; then update any fixed packages that can
+safely be pulled from their origin; then call Pkg.resolve() to
+determine a new optimal set of packages versions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">checkout(pkg[, branch="master"])</td>
+      <td style="vertical-align: top;">Checkout the Pkg.dir(pkg) repo
+to the branch branch. Defaults to checking out the “master” branch. To
+go back to using the newest compatible released version, use
+Pkg.free(pkg)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pin(pkg)</td>
+      <td style="vertical-align: top;">Pin pkg at the current version.
+To go back to using the newest compatible released version, use
+Pkg.free(pkg)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pin(pkg, version)</td>
+      <td style="vertical-align: top;">Pin pkg at registered version
+version.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">free(pkg)</td>
+      <td style="vertical-align: top;">Free the package pkg to be
+managed by the package manager again. It calls Pkg.resolve() to
+determine optimal package versions after. This is an inverse for both
+Pkg.checkout and Pkg.pin.<br>
+You can also supply an iterable collection of package names, e.g.,
+Pkg.free(("Pkg1", "Pkg2")) to free multiple packages at once.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">build()</td>
+      <td style="vertical-align: top;">Run the build scripts for all
+installed packages in depth-first recursive order.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">build(pkgs...)</td>
+      <td style="vertical-align: top;">Run the build script in
+deps/build.jl for each package in pkgs and all of their dependencies in
+depth-first recursive order. This is called automatically by
+Pkg.resolve() on all installed or updated packages.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">generate(pkg, license)</td>
+      <td style="vertical-align: top;">Generate a new package named pkg
+with one of these license keys: "MIT", "BSD" or "ASL". If you want to
+make a package with a different license, you can edit it afterwards.
+Generate creates a git repo at Pkg.dir(pkg) for the package and inside
+it LICENSE.md, README.md, REQUIRE, the julia entrypoint
+$pkg/src/$pkg.jl, and Travis and AppVeyor CI configuration files
+.travis.yml and appveyor.yml.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">register(pkg[, url])<br>
+      </td>
+      <td style="vertical-align: top;">Register pkg at the git URL url,
+defaulting to the configured origin URL of the git repo Pkg.dir(pkg).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tag(pkg[, ver[, commit]])</td>
+      <td style="vertical-align: top;">Tag commit as version ver of
+package pkg and create a version entry in METADATA. If not provided,
+commit defaults to the current commit of the pkg repo. If ver is one of
+the symbols :patch, :minor, :major the next patch, minor or major
+version is used. If ver is not provided, it defaults to :patch.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">publish()</td>
+      <td style="vertical-align: top;">For each new package version
+tagged in METADATA not already published, make sure that the tagged
+package commits have been pushed to the repo at the registered URL for
+the package and if they all have, open a pull request to METADATA.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">test()</td>
+      <td style="vertical-align: top;">Run the tests for all installed
+packages ensuring that each package’s test dependencies are installed
+for the duration of the test. A package is tested by running its
+test/runtests.jl file and test dependencies are specified in
+test/REQUIRE.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">test(pkgs...)</td>
+      <td style="vertical-align: top;">Run the tests for each package
+in pkgs ensuring that each package’s test dependencies are installed
+for the duration of the test. A package is tested by running its
+test/runtests.jl file and test dependencies are specified in
+test/REQUIRE.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

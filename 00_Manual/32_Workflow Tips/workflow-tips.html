@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Tips — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Style Guide" href="style-guide.html">
+  <link rel="prev" title="Performance Tips" href="performance-tips.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="workflow-tips">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">ワー
+クフロー</span><span class="">のヒント</span></span></h2>
+</div>
+</div>
+<h1><a class="headerlink" href="#workflow-tips"
+ title="Permalink to this headline"></a></h1>
+<p>Here are some tips for working with Julia efficiently.</p>
+<div class="section" id="repl-based-workflow">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">REPL</span><span
+ class="">ベースのワークフロー</span></span></h3>
+</div>
+</div>
+<h2><a class="headerlink" href="#repl-based-workflow"
+ title="Permalink to this headline"></a></h2>
+<p>As already elaborated in <a class="reference internal"
+ href="interacting-with-julia.html#man-interacting-with-julia"><span>Interacting
+With Julia</span></a>, Julia’s
+REPL provides rich functionality that facilitates an efficient
+interactive workflow. Here are some tips that might further enhance
+your
+experience at the command line.</p>
+<div class="section" id="a-basic-editor-repl-workflow">
+<h3><span id="result_box" class="short_text" lang="ja"><span>基本的な</span><span>エ
+ディタ</span><span>/</span> <span class="hps">REPL</span><span class="">の
+ワークフロー</span></span><a class="headerlink"
+ href="#a-basic-editor-repl-workflow" title="Permalink to this headline"></a></h3>
+<p>The most basic Julia workflows involve using a text editor in
+conjunction with the <code class="docutils literal"><span class="pre">julia</span></code>
+command line. A common pattern includes
+the following elements:</p>
+<ul>
+  <li>
+    <p class="first"><strong>Put code under development in a temporary
+module.</strong> Create a file,
+say <code class="docutils literal"><span class="pre">Tmp.jl</span></code>,
+and include within it</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">module</span> <span class="n">Tmp</span>
+
+<span class="o">&lt;</span><span class="n">your</span> <span class="n">definitions</span> <span
+ class="n">here</span><span class="o">&gt;</span>
+
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+  <li>
+    <p class="first"><strong>Put your test code in another file.</strong>
+Create another file, say <code class="docutils literal"><span
+ class="pre">tst.jl</span></code>,
+which begins with</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">import</span> <span class="n">Tmp</span>
+    </pre>
+    </div>
+    </div>
+    <p>and includes tests for the contents of <code
+ class="docutils literal"><span class="pre">Tmp</span></code>. The
+value of using <code class="xref jl jl-obj docutils literal"><span
+ class="pre">import</span></code>
+versus <code class="xref jl jl-obj docutils literal"><span class="pre">using</span></code>
+is that you can call <code class="xref jl jl-obj docutils literal"><span
+ class="pre">reload</span></code> <code class="docutils literal"><span
+ class="pre">("Tmp")</span></code>
+instead of having to restart the REPL when your
+definitions change. Of course, the cost is the need to prepend <code
+ class="docutils literal"><span class="pre">Tmp.</span></code>
+to uses of names defined in your module. (You can lower that
+cost by keeping your module name short.)</p>
+    <p>Alternatively, you can wrap the contents of your test file in a
+module, as</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="k">module</span> <span class="n">Tst</span>
+    <span
+ class="k">using</span> <span class="n">Tmp</span>
+
+    <span
+ class="o">&lt;</span><span class="n">scratch</span> <span class="n">work</span><span
+ class="o">&gt;</span>
+
+<span class="k">end</span>
+    </pre>
+    </div>
+    </div>
+    <p>The advantage is that you can now do <code
+ class="xref jl jl-obj docutils literal"><span class="pre">using</span></code>
+    <code class="docutils literal"><span class="pre">Tmp</span></code>
+in your
+test code and can therefore avoid prepending <code
+ class="docutils literal"><span class="pre">Tmp.</span></code>
+everywhere.
+The disadvantage is that code can no longer be selectively copied
+to the REPL without some tweaking.</p>
+  </li>
+  <li>
+    <p class="first"><strong>Lather. Rinse. Repeat.</strong> Explore
+ideas at the <code class="docutils literal"><span class="pre">julia</span></code>
+command
+prompt. Save good ideas in <code class="docutils literal"><span
+ class="pre">tst.jl</span></code>. Occasionally
+restart the REPL, issuing</p>
+    <div class="highlight-julia">
+    <div class="highlight">
+    <pre><span class="n">reload</span><span class="p">(</span><span
+ class="s">"Tmp"</span><span class="p">)</span>
+<span class="n">include</span><span class="p">(</span><span class="s">"tst.jl"</span><span
+ class="p">)</span>
+    </pre>
+    </div>
+    </div>
+  </li>
+</ul>
+</div>
+<div class="section" id="simplify-initialization">
+<h3><span id="result_box" class="short_text" lang="ja"><span>初期設定</span><span>を</span><span
+ class="">簡素化</span></span><a class="headerlink"
+ href="#simplify-initialization" title="Permalink to this headline"></a></h3>
+<p>To simplify restarting the REPL, put project-specific initialization
+code in a file, say <code class="docutils literal"><span class="pre">_init.jl</span></code>,
+which you can run on startup by
+issuing the command:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span> <span class="o">-</span><span
+ class="n">L</span> <span class="n">_init</span><span class="o">.</span><span
+ class="n">jl</span>
+</pre>
+</div>
+</div>
+<p>If you further add the following to your <code
+ class="docutils literal"><span class="pre">.juliarc.jl</span></code>
+file</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">isinteractive</span><span class="p">()</span> <span
+ class="o">&amp;&amp;</span> <span class="n">isfile</span><span
+ class="p">(</span><span class="s">"_init.jl"</span><span class="p">)</span> <span
+ class="o">&amp;&amp;</span> <span class="n">require</span><span
+ class="p">(</span><span class="s">"_init.jl"</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>then calling <code class="docutils literal"><span class="pre">julia</span></code>
+from that directory will run the initialization
+code without the additional command line argument.</p>
+</div>
+</div>
+<div class="section" id="browser-based-workflow">
+<h2>ブラウザベースのワークフロー</h2>
+<p>It is also possible to interact with a Julia REPL in the browser via
+<a class="reference external"
+ href="https://github.com/JuliaLang/IJulia.jl">IJulia</a>. See the
+package home for details.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

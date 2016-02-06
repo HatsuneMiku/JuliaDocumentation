@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>Cインターフェース</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">C
+Interface<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ccall((symbol, library) or
+function_pointer, ReturnType,
+(ArgumentType1, ...), ArgumentValue1, ...) </td>
+      <td style="vertical-align: top;">Call function in C-exported
+shared library,
+specified by (function name, library) tuple, where each component is a
+string or symbol.<br>
+&nbsp;&nbsp;&nbsp; Note that the argument type tuple must be a literal
+tuple, and not a tuple-valued variable or expression. Alternatively,
+ccall may also be used to call a function pointer, such as one returned
+by dlsym.<br>
+&nbsp;&nbsp;&nbsp; Each ArgumentValue to the ccall will be converted to
+the corresponding ArgumentType, by automatic insertion of calls to
+unsafe_convert(ArgumentType, cconvert(ArgumentType, ArgumentValue)).
+(See also the documentation for each of these functions for further
+details.) In most cases, this simply results in a call to
+convert(ArgumentType, ArgumentValue).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cglobal((symbol, library)[,
+type=Void]) </td>
+      <td style="vertical-align: top;">Obtain a pointer to a global
+variable in a
+C-exported shared library, specified exactly as in ccall. Returns a
+Ptr{Type}, defaulting to Ptr{Void} if no Type argument is supplied. The
+values can be read or written by unsafe_load or unsafe_store!,
+respectively.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cfunction(function::Function,
+ReturnType::Type, (ArgumentTypes...)) </td>
+      <td style="vertical-align: top;">Generate C-callable function
+pointer from Julia
+function. Type annotation of the return value in the callback function
+is a must for situations where Julia cannot infer the return type
+automatically.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">function foo()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # body<br>
+retval::Float64<br>
+end<br>
+bar = cfunction(foo, Float64, ()) </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_convert(T, x) </td>
+      <td style="vertical-align: top;">Convert x to a value of type T<br>
+&nbsp;&nbsp;&nbsp; In cases where convert would need to take a Julia
+object and turn it into a Ptr, this function should be used to define
+and perform that conversion.<br>
+&nbsp;&nbsp;&nbsp; Be careful to ensure that a julia reference to x
+exists as long as the result of this function will be used.
+Accordingly, the argument x to this function should never be an
+expression, only a variable name or field reference. For example,
+x=a.b.c is acceptable, but x=[a,b,c] is not.<br>
+&nbsp;&nbsp;&nbsp; The unsafe prefix on this function indicates that
+using the result of this function after the x argument to this function
+is no longer accessible to the program may cause undefined behavior,
+including program corruption or segfaults, at any later time.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cconvert(T, x) </td>
+      <td style="vertical-align: top;">Convert x to a value of type T,
+typically by calling
+convert(T,x)<br>
+&nbsp;&nbsp;&nbsp; In cases where x cannot be safely converted to T,
+unlike convert, cconvert may return an object of a type different from
+T, which however is suitable for unsafe_convert to handle.<br>
+&nbsp;&nbsp;&nbsp; Neither convert nor cconvert should take a Julia
+object and turn it into a Ptr.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_load(p::Ptr{T},
+i::Integer) </td>
+      <td style="vertical-align: top;">Load a value of type T from the
+address of the ith
+element (1-indexed) starting at p. This is equivalent to the C
+expression p[i-1].<br>
+&nbsp;&nbsp;&nbsp; The unsafe prefix on this function indicates that no
+validation is performed on the pointer p to ensure that it is valid.
+Incorrect usage may segfault your program or return garbage answers, in
+the same manner as C.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_store!(p::Ptr{T}, x,
+i::Integer) </td>
+      <td style="vertical-align: top;">Store a value of type T to the
+address of the ith
+element (1-indexed) starting at p. This is equivalent to the C
+expression p[i-1] = x.<br>
+&nbsp;&nbsp;&nbsp; The unsafe prefix on this function indicates that no
+validation is performed on the pointer p to ensure that it is valid.
+Incorrect usage may corrupt or segfault your program, in the same
+manner as C.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_copy!(dest::Ptr{T},
+src::Ptr{T}, N) </td>
+      <td style="vertical-align: top;">Copy N elements from a source
+pointer to a
+destination, with no checking. The size of an element is determined by
+the type of the pointers.<br>
+&nbsp;&nbsp;&nbsp; The unsafe prefix on this function indicates that no
+validation is performed on the pointers dest and src to ensure that
+they are valid. Incorrect usage may corrupt or segfault your program,
+in the same manner as C.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_copy!(dest::Array, do,
+src::Array, so, N) </td>
+      <td style="vertical-align: top;">Copy N elements from a source
+array to a
+destination, starting at offset so in the source and do in the
+destination (1-indexed).<br>
+&nbsp;&nbsp;&nbsp; The unsafe prefix on this function indicates that no
+validation is performed to ensure that N is inbounds on either array.
+Incorrect usage may corrupt or segfault your program, in the same
+manner as C.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">copy!(dest, src) </td>
+      <td style="vertical-align: top;">Copy all elements from
+collection src to array dest.
+Returns dest.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">copy!(dest, do, src, so, N) </td>
+      <td style="vertical-align: top;">Copy N elements from collection
+src starting at
+offset so, to array dest starting at offset do. Returns dest.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pointer(array[, index]) </td>
+      <td style="vertical-align: top;">Get the native address of an
+array or string
+element. Be careful to ensure that a julia reference to a exists as
+long as this pointer will be used. This function is “unsafe” like
+unsafe_convert.<br>
+Calling Ref(array[, index]) is generally preferable
+to this function.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pointer_to_array(pointer, dims[,
+take_ownership::Bool]) </td>
+      <td style="vertical-align: top;">Wrap a native pointer as a Julia
+Array object. The
+pointer element type determines the array element type. own optionally
+specifies whether Julia should take ownership of the memory, calling
+free on the pointer when the array is no longer referenced.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pointer_from_objref(object_instance)
+      </td>
+      <td style="vertical-align: top;">Get the memory address of a
+Julia object as a Ptr.
+The existence of the resulting Ptr will not protect the object from
+garbage collection, so you must ensure that the object remains
+referenced for the whole time that the Ptr will be used.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsafe_pointer_to_objref(p::Ptr)
+      </td>
+      <td style="vertical-align: top;">Convert a Ptr to an object
+reference. Assumes the
+pointer refers to a valid heap-allocated Julia object. If this is not
+the case, undefined behavior results, hence this function is considered
+“unsafe” and should be used with care.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">disable_sigint(f::Function) </td>
+      <td style="vertical-align: top;">Disable Ctrl-C handler during
+execution of a
+function, for calling external code that is not interrupt safe.
+Intended to be called using do block syntax as follows:<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">disable_sigint() do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # interrupt-unsafe code<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br>
+end </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reenable_sigint(f::Function) </td>
+      <td style="vertical-align: top;">Re-enable Ctrl-C handler during
+execution of a
+function. Temporarily reverses the effect of disable_sigint.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">systemerror(sysfunc, iftrue) </td>
+      <td style="vertical-align: top;">Raises a SystemError for errno
+with the descriptive
+string sysfunc if iftrue is true<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Ptr{T}</td>
+      <td style="vertical-align: top;">A memory address referring to
+data of type T. However, there is no guarantee that the memory is
+actually valid, or that it actually represents data of the specified
+type.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Ref{T}</td>
+      <td style="vertical-align: top;">An object that safely references
+data of type T. This type is guaranteed to point to valid,
+Julia-allocated memory of the correct type. The underlying data is
+protected from freeing by the garbage collector as long as the Ref
+itself is referenced.<br>
+When passed as a ccall argument (either as a Ptr or Ref type), a Ref
+object will be converted to a native pointer to the data it references.<br>
+There is no invalid (NULL) Ref.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cchar</td>
+      <td style="vertical-align: top;">Equivalent to the native char
+c-type<br>
+      </td>
+      <td style="vertical-align: top;">Cchar </td>
+      <td style="vertical-align: top;">Int8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cuchar</td>
+      <td style="vertical-align: top;">Equivalent to the native
+unsigned char c-type (UInt8)<br>
+      </td>
+      <td style="vertical-align: top;">Cuchar </td>
+      <td style="vertical-align: top;">UInt8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cshort</td>
+      <td style="vertical-align: top;">Equivalent to the native signed
+short c-type (Int16)<br>
+      </td>
+      <td style="vertical-align: top;">Cshort </td>
+      <td style="vertical-align: top;">Int16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cushort</td>
+      <td style="vertical-align: top;">Equivalent to the native
+unsigned short c-type (UInt16)<br>
+      </td>
+      <td style="vertical-align: top;">Cushort </td>
+      <td style="vertical-align: top;">UInt16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cint<br>
+      </td>
+      <td style="vertical-align: top;">Equivalent to the native signed
+int c-type (Int32)<br>
+      </td>
+      <td style="vertical-align: top;">Cint </td>
+      <td style="vertical-align: top;">Int32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cuint</td>
+      <td style="vertical-align: top;">Equivalent to the native
+unsigned int c-type (UInt32)<br>
+      </td>
+      <td style="vertical-align: top;">Cuint<br>
+      </td>
+      <td style="vertical-align: top;">UInt32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Clong</td>
+      <td style="vertical-align: top;">Equivalent to the native signed
+long c-type<br>
+      </td>
+      <td style="vertical-align: top;">Clong<br>
+      </td>
+      <td style="vertical-align: top;">Int32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Culong</td>
+      <td style="vertical-align: top;">Equivalent to the native
+unsigned long c-type<br>
+      </td>
+      <td style="vertical-align: top;">Culong<br>
+      </td>
+      <td style="vertical-align: top;">UInt32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Clonglong</td>
+      <td style="vertical-align: top;">Equivalent to the native signed
+long long c-type (Int64)<br>
+      </td>
+      <td style="vertical-align: top;">Clonglong </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Culonglong</td>
+      <td style="vertical-align: top;">Equivalent to the native
+unsigned long long c-type (UInt64)<br>
+      </td>
+      <td style="vertical-align: top;">Culonglong </td>
+      <td style="vertical-align: top;">UInt64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cintmax_t</td>
+      <td style="vertical-align: top;">Equivalent to the native
+intmax_t c-type (Int64)<br>
+      </td>
+      <td style="vertical-align: top;">Cintmax_t </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cuintmax_t</td>
+      <td style="vertical-align: top;">Equivalent to the native
+uintmax_t c-type (UInt64)<br>
+      </td>
+      <td style="vertical-align: top;">Cuintmax_t </td>
+      <td style="vertical-align: top;">UInt64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Csize_t</td>
+      <td style="vertical-align: top;">Equivalent to the native size_t
+c-type (UInt)<br>
+      </td>
+      <td style="vertical-align: top;">Csize_t </td>
+      <td style="vertical-align: top;">UInt64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cssize_t</td>
+      <td style="vertical-align: top;">Equivalent to the native ssize_t
+c-type<br>
+      </td>
+      <td style="vertical-align: top;">Cssize_t </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cptrdiff_t</td>
+      <td style="vertical-align: top;">Equivalent to the native
+ptrdiff_t c-type (Int)<br>
+      </td>
+      <td style="vertical-align: top;">Cptrdiff_t </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Coff_t</td>
+      <td style="vertical-align: top;">Equivalent to the native off_t
+c-type&nbsp;&nbsp; <br>
+      </td>
+      <td style="vertical-align: top;">Coff_t </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cwchar_t</td>
+      <td style="vertical-align: top;">Equivalent to the native wchar_t
+c-type (Int32)<br>
+      </td>
+      <td style="vertical-align: top;">Cwchar_t </td>
+      <td style="vertical-align: top;">UInt16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cfloat</td>
+      <td style="vertical-align: top;">Equivalent to the native float
+c-type (Float32)<br>
+      </td>
+      <td style="vertical-align: top;">Cfloat<br>
+      </td>
+      <td style="vertical-align: top;">Float32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Cdouble</td>
+      <td style="vertical-align: top;">Equivalent to the native double
+c-type (Float64)<br>
+      </td>
+      <td style="vertical-align: top;">Cdouble </td>
+      <td style="vertical-align: top;">Float64<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

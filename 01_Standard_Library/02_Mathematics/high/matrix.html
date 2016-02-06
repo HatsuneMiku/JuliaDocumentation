@@ -1,0 +1,520 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>行列</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4">行列<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">書式<br>
+      </td>
+      <td style="vertical-align: top;">機能<br>
+      </td>
+      <td style="vertical-align: top;">例題<br>
+      </td>
+      <td style="vertical-align: top;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">*(A,B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">行列AB<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0]; <br>
+B=[1.0 8.0; 2.0 3.0];<br>
+*(A,B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;12.0&nbsp; 31.0<br>
+&nbsp; 5.0&nbsp; 27.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_mul_B!(Y,
+A, B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">行列Aと
+行列Bの積を行列Y</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0]; <br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Y = similar(B); <br>
+A_mul_B!(Y, A, B);</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;12.0&nbsp; 31.0<br>
+&nbsp; 5.0&nbsp; 27.0</td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">.*(A,B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">成分の掛
+け算<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0]; <br>
+B=[1.0 8.0; 2.0 3.0];<br>
+.*(A,B)</td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;2.0&nbsp; 40.0<br>
+&nbsp;6.0&nbsp;&nbsp; 3.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_ldiv_Bc(A,
+B) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates \(A\) \ \(B&#7476;\) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">
+      <pre>A=[2.0 5.0; 3.0 1.0]; <br>B=[1.0 8.0; 2.0 3.0];<span
+ class="p"><br></span>A_ldiv_Bc(A, B)<br></pre>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 3.0&nbsp; 1.0<br>
+&nbsp;-1.0&nbsp; 0.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_ldiv_Bt(A,
+B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates \(A\) \ \(B&#7488;\)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+A_ldiv_Bt(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 3.0&nbsp; 1.0<br>
+&nbsp;-1.0&nbsp; 0.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_mul_Bc(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#8901;B&#7476;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0]; <br>
+B=[1.0 8.0; 2.0 3.0];<br>
+A_mul_Bc(A, B) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;42.0&nbsp; 19.0<br>
+&nbsp;11.0&nbsp;&nbsp; 9.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_mul_Bt(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#8901;B&#7488;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+A_mul_Bt(A, B) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;42.0&nbsp; 19.0<br>
+&nbsp;11.0&nbsp;&nbsp; 9.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_rdiv_Bc(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A / B&#7476;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+A_rdiv_Bc(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 2.61538&nbsp;&nbsp;&nbsp; -0.0769231<br>
+&nbsp;-0.0769231&nbsp;&nbsp; 0.384615<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A_rdiv_Bt(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A / B&#7488;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+A_rdiv_Bt(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 2.61538&nbsp;&nbsp;&nbsp; -0.0769231<br>
+&nbsp;-0.0769231&nbsp;&nbsp; 0.384615<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_ldiv_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476;\) \ \(B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_ldiv_B(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;0.384615&nbsp;&nbsp; 0.0769231<br>
+&nbsp;0.0769231&nbsp; 2.61538<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_ldiv_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488;\) \ \(B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_ldiv_B(A, B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;0.384615&nbsp;&nbsp; 0.0769231<br>
+&nbsp;0.0769231&nbsp; 2.61538</td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_ldiv_Bc(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476;\) \ \(B&#7476;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_ldiv_Bc(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 1.76923&nbsp;&nbsp; 0.538462<br>
+&nbsp;-0.846154&nbsp; 0.307692<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_ldiv_Bt(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488;\) \ \(B&#7488;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_ldiv_Bt(A, B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 1.76923&nbsp;&nbsp; 0.538462<br>
+&nbsp;-0.846154&nbsp; 0.307692</td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_mul_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476;&#8901;B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_mul_B(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;8.0&nbsp; 25.0<br>
+&nbsp;7.0&nbsp; 43.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_mul_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488;&#8901;B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_mul_B(A, B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;8.0&nbsp; 25.0<br>
+&nbsp;7.0&nbsp; 43.0</td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_rdiv_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488; / B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_rdiv_B(A, B) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 0.0&nbsp; 1.0<br>
+&nbsp;-1.0&nbsp; 3.0 </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_rdiv_B(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476; / B\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_rdiv_B(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 0.0&nbsp; 1.0<br>
+&nbsp;-1.0&nbsp; 3.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_rdiv_Bc(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476; / B&#7476;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_rdiv_Bc(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 1.38462&nbsp;&nbsp; 0.0769231<br>
+&nbsp;-0.538462&nbsp; 0.692308<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_rdiv_Bt(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488; / B&#7488;\)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_rdiv_Bt(A, B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(204, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp; 1.38462&nbsp;&nbsp; 0.0769231<br>
+&nbsp;-0.538462&nbsp; 0.692308</td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">Ac_mul_Bc(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7476; B&#7476;\)<br>
+行列BA<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+Ac_mul_Bc(A, B) </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;26.0&nbsp; 13.0<br>
+&nbsp;13.0&nbsp; 13.0 </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">At_mul_Bt(A,
+B)</td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">For
+matrices or vectors \(A\)
+and \(B\), calculates
+\(A&#7488;&#8901;B&#7488;\)<br>
+行列BA<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+At_mul_Bt(A, B)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;26.0&nbsp; 13.0<br>
+&nbsp;13.0&nbsp; 13.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">*(B,A)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">行列BA<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 255, 255);">A=[2.0
+5.0; 3.0 1.0];<br>
+B=[1.0 8.0; 2.0 3.0];<br>
+*(B,A)<br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(255, 204, 255);">2x2
+Array{Float64,2}:<br>
+&nbsp;26.0&nbsp; 13.0<br>
+&nbsp;13.0&nbsp; 13.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">A/B<br>
+      </td>
+      <td style="vertical-align: top;">逆行列<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 0;0 1];<br>
+B=[1 2;5 3];<br>
+A/B<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Float64,2}:<br>
+&nbsp;-0.428571&nbsp;&nbsp; 0.285714<br>
+&nbsp; 0.714286&nbsp; -0.142857<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+ドット演算と普通の演算の違い<br>
+<span class="n">A</span><span class="o">=</span><span class="p">[</span><span
+ class="mf">1.0</span> <span class="mf">2.0</span><span class="p">;</span>
+<span class="mf">3.0</span> <span class="mf">4.0</span><span class="p">];</span>
+<br>
+<span class="n">B</span><span class="o">=</span><span class="p">[</span><span
+ class="mf">1.0</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="mf">1.0</span> <span class="mf">1.0</span><span class="p">];</span><span
+ style="font-family: sans-serif;"><br>
+</span>julia&gt; .==(A,B)<span style="font-family: sans-serif;"><br>
+</span>2x2 BitArray{2}:<br>
+&nbsp; true&nbsp; false<br>
+&nbsp;false&nbsp; false<br>
+julia&gt; ==(A,B)<br>
+false<br>
+<br>
+</body>
+</html>

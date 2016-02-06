@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>大学生</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">大学生</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">log1p(x)<br>
+      </td>
+      <td style="vertical-align: top;">x-1の自然対数(nog)<br>
+      </td>
+      <td style="vertical-align: top;">log1p(e-1)<br>
+      </td>
+      <td style="vertical-align: top;">1.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">expm1(x)<br>
+      </td>
+      <td style="vertical-align: top;">e^(x)-1<br>
+ニュートンがしていたnogの指数表記<br>
+      </td>
+      <td style="vertical-align: top;">e-1==expm1(1)<br>
+expm1(1)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+1.718281828459045<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sign(x)<br>
+      </td>
+      <td style="vertical-align: top;">フラグを[1,0,-1]で返す値は無視<br>
+      </td>
+      <td style="vertical-align: top;">sign(-5)<br>
+      </td>
+      <td style="vertical-align: top;">-1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">signbit(x)<br>
+      </td>
+      <td style="vertical-align: top;">xの数が正ならfalse負の数ならtrue 0はfalse<br>
+      </td>
+      <td style="vertical-align: top;">signbit(5)<br>
+signbit(-2)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">特殊関数</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">beta(x, y)</td>
+      <td style="vertical-align: top;">Β(x,y)：ベータ関数<br>
+      <span id="result_box" class="short_text" lang="ja"><span class="">の</span><span
+ class="">オイラー</span><span class="">積分</span></span><span
+ id="result_box" class="short_text" lang="ja"><span>の一種</span></span>
+\(\operatorname{B}(x,y) = \Gamma(x)\Gamma(y)/\Gamma(x+y)\).<br>
+      </td>
+      <td style="vertical-align: top;">beta(2.0,3.0) </td>
+      <td style="vertical-align: top;">0.08333333333333333<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lbeta(x, y)</td>
+      <td style="vertical-align: top;">Natural logarithm of the
+absolute value of the beta function \(\log(|\operatorname{B}(x,y)|)\).<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">lbeta(2.0, 3.0) </td>
+      <td style="vertical-align: top;">-2.4849066497880004<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gamma(x)<br>
+      </td>
+      <td style="vertical-align: top;">Γ(x)：ガンマ関数<br>
+\Gamma(z)=\int_{0}^{\inft} t^{z-1}e^{-t}\,dt \ \ z&gt;0<br>
+      </td>
+      <td style="vertical-align: top;">gamma(2+3im)<br>
+      </td>
+      <td style="vertical-align: top;">-0.0823952726655382 +
+0.09177428743524771im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lgamma(x)<br>
+      </td>
+      <td style="vertical-align: top;">\eta(\tau)=e^{\pi
+i\tau/12}\Pi_{m=1}^{\infty}(1-e^{2\pi i\tau m})<br>
+      </td>
+      <td style="vertical-align: top;">lgamma(2+3im)<br>
+      </td>
+      <td style="vertical-align: top;">-2.0928517530932025 +
+2.302396543466486im<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">digamma(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの</span><span>ディガンマ関数</span><span>計
+算</span><span>（</span><span>ガンマ</span><span>の</span><span>対数微分</span><span>を</span><span
+ class="">（</span><span class="">x））の</span></span> </td>
+      <td style="vertical-align: top;">digamma(2.0) </td>
+      <td style="vertical-align: top;">0.42278433509846897<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">invdigamma(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの逆</span><span class="">ディガンマ関数</span><span>を
+計算します</span><span>。</span></span> </td>
+      <td style="vertical-align: top;"> invdigamma(2.0) </td>
+      <td style="vertical-align: top;">7.8834286311860415<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">trigamma(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの</span><span>trigamma</span><span>関
+数</span><span>計算</span><span>（</span><span>ガンマ</span><span>の</span><span>対
+数</span><span class="">二次導関数</span><span class="">を</span><span class="">（</span><span
+ class="">x））の</span></span></td>
+      <td style="vertical-align: top;">trigamma(2.3) </td>
+      <td style="vertical-align: top;">0.5425374586652583<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">polygamma(m, x)</td>
+      <td style="vertical-align: top;">引数の次数m
+xのポリガンマ関数計算（ガンマの対数の微分番目（M+1）（x））<br>
+&nbsp;m整数　x実数<br>
+      </td>
+      <td style="vertical-align: top;">polygamma(4, 3.0) </td>
+      <td style="vertical-align: top;">-0.1362661234408782<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <dl class="function">
+        <dt id="Base.eta"><code class="descname"><span
+ style="font-family: sans-serif;">eta(x)<br>
+          </span></code><span class="sig-paren"></span></dt>
+      </dl>
+      </td>
+      <td style="vertical-align: top;">
+      <dl class="function">
+イータ関数&nbsp;(\eta(s) =
+\sum^\infty_{n=1}(-)^{n-1}/n^{s}&nbsp;η(s)=∑n=1∞(－)n－1/ns.
+      </dl>
+      </td>
+      <td style="vertical-align: top;">eta(2.0) </td>
+      <td style="vertical-align: top;">0.8224670334241136<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">zeta(s) </td>
+      <td style="vertical-align: top;">ゼータ関数ζ(s)
+\zetta(s)sum_{n=1}^{\infty}\
+frac{1}{n^s}<br>
+      <span id="result_box" class="short_text" lang="ja"><span class="">リー
+マンのゼータ関数</span><span>\</span><span>（</span><span>\</span><span>ゼータ</span><span>（</span><span>複
+数可</span><span>）</span><span>\</span><span>）</span><span>。</span></span><br>
+      </td>
+      <td style="vertical-align: top;">zeta(2.0)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1.6449340668482273 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">zeta(s, z)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>フルビッツ</span><span>ゼータ</span><span>関数\</span><span>（</span><span>\</span><span>ゼー
+タ</span><span>（</span><span>S、</span><span>Z</span><span>）</span><span>\</span><span>）</span><span>。</span>
+      <span class="hps">（</span><span>これは、</span><span>（</span><span>リーマ
+ン</span><span>ゼータ</span><span>関数\</span><span>と同等です</span><span>\</span><span>ゼー
+タ</span><span>（</span><span class="">複数可</span><span class="">）</span><span
+ class="">\</span><span>）は、z</span><span>=</span><span>1</span><span>の場合</span><span>の
+ために</span><span>。</span><span>）</span></span> </td>
+      <td style="vertical-align: top;">zeta(2.0,3+2im) </td>
+      <td style="vertical-align: top;">0.24493116214094462 -
+0.19282555014722993im<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

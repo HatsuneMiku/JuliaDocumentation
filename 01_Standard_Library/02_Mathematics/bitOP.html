@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>ビット演算</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">ビット演算</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&lt;&lt;(x,n)<br>
+      </td>
+      <td style="vertical-align: top;">ｘをnビット左へ移動させる(二倍)小数以下は-1<br>
+      </td>
+      <td style="vertical-align: top;">&lt;&lt;(16,1)<br>
+      </td>
+      <td style="vertical-align: top;">32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&gt;&gt;(x,n)<br>
+      </td>
+      <td style="vertical-align: top;">xをnビット右へ移動させる(2で割る)小数以下は-1<br>
+      </td>
+      <td style="vertical-align: top;">&gt;&gt;(16,1)<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&gt;&gt;&gt;(8,3)<br>
+      </td>
+      <td style="vertical-align: top;">xをnビット右へ移動させる．小数以下は切り捨0<br>
+      </td>
+      <td style="vertical-align: top;">&gt;&gt;&gt;(16,1)<br>
+      </td>
+      <td style="vertical-align: top;">8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">~(x)<br>
+      </td>
+      <td style="vertical-align: top;">符号を変えて1を引く<br>
+      </td>
+      <td style="vertical-align: top;">~(7)<br>
+~(0b01)<br>
+      </td>
+      <td style="vertical-align: top;">-8<br>
+0xfe<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bits(x)<br>
+      </td>
+      <td style="vertical-align: top;">xを64ビットで表す<br>
+      </td>
+      <td style="vertical-align: top;">bits(5)<br>
+length(bits(5)) </td>
+      <td style="vertical-align: top;">"**101"全部で64桁**は0を省略<br>
+64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>

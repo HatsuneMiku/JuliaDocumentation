@@ -1,0 +1,2275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>配列</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">基本的な関数<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ndims(A) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>A</span><span>の</span><span>次元数</span><span
+ class="">を返します。</span></span> </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+ndims(A) </td>
+      <td style="vertical-align: top;"><br>
+2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">size(A[, dim...])<br>
+      </td>
+      <td style="vertical-align: top;">Returns a tuple containing the
+dimensions of A. Optionally you can specify the dimension(s) you want
+the length of, and get the length of that dimension, or a tuple of the
+lengths of dimensions you asked for.:<br>
+      </td>
+      <td style="vertical-align: top;">A=rand(2,3,4);<br>
+size(A, 2)<br>
+size(A,3,2)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+3<br>
+(4,3) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">iseltype(A, T)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>A</span><span>または</span><span>その要素</span><span>か
+どうかをテストする</span><span>には</span><span class="">、T型</span><span class="">の
+ものです</span></span> </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+iseltype(A, Int32)<br>
+iseltype(A, Int64)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">length(A) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>A.</span><span class="">内の要素の数を返します</span></span>
+      </td>
+      <td style="vertical-align: top;">length([1 2;3 1])<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eachindex(A...)<br>
+      </td>
+      <td style="vertical-align: top;">
+      <p>Creates an iterable object for visiting each index of an
+AbstractArray <code class="docutils literal"><span class="pre">A</span></code>
+in an efficient manner. For array types that have opted into fast
+linear indexing (like <code class="docutils literal"><span class="pre">Array</span></code>),
+this is simply the range <code class="docutils literal"><span
+ class="pre">1:length(A)</span></code>. For other array types, this
+returns a specialized Cartesian range to efficiently index into the
+array with indices specified for every dimension. For other iterables,
+including strings and dictionaries, this returns an iterator object
+supporting arbitrary index types (e.g. unevenly spaced or non-integer
+indices).</p>
+If you supply more than one <code class="docutils literal"><span
+ class="pre">AbstractArray</span></code> argument, <code
+ class="docutils literal"><span class="pre">eachindex</span></code>
+will create an iterable object that is fast for all arguments (a <code
+ class="docutils literal"><span class="pre">UnitRange</span></code> if
+all inputs have fast linear indexing, a CartesianRange otherwise). If
+the arrays have different sizes and/or dimensionalities, <code
+ class="docutils literal"><span class="pre">eachindex</span></code>
+returns an iterable that spans the largest range along each dimension.</td>
+      <td style="vertical-align: top;">A = sparse([1, 1, 2], [1, 3, 1],
+[1, 2, -5])<br>
+      <br>
+      <br>
+      <br>
+      <br>
+for iter in eachindex(A)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @show
+iter.I[1], iter.I[2]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @show
+A[iter]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+      </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 3 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 1]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; -5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 3]&nbsp; =&nbsp; 2<br>
+      <br>
+(iter.I[1],iter.I[2]) = (1,1)<br>
+A[iter] = 1<br>
+(iter.I[1],iter.I[2]) = (2,1)<br>
+A[iter] = -5<br>
+(iter.I[1],iter.I[2]) = (1,2)<br>
+A[iter] = 0<br>
+(iter.I[1],iter.I[2]) = (2,2)<br>
+A[iter] = 0<br>
+(iter.I[1],iter.I[2]) = (1,3)<br>
+A[iter] = 2<br>
+(iter.I[1],iter.I[2]) = (2,3)<br>
+A[iter] = 0 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base.linearindexing(A)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp;
+linearindexing defines how an AbstractArray most efficiently accesses
+its elements. If Base.linearindexing(A) returns Base.LinearFast(), this
+means that linear indexing with only one index is an efficient
+operation. If it instead returns Base.LinearSlow() (by default), this
+means that the array intrinsically accesses its elements with indices
+specified for every dimension. Since converting a linear index to
+multiple indexing subscripts is typically very expensive, this provides
+a traits-based mechanism to enable efficient generic code for all array
+types.<br>
+&nbsp;&nbsp;&nbsp; An abstract array subtype MyArray that wishes to opt
+into fast linear indexing behaviors should define linearindexing in the
+type-domain:<br>
+&nbsp;&nbsp;&nbsp; Base.linearindexing{T&lt;:MyArray}(::Type{T}) =
+Base.LinearFast()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+Base.linearindexing(A) </td>
+      <td style="vertical-align: top;"><br>
+Base.LinearFast()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">countnz(A)<br>
+      </td>
+      <td style="vertical-align: top;">配列A（密または疎）でゼロ以外の値の数をカウントします。これは、一
+定時間操作ではないことに注意してください。スパース行列の場合には、通常、保存された値の数を返しますNNZを使用する必要があります。<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+countnz(A)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">conj!(A)<br>
+      </td>
+      <td style="vertical-align: top;">インプレースその複素共役に配列を変換します<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+conj!(A)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">stride(A, k)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>寸法</span><span>kの</span><span>隣接する要素</span><span>間</span><span>（</span><span>素
+子数の</span><span>）</span><span>メモリ内の</span><span class="">距離を返します</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+stride(A, 2)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">strides(A)<br>
+      </td>
+      <td style="vertical-align: top;">各次元のメモリストライドのタプルを返します。<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+strides(A)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+(1,2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ind2sub(dims, index) <br>
+→ subscripts<br>
+      </td>
+      <td style="vertical-align: top;">Returns a tuple of subscripts
+into an array with dimensions dims, corresponding to the linear index
+index.<br>
+Example: i, j, ... = ind2sub(size(A), indmax(A)) provides the indices
+of the maximum element<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ind2sub(a, index) <br>
+→ subscripts<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>線形</span><span>インデックス</span><span>イン
+デックスに対応する</span><span>配列に</span><span>添字</span><span>の</span><span>タプル</span><span
+ class="">を返します。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sub2ind(dims, i, j, k...) → index<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>ind2sub</span><span>の逆数</span><span>は</span><span>、</span><span>提
+供</span><span>添字</span><span>に対応する線形</span><span class="">インデックスを返します</span></span>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+&nbsp;&nbsp; <br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">コンストラクター<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Array(dims)<br>
+      </td>
+      <td style="vertical-align: top;">Array{T}(dims) constructs an
+uninitialized dense array with element type T. dims may be a tuple or a
+series of integer arguments. The syntax Array(T, dims) is also
+available, but deprecated.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getindex(type[, elements...])<br>
+      </td>
+      <td style="vertical-align: top;">Construct a 1-d array of the
+specified type. This is usually called with the syntax Type[]. Element
+values can be specified using Type[a,b,c,...].<br>
+      </td>
+      <td style="vertical-align: top;">getindex(Int)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">0-element Array{Int64,1} </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cell(dims)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span class="">初期化されていない</span><span>セル配列</span><span>（</span><span>異
+種の</span><span>配列）を</span><span>構築します。</span><span class="">暗くなる</span><span
+ class="">タプル</span><span class="">または整数</span><span>一連の引数</span><span>の
+いずれかになります</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">cell(3) </td>
+      <td style="vertical-align: top;">3-element Array{Any,1}:<br>
+&nbsp;#undef<br>
+&nbsp;#undef<br>
+&nbsp;#undef<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">zeros(type, dims)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>指定されたタイプ</span><span>の</span><span>すべてゼロ</span><span>の配
+列を</span><span>作成します</span><span>。</span><span>指定されていない</span><span>場合は</span><span>型</span><span
+ class="">のデフォルトは</span><span class="">のfloat64</span><span class="">します</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;"> zeros(Int16, 3) </td>
+      <td style="vertical-align: top;">3-element Array{Int16,1}:<br>
+&nbsp;0<br>
+&nbsp;0<br>
+&nbsp;0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">zeros(A)<br>
+      </td>
+      <td style="vertical-align: top;">Aと同じサイズの配列または行列のすべて0の要素で作成します．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+zeros(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;0&nbsp; 0<br>
+&nbsp;0&nbsp; 0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ones(type, dims)<br>
+      </td>
+      <td style="vertical-align: top;">typeで指定した型のdims数の配列をすべての要素0で作成しま
+す．<br>
+      </td>
+      <td style="vertical-align: top;">ones(Int16, 3) </td>
+      <td style="vertical-align: top;">3-element Array{Int16,1}:<br>
+&nbsp;1<br>
+&nbsp;1<br>
+&nbsp;1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ones(A)</td>
+      <td style="vertical-align: top;">Aと同じ行列または配列の要素をすべて1の行列を作成します．<br>
+      </td>
+      <td style="vertical-align: top;">ones(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 1<br>
+&nbsp;1&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">trues(dims)<br>
+      </td>
+      <td style="vertical-align: top;">すべての要素をtrueの配列を作成します．<br>
+      </td>
+      <td style="vertical-align: top;">trues(3) </td>
+      <td style="vertical-align: top;">3-element BitArray{1}:<br>
+&nbsp;true<br>
+&nbsp;true<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">falses(dims)<br>
+      </td>
+      <td style="vertical-align: top;">すべての要素をfalseの配列を作成します．<br>
+      </td>
+      <td style="vertical-align: top;">falses(3) </td>
+      <td style="vertical-align: top;">3-element BitArray{1}:<br>
+&nbsp;false<br>
+&nbsp;false<br>
+&nbsp;false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fill(x, dims)<br>
+      </td>
+      <td style="vertical-align: top;">すべての要素をxの値でdimes数の配列を作成します．<br>
+      </td>
+      <td style="vertical-align: top;"> fill(2, 3) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;2<br>
+&nbsp;2<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fill!(A, x)<br>
+      </td>
+      <td style="vertical-align: top;">Aにすべての要素をxの配列を作成します．Aの要素もすべてxになりま
+す．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 1];<br>
+fill!(A, 3) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 3<br>
+&nbsp;3&nbsp; 3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reshape(A, dims)<br>
+      </td>
+      <td style="vertical-align: top;">行列の要素数と同じ要素数の配列を作成します．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 5];<br>
+reshape(A, 4) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;3<br>
+&nbsp;2<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">similar(array[,
+element_type=eltype(array)][, dims=size(array)])<br>
+      </td>
+      <td style="vertical-align: top;">Create an uninitialized mutable
+array with the given element type and size, based upon the given source
+array. The second and third arguments are both optional, defaulting to
+the given array’s eltype and size. The dimensions may be specified
+either as a single tuple argument or as a series of integer arguments.<br>
+Custom AbstractArray subtypes may choose which specific array type is
+best-suited to return for the given element type and dimensionality. If
+they do not specialize this method, the default is an
+Array(element_type, dims...).<br>
+For example, similar(1:10, 1, 4) returns an uninitialized Array{Int,2}
+since ranges are neither mutable nor support 2 dimensions:<br>
+Conversely, similar(trues(10,10), 2) returns an uninitialized BitVector
+with two elements since BitArrays are both mutable and can support
+1-dimensional arrays:&nbsp;&nbsp; <br>
+Since BitArrays can only store elements of type Bool, however, if you
+request a different element type it will create a regular Array instead:<br>
+      </td>
+      <td style="vertical-align: top;">similar(1:10, 1, 4)<br>
+      <br>
+      <br>
+similar(trues(10,10), 2)<br>
+      <br>
+      <br>
+similar(falses(10), Float64, 2, 4)<br>
+      </td>
+      <td style="vertical-align: top;">1x4 Array{Int64,2}:<br>
+&nbsp;4419743872&nbsp; 4374413872&nbsp; 4419743888&nbsp; 0<br>
+2-element BitArray{1}:<br>
+&nbsp;false<br>
+&nbsp;false<br>
+2x4 Array{Float64,2}:<br>
+&nbsp;2.18425e-314&nbsp; 2.18425e-314&nbsp; 2.18425e-314&nbsp;
+2.18425e-314<br>
+&nbsp;2.18425e-314&nbsp; 2.18425e-314&nbsp; 2.18425e-314&nbsp;
+2.18425e-314<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reinterpret(type, A)</td>
+      <td style="vertical-align: top;">Change the type-interpretation
+of a block of memory. For example, reinterpret(Float32, UInt32(7))
+interprets the 4 bytes corresponding to UInt32(7) as a Float32. For
+arrays, this constructs an array with the same binary data as the given
+array, but with the specified element type.<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+&nbsp;reinterpret(Int64, A)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 3<br>
+&nbsp;3&nbsp; 3 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eye(n)<br>
+      </td>
+      <td style="vertical-align: top;">n×nの単位行列を作成する<br>
+      </td>
+      <td style="vertical-align: top;">eye(3)</td>
+      <td style="vertical-align: top;">3x3 Array{Float64,2}:<br>
+&nbsp;1.0&nbsp; 0.0&nbsp; 0.0<br>
+&nbsp;0.0&nbsp; 1.0&nbsp; 0.0<br>
+&nbsp;0.0&nbsp; 0.0&nbsp; 1.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eye(A)</td>
+      <td style="vertical-align: top;">A行列と同じ正方行列の単位行列を作成する．Aの値は変更されない．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4]<br>
+      <br>
+      <br>
+eye(A)<br>
+      <br>
+      <br>
+A<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4<br>
+2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 0<br>
+&nbsp;0&nbsp; 1<br>
+2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">linspace(start, stop, n=100)</td>
+      <td style="vertical-align: top;">Construct a range of n linearly
+spaced elements from start to stop. </td>
+      <td style="vertical-align: top;">linspace(0,100,2) </td>
+      <td style="vertical-align: top;">linspace(0.0,100.0,2)<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">logspace(start, stop, n=50)</td>
+      <td style="vertical-align: top;">Construct a vector of n
+logarithmically spaced numbers from 10^start to 10^stop.<br>
+      </td>
+      <td style="vertical-align: top;"> logspace(0,100,2) </td>
+      <td style="vertical-align: top;">2-element Array{Float64,1}:<br>
+&nbsp;1.0<br>
+&nbsp;1.0e100<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">数学の演算と関数　
+　All mathematical operations and functions are supported for arrays<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast(f, As...) </td>
+      <td style="vertical-align: top;">Broadcasts the arrays As to a
+common size by
+expanding singleton dimensions, and returns an array of the results
+f(as...) for each position.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast!(f, dest, As...) </td>
+      <td style="vertical-align: top;">Like broadcast, but store the
+result of broadcast(f,
+As...) in the dest array. Note that dest is only used to store the
+result, and does not supply arguments to f unless it is also listed in
+the As, as in broadcast!(f, A, A, B) to perform A[:] = broadcast(f, A,
+B).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bitbroadcast(f, As...) </td>
+      <td style="vertical-align: top;">Like broadcast, but allocates a
+BitArray to store
+the result, rather then an Array.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast_function(f) </td>
+      <td style="vertical-align: top;">Returns a function broadcast_f
+such that
+broadcast_function(f)(As...) === broadcast(f, As...). Most useful in
+the form const broadcast_f = broadcast_function(f).<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x^2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+broadcast_function(f(2)) </td>
+      <td style="vertical-align: top;">(anonymous function)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast!_function(f) </td>
+      <td style="vertical-align: top;">Like broadcast_function, but for
+broadcast!.<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x^2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+&nbsp;broadcast!_function(f(2))<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">f (generic function with 1
+method)<br>
+      <br>
+(anonymous function)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">&nbsp;Indexing,
+Assignment, and Concatenation </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getindex(A, inds...) </td>
+      <td style="vertical-align: top;">Returns a subset of array A as
+specified by inds, where each ind may be an Int, a Range, or a Vector.
+See the manual section on array indexing for details.<br>
+Aのinds番目の要素の値をとりだす<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+getindex(A, 3) </td>
+      <td style="vertical-align: top;">3<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sub(A, inds...) </td>
+      <td style="vertical-align: top;">Like getindex(), but returns a
+view into the parent array A with the given indices instead of making a
+copy. Calling getindex() or setindex!() on the returned SubArray
+computes the indices to the parent array on the fly without checking
+bounds.<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+sub(A, 2)<br>
+      </td>
+      <td style="vertical-align: top;">0-dimensional
+SubArray{Int64,0,Array{Int64,2},Tuple{Int64},1}:<br>
+3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parent(A) </td>
+      <td style="vertical-align: top;">Returns the “parent array” of an
+array view type (e.g., SubArray), or the array itself if it is not a
+view<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+parent(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 3<br>
+&nbsp;3&nbsp; 3<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parentindexes(A) </td>
+      <td style="vertical-align: top;">From an array view A, returns
+the corresponding indexes in the parent<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+parentindexes(A) </td>
+      <td style="vertical-align: top;"><br>
+(1:2,1:2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">slicedim(A, d, i) </td>
+      <td style="vertical-align: top;">Return all the data of A where
+the index for dimension d equals i. Equivalent to A[:,:,...,i,:,:,...]
+where i is in position d.<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+slicedim(A, 2, 1) </td>
+      <td style="vertical-align: top;">2x1 Array{Int64,2}:<br>
+&nbsp;3<br>
+&nbsp;3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">slice(A, inds...) </td>
+      <td style="vertical-align: top;">Returns a view of array A with
+the given indices like sub(), but drops all dimensions indexed with
+scalars.<br>
+      </td>
+      <td style="vertical-align: top;">slice(A, 2) </td>
+      <td style="vertical-align: top;">0-dimensional
+SubArray{Int64,0,Array{Int64,2},Tuple{Int64},1}:<br>
+3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setindex!(A, X, inds...)</td>
+      <td style="vertical-align: top;">Store values from array X within
+some subset of A as specified by inds.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast_getindex(A, inds...)</td>
+      <td style="vertical-align: top;">Broadcasts the inds arrays to a
+common size like broadcast, and returns an array of the results
+A[ks...], where ks goes over the positions in the broadcast.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">broadcast_setindex!(A, X,
+inds...)</td>
+      <td style="vertical-align: top;">&nbsp;Broadcasts the X and inds
+arrays to a common size and stores the value from each position in X at
+the indices given by the same positions in inds.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">cat(dims, A...)</span></code><span
+ class="sig-paren"></span></td>
+      <td style="vertical-align: top;">Concatenate the input arrays
+along the specified dimensions in
+the iterable dims.
+For dimensions not in dims,
+all input arrays should have the same size, which will also be the size
+of the output array along that dimension. For dimensions in dims, the
+size of the output array is the sum of the sizes of the input arrays
+along that dimension. If dims is a single number, the different
+arrays are tightly stacked along that dimension. If dims is an
+iterable containing several dimensions, this allows one to construct
+block diagonal matrices and their higher-dimensional analogues by
+simultaneously increasing several dimensions for every new input array
+and putting zero blocks elsewhere. For example, cat([1,2], matrices...)
+builds a block diagonal matrix,
+i.e. a block matrix with matrices[1], matrices[2], ... as diagonal
+blocks and
+matching zero blocks away from the diagonal.</td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+cat(3, A) </td>
+      <td style="vertical-align: top;">2x2x1 Array{Int64,3}:<br>
+[:, :, 1] =<br>
+&nbsp;3&nbsp; 3<br>
+&nbsp;3&nbsp; 3<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">vcat(A...)</td>
+      <td style="vertical-align: top;">Concatenate along dimension 1<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+vcat(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hcat(A...)</td>
+      <td style="vertical-align: top;">Concatenate along dimension 2<br>
+      </td>
+      <td style="vertical-align: top; width: 200px;">A=[1 2;3 4];<br>
+hcat(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hvcat(rows::Tuple{Vararg{Int}},
+values...)</td>
+      <td style="vertical-align: top;">Horizontal and vertical
+concatenation in one call. This function is called for block matrix
+syntax. <br>
+The first argument specifies the number of arguments to concatenate in
+each block row.<br>
+If the first argument is a single integer n, then all block rows are
+assumed to have n block columns.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">a, b, c, d, e, f = 1, 2, 3, 4,
+5, 6 <br>
+[a b c; d e f]<br>
+      <br>
+      <br>
+hvcat((3,3), a,b,c,d,e,f)<br>
+      <br>
+      <br>
+[a b;c d; e f]<br>
+      <br>
+      <br>
+      <br>
+hvcat((2,2,2), a,b,c,d,e,f)<br>
+      <br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">(1,2,3,4,5,6)<br>
+2x3Array{Int64,2}:<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp; 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp; 5&nbsp; 6<br>
+2x3Array{Int64,2}:<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2&nbsp; 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp; 5&nbsp; 6<br>
+3x2Array{Int64,2}:<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp; 4<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp; 6<br>
+3x2Array{Int64,2}:<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp; 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp; 4<br>
+&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp; 6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">flipdim(A, d)<br>
+      </td>
+      <td style="vertical-align: top;">Reverse A in dimension d.<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+flipdim(A, 1) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 3<br>
+&nbsp;3&nbsp; 3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">circshift(A, shifts) </td>
+      <td style="vertical-align: top;">一行目が末行に来て上に一つずつずれた<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+circshift(A, 1) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 4<br>
+&nbsp;1&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">find(A) </td>
+      <td style="vertical-align: top;">Return a vector of the linear
+indexes of the
+non-zeros in A (determined by A[i]!=0). A common use of this is to
+convert a boolean array to an array of indexes of the true elements<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+find(A) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">find(f, A) </td>
+      <td style="vertical-align: top;">fがtrueを返すAの線形インデックスのベクトルを返します。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findn(A) </td>
+      <td style="vertical-align: top;">Return a vector of indexes for
+each dimension giving
+the locations of the non-zeros in A (determined by A[i]!=0).<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+findn(A)<br>
+      </td>
+      <td style="vertical-align: top;">([1,2,1,2],[1,1,2,2]) </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findnz(A) </td>
+      <td style="vertical-align: top;">Return a tuple (I, J, V) where I
+and J are the row
+and column indexes of the non-zero values in matrix A, and V is a
+vector of the non-zero values.<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+findnz(A) </td>
+      <td style="vertical-align: top;">([1,2,1,2],[1,1,2,2],[3,3,3,3])<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findfirst(A) </td>
+      <td style="vertical-align: top;">Return the index of the first
+non-zero value in A
+(determined by A[i]!=0).<br>
+      </td>
+      <td style="vertical-align: top;">A=[3 3;3 3];<br>
+findfirst(A)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findfirst(A, v) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>A.</span><span>でv</span><span
+ class="">に</span><span class="">最初の要素</span><span>に等しい</span><span>のイン
+デックスを</span><span class="">返します。</span></span> </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findfirst(A, 1)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+4<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findfirst(predicate, A) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>述語</span><span>がtrueを返す</span><span>A</span><span>の</span><span>最
+初の要素のインデックス</span><span class="">を返します</span><span class="">。</span></span>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findfirst(0, A) </td>
+      <td style="vertical-align: top;"><br>
+0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findlast(A) </td>
+      <td style="vertical-align: top;">Return the index of the last
+non-zero value in A
+(determined by A[i]!=0).<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findlast(A) </td>
+      <td style="vertical-align: top;"><br>
+4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findlast(A, v)</td>
+      <td style="vertical-align: top;">
+      <div id="gt-src-c" class="g-unit">
+      <div id="gt-src-p"> </div>
+      </div>
+      <div id="gt-res-content" class="almost_half_cell">
+      <div dir="ltr" style="">
+      <div id="tts_button"><span id="result_box" class="short_text"
+ lang="ja"><span>A.</span><span>で</span><span>に</span><span>最後の要素</span><span>に
+等しい</span><span class="">のインデックスを</span><span class="">返します。</span></span></div>
+      </div>
+      </div>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findlast(A, 3) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findlast(predicate, A) </td>
+      <td style="vertical-align: top;">Return the index of the last
+element of A for which
+predicate returns true.<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findlast(2, A) </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findnext(A, i) </td>
+      <td style="vertical-align: top;">要素i番目の値を取り出す<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+findnext(A, 1) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findnext(predicate, A, i) </td>
+      <td style="vertical-align: top;">Find the next index &gt;= i of
+an element of A for
+which predicate returns true, or 0 if not found.<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findnext(2, A, 1) </td>
+      <td style="vertical-align: top;"><br>
+0<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findnext(A, v, i) </td>
+      <td style="vertical-align: top;">Find the next index &gt;= i of
+an element of A equal
+to v (using ==), or 0 if not found.<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findnext(A, 2, 1)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+3 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findprev(A, i) </td>
+      <td style="vertical-align: top;">Find the previous index &lt;= i
+of a non-zero
+element of A, or 0 if not found.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+findprev(A, 2)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findprev(predicate, A, i) </td>
+      <td style="vertical-align: top;">Find the previous index &lt;= i
+of an element of A
+for which predicate returns true, or 0 if not found.<br>
+      </td>
+      <td style="vertical-align: top;"> A=[4 2;3 1];<br>
+findprev(2, A, 1) </td>
+      <td style="vertical-align: top;"><br>
+0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">findprev(A, v, i) </td>
+      <td style="vertical-align: top;">Find the previous index &lt;= i
+of an element of A
+equal to v (using ==), or 0 if not found.<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+findprev(A, 1, 2)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">permutedims(A, perm) </td>
+      <td style="vertical-align: top;">Permute the dimensions of array
+A. perm is a vector
+specifying a permutation of length ndims(A). This is a generalization
+of transpose for multi-dimensional arrays. Transpose is equivalent to
+permutedims(A, [2,1]).<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+permutedims(A, [1,2]) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;4&nbsp; 2<br>
+&nbsp;3&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ipermutedims(A, perm) </td>
+      <td style="vertical-align: top;">Like permutedims(), except the
+inverse of the given
+permutation is applied.<br>
+      </td>
+      <td style="vertical-align: top;">A=[4 2;3 1];<br>
+ipermutedims(A, [1,2])<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;4&nbsp; 2<br>
+&nbsp;3&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">permutedims!(dest, src, perm) </td>
+      <td style="vertical-align: top;">Permute the dimensions of array
+src and store the
+result in the array dest. perm is a vector specifying a permutation of
+length ndims(src). The preallocated array dest should have size(dest)
+== size(src)[perm] and is completely overwritten. No in-place
+permutation is supported and unexpected results will happen if src and
+dest have overlapping memory regions.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">squeeze(A, dims) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>暗くなる</span><span>（</span><span>A</span><span>）</span><span>：</span><span>ユ
+ニークな</span><span>範囲</span><span>1</span><span>内でなければなりません</span><span>暗く
+なる</span><span>の</span><span>配列A</span><span class="">の要素</span><span
+ class="">から</span><span>暗くなる</span><span>ことにより、</span><span>指定された寸法</span><span>を
+削除します。</span></span> </td>
+      <td style="vertical-align: top;"> squeeze(A, 0.1)<br>
+暴走<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">vec(Array) <br>
+→ Vector </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>列優先</span><span>規則を</span><span
+ class="">使用して配列</span><span>をベクトル化</span><span>。</span></span> </td>
+      <td style="vertical-align: top;">vec([1,2,3]) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">promote_shape(s1, s2) </td>
+      <td style="vertical-align: top;">シングルトン次元を引きずることができ、互換性のために2つの配列形状
+を確認し、より多くの次元を持っている方形状返します。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">checkbounds(array, indexes...) </td>
+      <td style="vertical-align: top;">指定されたインデックスが与えられた配列のための境界内にない場合はエ
+ラーをスローします。彼らは行動をチェックするカスタム境界を提供するために必要がある場合は、抽象アレイのサブタイプは、この方法を専門にする必要があ
+ります。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">checkbounds(::Type{Bool},
+dimlength::Integer, index) </td>
+      <td style="vertical-align: top;">指定されたインデックスは、与えられた寸法の長さの範囲内であれば、今
+は記述を返します。すべてのアレイのための指標として振る舞うしたいカスタムタイプは、実装をチェックする専門の境界を提供するために、この方法を拡張す
+ることができます。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randsubseq(A, p) <br>
+→ Vector </td>
+      <td style="vertical-align: top;">独立した確率pで（順番に）Aの各要素が含まれている指定された配列A
+のランダムなサブシーケンスからなるベクトルを返します。
+（複雑さは、P*の長さ（A）において線形であるので、pが小さく、Aが大きい場合であっても、この機能は、効率的である。）技術的には、このプロセス
+は、Aの「ベルヌーイサンプリング」として知られています<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 5];<br>
+randsubseq(A, 0.3) </td>
+      <td style="vertical-align: top;">0-element Array{Int64,1}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randsubseq!(S, A, p) </td>
+      <td style="vertical-align: top;">randsubseqと同様に、その結果は（必要に応じてサイズが変更
+されている）Sに格納されています。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">配列関数 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold; width: 500px;">機
+能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cumprod(A[, dim]) </td>
+      <td style="vertical-align: top; width: 300px;">Cumulative product
+along a
+dimension dim (defaults to 1). See also cumprod!() to use a
+preallocated output array, both for performance<br>
+&nbsp;and to control the
+precision of the output (e.g. to avoid overflow).<br>
+上の行に各々の列をかける．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+cumprod(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cumprod!(B, A[, dim]) </td>
+      <td style="vertical-align: top;">1にBでのディメンションのデフォルトを結果を格納する次元に沿ってA
+の累積製品。計算結果がBに代入される．<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+B=[3 2;4 1];<br>
+cumprod!(B, A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cumsum(A[, dim]) </td>
+      <td style="vertical-align: top;">Cumulative sum along a dimension
+dim (defaults to 1). See also cumsum!() to use a preallocated output
+array, <br>
+both for performance and to control the precision of the output
+(e.g. to avoid overflow).<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+cumsum(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;4&nbsp; 6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cumsum!(B, A[, dim]) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>1</span><span>に</span><span>Bで</span><span>の
+ディメンション</span><span>のデフォルトを</span><span class="">結果を格納する</span><span
+ class="">次元に沿って</span><span class="">A</span><span class="">の</span><span
+ class="">累積和</span><span class="">、</span><span class="">。Bに計算結果代入．</span></span>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+B=[3 2;4 1];<br>
+cumsum!(B, A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;4&nbsp; 6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cumsum_kbn(A[, dim]) </td>
+      <td style="vertical-align: top;">各要素の和の累積した配列を作成する．<br>
+      </td>
+      <td style="vertical-align: top;">cumsum_kbn([1.0,2.0,3.0,4.0]) </td>
+      <td style="vertical-align: top;">4-element Array{Float64,1}:<br>
+&nbsp; 1.0<br>
+&nbsp; 3.0<br>
+&nbsp; 6.0<br>
+&nbsp;10.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cummin(A[, dim]) </td>
+      <td style="vertical-align: top;">Cumulative minimum along a
+dimension. The dimension defaults to 1.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+&nbsp;cummin(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;1&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">cummax(A[, dim])</td>
+      <td style="vertical-align: top;">Cumulative maximum along a
+dimension. The dimension defaults to 1.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+cummax(A)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">diff(A[, dim])</td>
+      <td style="vertical-align: top;">Finite difference operator of
+matrix or vector.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+diff(A) </td>
+      <td style="vertical-align: top;"><br>
+1x2 Array{Int64,2}:<br>
+&nbsp;2&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gradient(F[, h])</td>
+      <td style="vertical-align: top;">Compute differences along vector
+F, using h as the spacing between points. The default spacing is one.<br>
+      </td>
+      <td style="vertical-align: top;">gradient([1,2,3,4])<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">4-element Array{Float64,1}:<br>
+&nbsp;1.0<br>
+&nbsp;1.0<br>
+&nbsp;1.0<br>
+&nbsp;1.0 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rot180(A)</td>
+      <td style="vertical-align: top;">Aの要素の位置を180°回転したもの<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rot180(A)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;4&nbsp; 3<br>
+&nbsp;2&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rot180(A, k)</td>
+      <td style="vertical-align: top;">kが偶数ならもとの行列，奇数なら180度回転させた要素の行列<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rot180(A, 3) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;4&nbsp; 3<br>
+&nbsp;2&nbsp; 1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rotl90(A)</td>
+      <td style="vertical-align: top;">Aの行列を反時計回りに90度回転させた要素をもつ行列<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rotl90(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;2&nbsp; 4<br>
+&nbsp;1&nbsp; 3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rotl90(A, k)</td>
+      <td style="vertical-align: top;">Aの行列を反時計回り90k回転させた要素をもつ行列<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rotl90(A, 3) </td>
+      <td style="vertical-align: top;"><br>
+2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 1<br>
+&nbsp;4&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rotr90(A)</td>
+      <td style="vertical-align: top;">時計回り90度に回転した要素の行列<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rotr90(A) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;3&nbsp; 1<br>
+&nbsp;4&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rotr90(A, k)</td>
+      <td style="vertical-align: top;">Rotate matrix A right 90 degrees
+an integer k number of times. If k is zero or a multiple of four, this
+is equivalent to a copy.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+rotr90(A, 3)<br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp;2&nbsp; 4<br>
+&nbsp;1&nbsp; 3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reducedim(f, A, dims[, initial])</td>
+      <td style="vertical-align: top;">Reduce 2-argument function f
+along dimensions of A. dims is a vector specifying the dimensions to
+reduce, <br>
+and initial is the initial value to use in the reductions. For
++, *, max and min the initial argument is optional.<br>
+The associativity of the reduction is
+implementation-dependent; if you need a particular associativity, <br>
+e.g.
+left-to-right, you should write your own loop. See documentation for
+reduce.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapreducedim<br>
+(f, op, A, dims[, initial])</td>
+      <td style="vertical-align: top;">Evaluates to the same as
+reducedim(op, map(f, A), dims, f(initial)), but is generally faster
+because the intermediate array is avoided.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">mapslices(f, A, dims)</td>
+      <td style="vertical-align: top;">Transform the given dimensions
+of array A using function f. f is called on each slice of A of the form
+A[...,:,...,:,...]. <br>
+dims is an integer vector specifying where the
+colons go in this expression. The results are concatenated along the
+remaining dimensions. <br>
+For example, if dims is [1,2] and A is
+4-dimensional, f is called on A[:,:,i,j] for all i and j.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sum_kbn(A)</td>
+      <td style="vertical-align: top;">Returns the sum of all array
+elements, using the Kahan-Babuska-Neumaier compensated summation
+algorithm for additional accuracy.<br>
+      </td>
+      <td style="vertical-align: top;">sum_kbn([1.0,2.0,3.0,4.0]) </td>
+      <td style="vertical-align: top;">10.0<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">組み合わせ<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nthperm(v, k) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>ベクトル</span><span>の</span><span>n番目の</span><span>辞
+書式</span><span>の順列</span><span class="">を計算します</span><span class="">。</span></span>
+      </td>
+      <td style="vertical-align: top;">nthperm(vec([1,2,4]), 4) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;2<br>
+&nbsp;4<br>
+&nbsp;1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nthperm(p) </td>
+      <td style="vertical-align: top;">Return the k that generated
+permutation p. Note that
+nthperm(nthperm([1:n], k)) == k for 1 &lt;= k &lt;= factorial(n).<br>
+      </td>
+      <td style="vertical-align: top;">nthperm([1,2]) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nthperm!(v, k) </td>
+      <td style="vertical-align: top;">nthperm()のインプレースバージョン<br>
+      </td>
+      <td style="vertical-align: top;">nthperm!([2,3], 2) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;3<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randperm([rng, ]n) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>長さnの</span><span class="">ランダム[rnd]な</span><span>順列</span><span>を
+構築します。</span><span>オプションの</span><span>範囲</span><span>引数は</span><span>乱数
+ジェネレータを</span><span>指定し</span><span>、</span><span>乱数</span><span
+ class="">を参照してください</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">randperm(4) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;3<br>
+&nbsp;2<br>
+&nbsp;4<br>
+&nbsp;1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">invperm(v) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja">v<span>の</span><span class="">逆置換</span><span>を
+返します</span><span>。</span></span> </td>
+      <td style="vertical-align: top;">invperm([1,2,3]) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isperm(v) <br>
+→ Bool </td>
+      <td style="vertical-align: top;">vが有効な順列である場合にtrueを返します。<br>
+      </td>
+      <td style="vertical-align: top;">isperm(2)<br>
+isperm(1)<br>
+      </td>
+      <td style="vertical-align: top;">false&nbsp;<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">permute!(v, p) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span class="">置換p</span><span class="">に応じて</span><span>インプ
+レース</span></span>permute!()<span id="result_box" class="" lang="ja"><span>ベ
+クトルv</span><span>、</span><span>。</span><span>いいえ</span><span>チェックは</span><span
+ class="">pが</span><span class="">順列</span><span>である</span><span>ことを確認する
+ために</span><span>行われません</span><span>。</span><span class="">新しい</span><span>順
+列</span><span>、使用</span><span>のV</span><span class="atn">[</span><span>p
+を</span><span>]</span><span>戻ります。</span><span>こ
+れは</span><span>大きなベクトル</span><span>のための</span><span>（</span><span
+ class="">VP</span><span class="">）</span><span>！</span><span class="">一
+般的に高速</span><span class="">並べ替える</span><span class="">よりも</span><span>ある</span><span>こ
+とに注意してください</span><span>。</span></span> </td>
+      <td style="vertical-align: top;">permute!([1,2], [1,2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ipermute!(v, p) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>並び替える</span><span>ように</span><span>！</span><span>し
+かし</span><span>、所与の</span><span>順列</span><span>の逆</span><span class="">を
+適用します。</span></span> </td>
+      <td style="vertical-align: top;"> ipermute!([1,2],[1,2]) </td>
+      <td style="vertical-align: top;">2-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randcycle([rng, ]n) </td>
+      <td style="vertical-align: top;">nまでの数字をでたらめに並べる<br>
+      </td>
+      <td style="vertical-align: top;">randcycle(5) </td>
+      <td style="vertical-align: top;">5-element Array{Int64,1}:<br>
+&nbsp;2<br>
+&nbsp;5<br>
+&nbsp;4<br>
+&nbsp;1<br>
+&nbsp;3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">shuffle([rng, ]v) </td>
+      <td style="vertical-align: top;">Return a randomly permuted copy
+of v. The optional
+rng argument specifies a random number generator, see Random Numbers.<br>
+      </td>
+      <td style="vertical-align: top;">shuffle([1,3,5]) </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;3<br>
+&nbsp;1<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">shuffle!([rng, ]v) </td>
+      <td style="vertical-align: top;">In-place version of shuffle().<br>
+      </td>
+      <td style="vertical-align: top;">shuffle!([2,4,3,6]) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;2<br>
+&nbsp;3<br>
+&nbsp;4<br>
+&nbsp;6<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reverse(v[, start=1[,
+stop=length(v)]]) </td>
+      <td style="vertical-align: top;">Return a copy of v reversed from
+start to stop.<br>
+      </td>
+      <td style="vertical-align: top;">reverse([1,5,3,6]) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;6<br>
+&nbsp;3<br>
+&nbsp;5<br>
+&nbsp;1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reverseind(v, i) </td>
+      <td style="vertical-align: top;">Given an index i in reverse(v),
+return the
+corresponding index in v so that v[reverseind(v,i)] == reverse(v)[i]. <br>
+(This can be nontrivial in the case where v is a Unicode string.)<br>
+      </td>
+      <td style="vertical-align: top;">reverseind([2,4,1],2) </td>
+      <td style="vertical-align: top;">2<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reverse!(v[, start=1[,
+stop=length(v)]]) <br>
+→ v </td>
+      <td style="vertical-align: top;">In-place version of reverse().<br>
+      </td>
+      <td style="vertical-align: top;">reverse!([2,4,3,5]) </td>
+      <td style="vertical-align: top;">4-element Array{Int64,1}:<br>
+&nbsp;5<br>
+&nbsp;3<br>
+&nbsp;4<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">combinations(array, n) </td>
+      <td style="vertical-align: top;">Generate all combinations of n
+elements from an
+indexable object. <br>
+Because the number of combinations can be very large,
+this function returns an iterator object. Use
+collect(combinations(array,n)) to get an array of all combinations.<br>
+      </td>
+      <td style="vertical-align: top;">combinations([1,2,3], 2) </td>
+      <td style="vertical-align: top;">Base.Combinations{Array{Int64,1}}([1,2,3],2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">permutations(array) </td>
+      <td style="vertical-align: top;">Generate all permutations of an
+indexable object.
+Because the number of permutations can be very large, this function
+returns an iterator object. <br>
+Use collect(permutations(array)) to get an
+array of all permutations.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 2;3 4];<br>
+permutations(A) </td>
+      <td style="vertical-align: top;">Base.Permutations{Array{Int64,2}}(2x2
+Array{Int64,2}:<br>
+&nbsp;1&nbsp; 2<br>
+&nbsp;3&nbsp; 4)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">partitions(n) </td>
+      <td style="vertical-align: top;">Generate all integer arrays that
+sum to n. Because
+the number of partitions can be very large, this function returns an
+iterator object. <br>
+Use collect(partitions(n)) to get an array of all
+partitions. The number of partitions to generate can be efficiently
+computed using length(partitions(n)).<br>
+      </td>
+      <td style="vertical-align: top;">partitions(5) </td>
+      <td style="vertical-align: top;">Base.IntegerPartitions(5)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">partitions(n, m) </td>
+      <td style="vertical-align: top;">Generate all arrays of m
+integers that sum to n.
+Because the number of partitions can be very large, this function
+returns an iterator object. <br>
+Use collect(partitions(n,m)) to get an
+array of all partitions. The number of partitions to generate can be
+efficiently computed using length(partitions(n,m)).<br>
+      </td>
+      <td style="vertical-align: top;">partitions(5, 3) </td>
+      <td style="vertical-align: top;">Base.FixedPartitions(5,3)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">partitions(array) </td>
+      <td style="vertical-align: top;">Generate all set partitions of
+the elements of an
+array, represented as arrays of arrays. Because the number of
+partitions can be very large, <br>
+this function returns an iterator object.
+Use collect(partitions(array)) to get an array of all partitions. <br>
+The
+number of partitions to generate can be efficiently computed using
+length(partitions(array)).<br>
+      </td>
+      <td style="vertical-align: top;">partitions([1,2,3]) </td>
+      <td style="vertical-align: top;">Base.SetPartitions{Array{Int64,1}}([1,2,3])<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">partitions(array, m) </td>
+      <td style="vertical-align: top;">Generate all set partitions of
+the elements of an
+array into exactly m subsets, represented as arrays of arrays. <br>
+Because
+the number of partitions can be very large, this function returns an
+iterator object. Use collect(partitions(array,m)) to get an array of
+all partitions. <br>
+The number of partitions into m subsets is equal to the
+Stirling number of the second kind and can be efficiently computed
+using length(partitions(array,m)).<br>
+      </td>
+      <td style="vertical-align: top;">partitions([1,2,3], 2) </td>
+      <td style="vertical-align: top;">Base.FixedSetPartitions{Array{Int64,1}}([1,2,3],2)<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">BitArrays
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bitpack(A::AbstractArray{T, N}) <br>
+→ BitArray </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">パックされた</span><span>boolean型</span><span>の
+配列</span><span>に</span><span>数値配列</span><span>に変換</span></span> </td>
+      <td style="vertical-align: top;">bitpack([true true;false false])<br>
+      </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp; true&nbsp;&nbsp; true<br>
+&nbsp;false&nbsp; false </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bitunpack(B::BitArray{N})<br>
+→
+Array{Bool,N} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">boolean配列</span><span>に</span><span>パッ
+クされた</span><span>boolean型配列</span><span>に変換</span></span> </td>
+      <td style="vertical-align: top;">bitunpack(bitpack([true
+true;false false]))<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">2x2 Array{Bool,2}:<br>
+&nbsp; true&nbsp;&nbsp; true<br>
+&nbsp;false&nbsp; false </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">flipbits!(B::BitArray{N}) <br>
+→
+BitArray{N} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>実行</span><span class="">ビット単位</span><span>BSEE</span><span>～</span><span>演
+算子</span><span>に</span><span>はない</span><span>操作</span><span>。</span></span>
+      </td>
+      <td style="vertical-align: top;">flipbits!(bitpack([true
+true;false false])) </td>
+      <td style="vertical-align: top;">2x2 BitArray{2}:<br>
+&nbsp;false&nbsp; false<br>
+&nbsp; true&nbsp;&nbsp; true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rol!(dest::BitArray{1},
+src::BitArray{1}, i::Integer)<br>
+&nbsp;→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>SRC</span><span>上の</span><span
+ class="">左</span><span>回転操作</span><span>を</span><span>行います</span><span>と
+dest</span><span>に結果を</span><span class="">置きます</span><span>。</span></span>
+      </td>
+      <td style="vertical-align: top;">rol!(bitpack([2]),
+bitpack([5]),2)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rol!(B::BitArray{1}, i::Integer)<br>
+&nbsp;→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>Bの</span><span>左</span><span
+ class="">回転操作</span><span>を実行します</span></span> </td>
+      <td style="vertical-align: top;">rol!(bitpack([2]), 2) </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rol(B::BitArray{1}, i::Integer) <br>
+→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>左回転</span><span class="">操作を実行します。</span></span>
+      </td>
+      <td style="vertical-align: top;">rol(bitpack([5]),1)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ror!(dest::BitArray{1},
+src::BitArray{1}, i::Integer) <br>
+→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>SRC</span><span>の右</span><span>回転操作</span><span>を</span><span>行
+います</span><span>とdest</span><span>に結果を</span><span class="">置きます</span><span>。</span></span>
+      </td>
+      <td style="vertical-align: top;">ror!(bitpack([2]),bitpack([3]),
+1) </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ror!(B::BitArray{1}, i::Integer)
+      <br>
+→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>Bの</span><span>右回転</span><span
+ class="">操作を実行します</span></span> </td>
+      <td style="vertical-align: top;">ror!(bitpack([3]), 1) </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ror(B::BitArray{1}, i::Integer) <br>
+→ BitArray{1} </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>右回転</span><span class="">操作を実行します。</span></span>
+      </td>
+      <td style="vertical-align: top;">ror(bitpack([5]), 1) </td>
+      <td style="vertical-align: top;">1-element BitArray{1}:<br>
+&nbsp;true<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ id="result_box" class="short_text" lang="ja" style="font-weight: bold;"><span
+ class="">疎行列</span></span><br>
+      <span id="result_box" class="" lang="ja"><span>スパース</span><span>行列
+は</span><span>密行列</span><span>などの操作</span><span>の</span><span>同じセット</span><span>の
+多くを</span><span>サポートしています。</span><span>次の関数は</span><span>疎行列</span><span
+ class="">に固有のものです</span><span>。</span></span> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparse(I, J, V[, m, n, combine])
+      </td>
+      <td style="vertical-align: top;">Create a sparse matrix S of
+dimensions m x n such that S[I[k], J[k]] = V[k]. The combine function
+is used to combine duplicates. <br>
+If m and n are not specified, they are set to maximum(I) and maximum(J)
+respectively. <br>
+If the combine function is not supplied, duplicates are added by
+default. <br>
+All elements of I must satisfy 1 &lt;= I[k] &lt;= m, and all elements
+of J must satisfy 1 &lt;= J[k] &lt;= n.<br>
+      </td>
+      <td style="vertical-align: top;">sparse([2],[3],[5]) </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 1 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 3]&nbsp; =&nbsp; 5<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparsevec(I, V[, m, combine]) </td>
+      <td style="vertical-align: top;">Create a sparse matrix S of size
+m x 1 such that S[I[k]] = V[k]. <br>
+Duplicates are combined using the combine function, which defaults to +
+if it is not provided. <br>
+In julia, sparse vectors are really just sparse matrices with one
+column. <br>
+Given Julia’s Compressed Sparse Columns (CSC) storage format, a sparse
+column matrix with one column is sparse, <br>
+whereas a sparse row matrix with one row ends up being dense.<br>
+      </td>
+      <td style="vertical-align: top;">sparsevec([2],[5])<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">2x1 sparse matrix with 1 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 5 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparsevec(D::Dict[, m]) </td>
+      <td style="vertical-align: top;">Create a sparse matrix of size m
+x 1 where the row values are keys from the dictionary, and the nonzero
+values are the values from the dictionary.<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 3; 2 5];<br>
+sparsevec(A) </td>
+      <td style="vertical-align: top;">4x1 sparse matrix with 4 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 1]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [3, 1]&nbsp; =&nbsp; 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [4, 1]&nbsp; =&nbsp; 5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issparse(S)<br>
+→Bool<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>S</span><span>は、</span><span>そうでなければ</span><span>、
+スパース</span><span>、</span><span>および</span><span>falseの</span><span
+ class="">場合にtrueを返します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">A=[1 3; 2 5];<br>
+issparse(A)<br>
+issparse(sparse([2],[3],[5]))<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      <br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparse(A) </td>
+      <td style="vertical-align: top;">行列として添え字と値を出力<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 3; 2 5];<br>
+sparse(A) </td>
+      <td style="vertical-align: top;">2x2 sparse matrix with 4 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 1]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 2]&nbsp; =&nbsp; 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 2]&nbsp; =&nbsp; 5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sparsevec(A) </td>
+      <td style="vertical-align: top;">配列として添え字と値で出力<br>
+      </td>
+      <td style="vertical-align: top;">A=[1 3; 2 5];<br>
+sparsevec(A) </td>
+      <td style="vertical-align: top;">4x1 sparse matrix with 4 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 1]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [3, 1]&nbsp; =&nbsp; 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [4, 1]&nbsp; =&nbsp; 5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">full(S)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>密行列</span><span>に</span></span><span
+ id="result_box" class="short_text" lang="ja"><span>疎行</span></span><span
+ id="result_box" class="short_text" lang="ja"><span>列</span><span>S</span><span
+ class="">に変換します。S:sparse</span></span> </td>
+      <td style="vertical-align: top;">full(sparse([2]))<br>
+      </td>
+      <td style="vertical-align: top;">1x1 Array{Int64,2}:<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nnz(A)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>疎行列</span><span>(</span></span>A:sparse<span
+ id="result_box" class="short_text" lang="ja"><span>)で</span><span>保存されて
+いる</span><span>（</span><span>埋め</span><span>）</span><span>の要素</span><span>の
+数を返します</span><span class="">。</span></span><br>
+      </td>
+      <td style="vertical-align: top;">nnz(sparse([5])) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spzeros(m, n)</td>
+      <td style="vertical-align: top;">Create a sparse matrix of size m
+x n. This sparse matrix will not contain any nonzero values. No storage
+will be allocated for nonzero values during construction.<br>
+      </td>
+      <td style="vertical-align: top;">spzeros(5, 3) </td>
+      <td style="vertical-align: top;">5x3 sparse matrix with 0 Float64
+entries:<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spones(S)</td>
+      <td style="vertical-align: top;">Create a sparse matrix with the
+same structure as that of S, but with every nonzero element having the
+value 1.0.<br>
+      </td>
+      <td style="vertical-align: top;">spones(spzeros(5, 3)) </td>
+      <td style="vertical-align: top;">5x3 sparse matrix with 0 Float64
+entries:<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">speye(type, m[, n])</td>
+      <td style="vertical-align: top;">Create a sparse identity matrix
+of specified type of size m x m. In case n is supplied, create a sparse
+identity matrix of size m x n.<br>
+      </td>
+      <td style="vertical-align: top;">speye(Int ,3)<br>
+      </td>
+      <td style="vertical-align: top;">3x3 sparse matrix with 3 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 1]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 2]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [3, 3]&nbsp; =&nbsp; 1 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spdiagm(B, d[, m, n])</td>
+      <td style="vertical-align: top;">Construct a sparse diagonal
+matrix. <br>
+B is a tuple of vectors containing the diagonals and d is a tuple
+containing the positions of the diagonals. <br>
+In the case the input contains only one diagonal, B can be a vector
+(instead of a tuple) <br>
+and d can be the diagonal position (instead of a tuple), defaulting to
+0 (diagonal). Optionally, m and n specify the size of the resulting
+sparse matrix.<br>
+      </td>
+      <td style="vertical-align: top;">spdiagm([1,2],1) </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 2 Int64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 2]&nbsp; =&nbsp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 3]&nbsp; =&nbsp; 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sprand([rng, ]m, n, p[, rfn])</td>
+      <td style="vertical-align: top;">Create a random m by n sparse
+matrix, in which the probability of any element being nonzero is
+independently given by p <br>
+(and hence the mean density of nonzeros is also exactly p). Nonzero
+values are sampled from the distribution specified by rfn. <br>
+The uniform distribution is used in case rfn is not specified. The
+optional rng argument specifies a random number generator, see Random
+Numbers.<br>
+m,n:int 0&lt;p&lt;1<br>
+      </td>
+      <td style="vertical-align: top;">sprand(2,3,0.5) </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 2 Float64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 0.476695<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 3]&nbsp; =&nbsp; 0.400729<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sprandn(m, n, p)</td>
+      <td style="vertical-align: top;">Create a random m by n sparse
+matrix with the specified (independent) <br>
+probability p of any entry being nonzero, where nonzero values are
+sampled from the normal distribution.<br>
+      </td>
+      <td style="vertical-align: top;">sprandn(2, 3, 0.5) </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 4 Float64
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; 0.108403<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 2]&nbsp; =&nbsp;
+-0.200814<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 2]&nbsp; =&nbsp;
+-0.416304<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 3]&nbsp; =&nbsp; -1.83476<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sprandbool(m, n, p)</td>
+      <td style="vertical-align: top;">Create a random m by n sparse
+boolean matrix with the specified (independent) probability p of any
+entry being true.<br>
+      </td>
+      <td style="vertical-align: top;">sprandbool(2,3,0.5) </td>
+      <td style="vertical-align: top;">2x3 sparse matrix with 4 Bool
+entries:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 1]&nbsp; =&nbsp; true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 2]&nbsp; =&nbsp; true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 2]&nbsp; =&nbsp; true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [1, 3]&nbsp; =&nbsp; true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">etree(A[, post])</td>
+      <td style="vertical-align: top;">Compute the elimination tree of
+a symmetric sparse matrix A from triu(A) and, optionally, its
+post-ordering permutation.<br>
+      </td>
+      <td style="vertical-align: top;">etree(sparse([2],[3],[5]))<br>
+      </td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;0<br>
+&nbsp;3<br>
+&nbsp;0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">symperm(A, p)</td>
+      <td style="vertical-align: top;">Return the symmetric permutation
+of A, which is A[p,p]. <br>
+A should be symmetric and sparse, where only the upper triangular part
+of the matrix is stored. <br>
+This algorithm ignores the lower triangular part of the matrix. Only
+the upper triangular part of the result is returned as well.<br>
+      </td>
+      <td style="vertical-align: top;">symperm(sparse([2],[3],[5]),
+0.5) </td>
+      <td style="vertical-align: top;">エラー<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nonzeros(A)</td>
+      <td style="vertical-align: top;">Return a vector of the
+structural nonzero values in sparse matrix A. <br>
+This includes zeros that are explicitly stored in the sparse matrix. <br>
+The returned vector points directly to the internal nonzero storage of
+A, <br>
+and any modifications to the returned vector will mutate A as well. See
+rowvals(A) and nzrange(A, col).<br>
+      </td>
+      <td style="vertical-align: top;">nonzeros(sparse([2],[3],[5]))<br>
+      </td>
+      <td style="vertical-align: top;">1-element Array{Int64,1}:<br>
+&nbsp;5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rowvals(A)</td>
+      <td style="vertical-align: top;">Return a vector of the row
+indices of A, and any modifications to the returned vector will mutate
+A as well. <br>
+Given the internal storage format of sparse matrices, providing access
+to how the row indices <br>
+are stored internally can be useful in conjunction with iterating over
+structural nonzero values. See nonzeros(A) and nzrange(A, col).<br>
+      </td>
+      <td style="vertical-align: top;">rowvals(sparse([2],[3],[5])) </td>
+      <td style="vertical-align: top;">1-element Array{Int64,1}:<br>
+&nbsp;2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nzrange(A, col)</td>
+      <td style="vertical-align: top;">Return the range of indices to
+the structural nonzero values of a sparse matrix column. <br>
+In conjunction with nonzeros(A) and rowvals(A), this allows for
+convenient iterating over a sparse matrix :<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">nzrange(sparse([2],[3],[5]), 2)<br>
+      <br>
+A = sparse([2],[3],[5]))<br>
+rows = rowvals(A)<br>
+vals = nonzeros(A)<br>
+&nbsp;&nbsp;&nbsp; m, n = size(A)<br>
+&nbsp;&nbsp;&nbsp; for i = 1:n<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for j in nzrange(A, i)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; row = rows[j]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; val = vals[j]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # perform sparse
+wizardry...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end<br>
+&nbsp;&nbsp;&nbsp; end</td>
+      <td style="vertical-align: top;">1:0<br>
+      <br>
+エラー<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

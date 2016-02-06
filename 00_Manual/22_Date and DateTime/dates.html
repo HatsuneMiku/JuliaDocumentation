@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date and DateTime — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Running External Programs"
+ href="running-external-programs.html">
+  <link rel="prev" title="Parallel Computing"
+ href="parallel-computing.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="date-and-datetime"><span id="man-dates"></span>
+<h1><span id="result_box" class="short_text" lang="ja"><span>日付と</span><span
+ class="">日時</span></span><a class="headerlink"
+ href="#date-and-datetime" title="Permalink to this headline"></a></h1>
+<p>The <a class="reference internal"
+ href="../stdlib/dates.html#module-Dates" title="Dates"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Dates</span></code></a>
+module provides two types for working with dates: <a
+ class="reference internal" href="../stdlib/dates.html#Dates.Date"
+ title="Dates.Date"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Date</span></code></a> and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>,
+representing day and millisecond precision, respectively; both are
+subtypes of the abstract <a class="reference internal"
+ href="../stdlib/dates.html#Dates.TimeType" title="Dates.TimeType"><code
+ class="xref jl jl-class docutils literal"><span class="pre">TimeType</span></code></a>.
+The motivation for distinct types is simple: some operations are much
+simpler, both in terms of code and mental reasoning, when the
+complexities of greater precision don’t have to be dealt with. For
+example, since the <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+type only resolves to the precision of a single date (i.e. no hours,
+minutes, or seconds), normal considerations for time zones, daylight
+savings/summer time, and leap seconds are unnecessary and avoided.</p>
+<p>Both <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+are basically immutable <code class="docutils literal"><span
+ class="pre">Int64</span></code> wrappers. The single <code
+ class="docutils literal"><span class="pre">instant</span></code> field
+of either type is actually a <code class="docutils literal"><span
+ class="pre">UTInstant{P}</span></code> type, which represents a
+continuously increasing machine timeline based on the UT second <a
+ class="footnote-reference" href="#id2" id="id1">[1]</a>. The <a
+ class="reference internal" href="../stdlib/dates.html#Dates.DateTime"
+ title="Dates.DateTime"><code class="xref jl jl-class docutils literal"><span
+ class="pre">DateTime</span></code></a> type is <em>timezone-unaware</em>
+(in Python parlance) or is analogous to a <em>LocalDateTime</em> in
+Java 8. Additional time zone functionality can be added through the <a
+ class="reference external"
+ href="https://github.com/quinnj/Timezones.jl/">Timezones.jl package</a>,
+which compiles the <a class="reference external"
+ href="http://www.iana.org/time-zones">Olsen Time Zone Database</a>.
+Both <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+are based on the ISO 8601 standard, which follows the proleptic
+Gregorian calendar. One note is that the ISO 8601 standard is
+particular about BC/BCE dates. In general, the last day of the BC/BCE
+era, 1-12-31 BC/BCE, was followed by 1-1-1 AD/CE, thus no year zero
+exists. The ISO standard, however, states that 1 BC/BCE is year zero,
+so <code class="docutils literal"><span class="pre">0000-12-31</span></code>
+is the day before <code class="docutils literal"><span class="pre">0001-01-01</span></code>,
+and year <code class="docutils literal"><span class="pre">-0001</span></code>
+(yes, negative one for the year) is 2 BC/BCE, year <code
+ class="docutils literal"><span class="pre">-0002</span></code> is 3
+BC/BCE, etc.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+  <colgroup><col class="label"><col></colgroup> <tbody valign="top">
+    <tr>
+      <td class="label"><a class="fn-backref" href="#id1">[1]</a></td>
+      <td>The notion of the UT second is actually quite fundamental.
+There are basically two different notions of time generally accepted,
+one based on the physical rotation of the earth (one full rotation = 1
+day), the other based on the SI second (a fixed, constant value). These
+are radically different! Think about it, a “UT second”, as defined
+relative to the rotation of the earth, may have a different absolute
+length depending on the day! Anyway, the fact that <a
+ class="reference internal" href="../stdlib/dates.html#Dates.Date"
+ title="Dates.Date"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Date</span></code></a> and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+are based on UT seconds is a simplifying, yet honest assumption so that
+things like leap seconds and all their complexity can be avoided. This
+basis of time is formally called <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Universal_Time">UT</a> or UT1.
+Basing types on the UT second basically means that every minute has 60
+seconds and every day has 24 hours and leads to more natural
+calculations when working with calendar dates.</td>
+    </tr>
+  </tbody>
+</table>
+<div class="section" id="constructors">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">コン
+ストラクタ</span></span><a class="headerlink" href="#constructors"
+ title="Permalink to this headline"></a></h2>
+<p><a class="reference internal" href="../stdlib/dates.html#Dates.Date"
+ title="Dates.Date"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Date</span></code></a> and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+types can be constructed by integer or <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Period" title="Dates.Period"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Period</span></code></a>
+types, by parsing, or through adjusters (more on those later):</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">DateTime</span><span class="p">(</span><span class="mi">2013</span><span
+ class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T00</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T00</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T00</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">,</span><span class="mi">12</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T12</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">,</span><span class="mi">12</span><span class="p">,</span><span
+ class="mi">30</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T12</span><span
+ class="p">:</span><span class="mi">30</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">,</span><span class="mi">12</span><span class="p">,</span><span
+ class="mi">30</span><span class="p">,</span><span class="mi">59</span><span
+ class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T12</span><span
+ class="p">:</span><span class="mi">30</span><span class="p">:</span><span
+ class="mi">59</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">DateTime</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">,</span><span class="mi">12</span><span class="p">,</span><span
+ class="mi">30</span><span class="p">,</span><span class="mi">59</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T12</span><span
+ class="p">:</span><span class="mi">30</span><span class="p">:</span><span
+ class="mf">59.001</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2013</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Year</span><span class="p">(</span><span class="mi">2013</span><span
+ class="p">),</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Month</span><span class="p">(</span><span class="mi">7</span><span
+ class="p">),</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Day</span><span class="p">(</span><span class="mi">1</span><span
+ class="p">))</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Month</span><span class="p">(</span><span class="mi">7</span><span
+ class="p">),</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Year</span><span class="p">(</span><span class="mi">2013</span><span
+ class="p">))</span>
+<span class="mi">2013</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">01</span>
+</pre>
+</div>
+</div>
+<p><a class="reference internal" href="../stdlib/dates.html#Dates.Date"
+ title="Dates.Date"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Date</span></code></a> or <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+parsing is accomplished by the use of format strings. Format strings
+work by the notion of defining <em>delimited</em> or <em>fixed-width</em>
+“slots” that contain a period to parse and passing the text to parse
+and format string to a <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+or <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+constructor, of the form <code class="docutils literal"><span
+ class="pre">Date("2015-01-01","y-m-d")</span></code> or <code
+ class="docutils literal"><span class="pre">DateTime("20150101","yyyymmdd")</span></code>.</p>
+<p>Delimited slots are marked by specifying the delimiter the parser
+should expect between two subsequent periods; so <code
+ class="docutils literal"><span class="pre">"y-m-d"</span></code> lets
+the parser know that between the first and second slots in a date
+string like <code class="docutils literal"><span class="pre">"2014-07-16"</span></code>,
+it should find the <code class="docutils literal"><span class="pre">-</span></code>
+character. The <code class="docutils literal"><span class="pre">y</span></code>,
+<code class="docutils literal"><span class="pre">m</span></code>, and <code
+ class="docutils literal"><span class="pre">d</span></code> characters
+let the parser know which periods to parse in each slot.</p>
+<p>Fixed-width slots are specified by repeating the period character
+the number of times corresponding to the width with no delimiter
+between characters. So <code class="docutils literal"><span class="pre">"yyyymmdd"</span></code>
+would correspond to a date string like <code class="docutils literal"><span
+ class="pre">"20140716"</span></code>. The parser distinguishes a
+fixed-width slot by the absence of a delimiter, noting the transition <code
+ class="docutils literal"><span class="pre">"yyyymm"</span></code> from
+one period character to the next.</p>
+<p>Support for text-form month parsing is also supported through the <code
+ class="docutils literal"><span class="pre">u</span></code> and <code
+ class="docutils literal"><span class="pre">U</span></code> characters,
+for abbreviated and full-length month names, respectively. By default,
+only English month names are supported, so <code
+ class="docutils literal"><span class="pre">u</span></code> corresponds
+to “Jan”, “Feb”, “Mar”, etc. And <code class="docutils literal"><span
+ class="pre">U</span></code> corresponds to “January”, “February”,
+“March”, etc. Similar to other name=&gt;value mapping functions <a
+ class="reference internal" href="../stdlib/dates.html#Dates.dayname"
+ title="Dates.dayname"><code class="xref jl jl-func docutils literal"><span
+ class="pre">dayname()</span></code></a> and <a
+ class="reference internal" href="../stdlib/dates.html#Dates.monthname"
+ title="Dates.monthname"><code class="xref jl jl-func docutils literal"><span
+ class="pre">monthname()</span></code></a>, custom locales can be
+loaded by passing in the <code class="docutils literal"><span
+ class="pre">locale=&gt;Dict{UTF8String,Int}</span></code> mapping to
+the <code class="xref jl jl-const docutils literal"><span class="pre">MONTHTOVALUEABBR</span></code>
+and <code class="xref jl jl-const docutils literal"><span class="pre">MONTHTOVALUE</span></code>
+dicts for abbreviated and full-name month names, respectively.</p>
+<p>One note on parsing performance: using the <code
+ class="docutils literal"><span class="pre">Date(date_string,format_string)</span></code>
+function is fine if only called a few times. If there are many
+similarly formatted date strings to parse however, it is much more
+efficient to first create a <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Dates.DateFormat"
+ title="Dates.Dates.DateFormat"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Dates.DateFormat</span></code></a>,
+and pass it instead of a raw format string.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">df</span> <span class="o">=</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">DateFormat</span><span class="p">(</span><span
+ class="s">"y-m-d"</span><span class="p">);</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">=</span> <span class="n">Date</span><span class="p">(</span><span
+ class="s">"2015-01-01"</span><span class="p">,</span><span class="n">df</span><span
+ class="p">)</span>
+<span class="mi">2015</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt2</span> <span
+ class="o">=</span> <span class="n">Date</span><span class="p">(</span><span
+ class="s">"2015-01-02"</span><span class="p">,</span><span class="n">df</span><span
+ class="p">)</span>
+<span class="mi">2015</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">02</span>
+</pre>
+</div>
+</div>
+<p>A full suite of parsing and formatting tests and examples is
+available in <a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/test/dates/io.jl">tests/dates/io.jl</a>.</p>
+</div>
+<div class="section" id="durations-comparisons">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">持続
+時間</span><span class="">/</span><span class="">比較</span></span><a
+ class="headerlink" href="#durations-comparisons"
+ title="Permalink to this headline"></a></h2>
+<p>Finding the length of time between two <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+or <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+is straightforward given their underlying representation as <code
+ class="docutils literal"><span class="pre">UTInstant{Day}</span></code>
+and <code class="docutils literal"><span class="pre">UTInstant{Millisecond}</span></code>,
+respectively. The difference between <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+is returned in the number of <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Day" title="Dates.Day"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Day</span></code></a>,
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+in the number of <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Millisecond" title="Dates.Millisecond"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Millisecond</span></code></a>.
+Similarly, comparing <a class="reference internal"
+ href="../stdlib/dates.html#Dates.TimeType" title="Dates.TimeType"><code
+ class="xref jl jl-class docutils literal"><span class="pre">TimeType</span></code></a>
+is a simple matter of comparing the underlying machine instants (which
+in turn compares the internal <code class="docutils literal"><span
+ class="pre">Int64</span></code> values).</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">dt</span> <span class="o">=</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2012</span><span class="p">,</span><span
+ class="mi">2</span><span class="p">,</span><span class="mi">29</span><span
+ class="p">)</span>
+<span class="mi">2012</span><span class="o">-</span><span class="mi">02</span><span
+ class="o">-</span><span class="mi">29</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt2</span> <span
+ class="o">=</span> <span class="n">Date</span><span class="p">(</span><span
+ class="mi">2000</span><span class="p">,</span><span class="mi">2</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">02</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dump</span><span
+ class="p">(</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">Date</span>
+  <span class="n">instant</span><span
+ class="p">:</span> <span class="n">UTInstant</span><span class="p">{</span><span
+ class="n">Day</span><span class="p">}</span>
+    <span class="n">periods</span><span
+ class="p">:</span> <span class="n">Day</span>
+      <span class="n">value</span><span
+ class="p">:</span> <span class="kt">Int64</span> <span class="mi">734562</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dump</span><span
+ class="p">(</span><span class="n">dt2</span><span class="p">)</span>
+<span class="n">Date</span>
+<span class="n">instant</span><span class="p">:</span> <span class="n">UTInstant</span><span
+ class="p">{</span><span class="n">Day</span><span class="p">}</span>
+  <span
+ class="n">periods</span><span class="p">:</span> <span class="n">Day</span>
+    <span
+ class="n">value</span><span class="p">:</span> <span class="kt">Int64</span> <span
+ class="mi">730151</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">&gt;</span> <span class="n">dt2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">!=</span> <span class="n">dt2</span>
+<span class="n">true</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">+</span> <span class="n">dt2</span>
+<span class="n">Operation</span> <span class="n">not</span> <span
+ class="n">defined</span> <span class="k">for</span> <span class="n">TimeTypes</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">*</span> <span class="n">dt2</span>
+<span class="n">Operation</span> <span class="n">not</span> <span
+ class="n">defined</span> <span class="k">for</span> <span class="n">TimeTypes</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">/</span> <span class="n">dt2</span>
+<span class="n">Operation</span> <span class="n">not</span> <span
+ class="n">defined</span> <span class="k">for</span> <span class="n">TimeTypes</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">-</span> <span class="n">dt2</span>
+<span class="mi">4411</span> <span class="n">days</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt2</span> <span
+ class="o">-</span> <span class="n">dt</span>
+<span class="o">-</span><span class="mi">4411</span> <span class="n">days</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">=</span> <span class="n">DateTime</span><span class="p">(</span><span
+ class="mi">2012</span><span class="p">,</span><span class="mi">2</span><span
+ class="p">,</span><span class="mi">29</span><span class="p">)</span>
+<span class="mi">2012</span><span class="o">-</span><span class="mi">02</span><span
+ class="o">-</span><span class="mi">29</span><span class="n">T00</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt2</span> <span
+ class="o">=</span> <span class="n">DateTime</span><span class="p">(</span><span
+ class="mi">2000</span><span class="p">,</span><span class="mi">2</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">02</span><span
+ class="o">-</span><span class="mi">01</span><span class="n">T00</span><span
+ class="p">:</span><span class="mi">00</span><span class="p">:</span><span
+ class="mi">00</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dt</span> <span
+ class="o">-</span> <span class="n">dt2</span>
+<span class="mi">381110402000</span> <span class="n">milliseconds</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="accessor-functions">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<div id="tts_button">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">アク
+セッサ関数</span></span></h2>
+</div>
+</div>
+</div>
+<h2><a class="headerlink" href="#accessor-functions"
+ title="Permalink to this headline"></a></h2>
+<p>Because the <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Date" title="Dates.Date"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Date</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.DateTime" title="Dates.DateTime"><code
+ class="xref jl jl-class docutils literal"><span class="pre">DateTime</span></code></a>
+types are stored as single <code class="docutils literal"><span
+ class="pre">Int64</span></code> values, date parts or fields can be
+retrieved through accessor functions. The lowercase accessors return
+the field as an integer:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">t</span> <span class="o">=</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">,</span><span class="mi">31</span><span
+ class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">31</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">year</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">2014</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">month</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">week</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">day</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">31</span>
+</pre>
+</div>
+</div>
+<p>While propercase return the same value in the corresponding <a
+ class="reference internal" href="../stdlib/dates.html#Dates.Period"
+ title="Dates.Period"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Period</span></code></a> type:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">Year</span><span
+ class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="mi">2014</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Day</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">31</span> <span class="n">days</span>
+</pre>
+</div>
+</div>
+<p>Compound methods are provided, as they provide a measure of
+efficiency if multiple fields are needed at the same time:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">yearmonth</span><span
+ class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">monthday</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span
+ class="mi">31</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">yearmonthday</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">,</span><span class="mi">31</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>One may also access the underlying <code class="docutils literal"><span
+ class="pre">UTInstant</span></code> or integer value:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">dump</span><span class="p">(</span><span class="n">t</span><span
+ class="p">)</span>
+<span class="n">Date</span>
+<span class="n">instant</span><span class="p">:</span> <span class="n">UTInstant</span><span
+ class="p">{</span><span class="n">Day</span><span class="p">}</span>
+  <span
+ class="n">periods</span><span class="p">:</span> <span class="n">Day</span>
+    <span
+ class="n">value</span><span class="p">:</span> <span class="kt">Int64</span> <span
+ class="mi">735264</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">t</span><span
+ class="o">.</span><span class="n">instant</span>
+<span class="n">UTInstant</span><span class="p">{</span><span class="n">Day</span><span
+ class="p">}(</span><span class="mi">735264</span> <span class="n">days</span><span
+ class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">value</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">735264</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="query-functions">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">クエ
+リ関数</span></span><a class="headerlink" href="#query-functions"
+ title="Permalink to this headline"></a></h2>
+<p>Query functions provide calendrical information about a <a
+ class="reference internal" href="../stdlib/dates.html#Dates.TimeType"
+ title="Dates.TimeType"><code class="xref jl jl-class docutils literal"><span
+ class="pre">TimeType</span></code></a>. They include information about
+the day of the week:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">t</span> <span class="o">=</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">,</span><span class="mi">31</span><span
+ class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">01</span><span
+ class="o">-</span><span class="mi">31</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayofweek</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">5</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayname</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="s">"Friday"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayofweekofmonth</span><span
+ class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="mi">5</span>  <span class="c"># 5th Friday of January</span>
+</pre>
+</div>
+</div>
+<p>Month of the year:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">monthname</span><span
+ class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="s">"January"</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">daysinmonth</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">31</span>
+</pre>
+</div>
+</div>
+<p>As well as information about the <a class="reference internal"
+ href="../stdlib/dates.html#Dates.TimeType" title="Dates.TimeType"><code
+ class="xref jl jl-class docutils literal"><span class="pre">TimeType</span></code></a>‘s
+year and quarter:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">isleapyear</span><span
+ class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">false</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayofyear</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">31</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">quarterofyear</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayofquarter</span><span class="p">(</span><span
+ class="n">t</span><span class="p">)</span>
+<span class="mi">31</span>
+</pre>
+</div>
+</div>
+<p>The <a class="reference internal"
+ href="../stdlib/dates.html#Dates.dayname" title="Dates.dayname"><code
+ class="xref jl jl-func docutils literal"><span class="pre">dayname()</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.monthname" title="Dates.monthname"><code
+ class="xref jl jl-func docutils literal"><span class="pre">monthname()</span></code></a>
+methods can also take an optional <code class="docutils literal"><span
+ class="pre">locale</span></code> keyword that can be used to return
+the name of the day or month of the year for other languages/locales:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="kd">const</span> <span class="n">french_daysofweek</span> <span
+ class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span
+ class="mi">1</span><span class="o">=&gt;</span><span class="s">"Lundi"</span><span
+ class="p">,</span><span class="mi">2</span><span class="o">=&gt;</span><span
+ class="s">"Mardi"</span><span class="p">,</span><span class="mi">3</span><span
+ class="o">=&gt;</span><span class="s">"Mercredi"</span><span class="p">,</span><span
+ class="mi">4</span><span class="o">=&gt;</span><span class="s">"Jeudi"</span><span
+ class="p">,</span><span class="mi">5</span><span class="o">=&gt;</span><span
+ class="s">"Vendredi"</span><span class="p">,</span><span class="mi">6</span><span
+ class="o">=&gt;</span><span class="s">"Samedi"</span><span class="p">,</span><span
+ class="mi">7</span><span class="o">=&gt;</span><span class="s">"Dimanche"</span><span
+ class="p">);</span>
+
+<span class="c"># Load the mapping into the Dates module under locale name "french"</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">VALUETODAYOFWEEK</span><span
+ class="p">[</span><span class="s">"french"</span><span class="p">]</span> <span
+ class="o">=</span> <span class="n">french_daysofweek</span><span
+ class="p">;</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">dayname</span><span class="p">(</span><span
+ class="n">t</span><span class="p">;</span><span class="n">locale</span><span
+ class="o">=</span><span class="s">"french"</span><span class="p">)</span>
+<span class="s">"Vendredi"</span>
+</pre>
+</div>
+</div>
+<p>Similarly for the <a class="reference internal"
+ href="../stdlib/dates.html#Dates.monthname" title="Dates.monthname"><code
+ class="xref jl jl-func docutils literal"><span class="pre">monthname()</span></code></a>
+function, a mapping of <code class="docutils literal"><span class="pre">locale=&gt;Dict{Int,UTF8String}</span></code>
+should be loaded in <code class="xref jl jl-const docutils literal"><span
+ class="pre">VALUETOMONTH</span></code>.</p>
+</div>
+<div class="section" id="timetype-period-arithmetic">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">時間
+型</span><span class="atn"></span><span class="">期間</span><span class="">算
+術</span></span><a class="headerlink" href="#timetype-period-arithmetic"
+ title="Permalink to this headline"></a></h2>
+<p>It’s good practice when using any language/date framework to be
+familiar with how date-period arithmetic is handled as there are some <a
+ class="reference external"
+ href="http://codeblog.jonskeet.uk/2010/12/01/the-joys-of-date-time-arithmetic">tricky
+issues</a> to deal with (though much less so for day-precision types).</p>
+<p>The <a class="reference internal"
+ href="../stdlib/dates.html#module-Dates" title="Dates"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Dates</span></code></a>
+module approach tries to follow the simple principle of trying to
+change as little as possible when doing <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Period" title="Dates.Period"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Period</span></code></a>
+arithmetic. This approach is also often known as <em>calendrical</em>
+arithmetic or what you would probably guess if someone were to ask you
+the same calculation in a conversation. Why all the fuss about this?
+Let’s take a classic example: add 1 month to January 31st, 2014. What’s
+the answer? Javascript will say <a class="reference external"
+ href="http://www.markhneedham.com/blog/2009/01/07/javascript-add-a-month-to-a-date/">March
+3</a> (assumes 31 days). PHP says <a class="reference external"
+ href="http://stackoverflow.com/questions/5760262/php-adding-months-to-a-date-while-not-exceeding-the-last-day-of-the-month">March
+2</a> (assumes 30 days). The fact is, there is no right answer. In the <a
+ class="reference internal" href="../stdlib/dates.html#module-Dates"
+ title="Dates"><code class="xref jl jl-mod docutils literal"><span
+ class="pre">Dates</span></code></a> module, it gives the result of
+February 28th. How does it figure that out? I like to think of the
+classic 7-7-7 gambling game in casinos.</p>
+<p>Now just imagine that instead of 7-7-7, the slots are
+Year-Month-Day, or in our example, 2014-01-31. When you ask to add 1
+month to this date, the month slot is incremented, so now we have
+2014-02-31. Then the day number is checked if it is greater than the
+last valid day of the new month; if it is (as in the case above), the
+day number is adjusted down to the last valid day (28). What are the
+ramifications with this approach? Go ahead and add another month to our
+date, <code class="docutils literal"><span class="pre">2014-02-28</span>
+<span class="pre">+</span> <span class="pre">Month(1)</span> <span
+ class="pre">==</span> <span class="pre">2014-03-28</span></code>.
+What? Were you expecting the last day of March? Nope, sorry, remember
+the 7-7-7 slots. As few slots as possible are going to change, so we
+first increment the month slot by 1, 2014-03-28, and boom, we’re done
+because that’s a valid date. On the other hand, if we were to add 2
+months to our original date, 2014-01-31, then we end up with
+2014-03-31, as expected. The other ramification of this approach is a
+loss in associativity when a specific ordering is forced (i.e. adding
+things in different orders results in different outcomes). For example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="p">(</span><span class="n">Date</span><span class="p">(</span><span
+ class="mi">2014</span><span class="p">,</span><span class="mi">1</span><span
+ class="p">,</span><span class="mi">29</span><span class="p">)</span><span
+ class="o">+</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Day</span><span class="p">(</span><span class="mi">1</span><span
+ class="p">))</span> <span class="o">+</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Month</span><span class="p">(</span><span
+ class="mi">1</span><span class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">02</span><span
+ class="o">-</span><span class="mi">28</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="p">(</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">,</span><span
+ class="mi">29</span><span class="p">)</span><span class="o">+</span><span
+ class="n">Dates</span><span class="o">.</span><span class="n">Month</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">))</span> <span
+ class="o">+</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Day</span><span class="p">(</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span
+ class="o">-</span><span class="mi">01</span>
+</pre>
+</div>
+</div>
+<p>What’s going on there? In the first line, we’re adding 1 day to
+January 29th, which results in 2014-01-30; then we add 1 month, so we
+get 2014-02-30, which then adjusts down to 2014-02-28. In the second
+example, we add 1 month <em>first</em>, where we get 2014-02-29, which
+adjusts down to 2014-02-28, and <em>then</em> add 1 day, which results
+in 2014-03-01. One design principle that helps in this case is that, in
+the presence of multiple Periods, the operations will be ordered by the
+Periods’ <em>types</em>, not their value or positional order; this
+means <code class="docutils literal"><span class="pre">Year</span></code>
+will always be added first, then <code class="docutils literal"><span
+ class="pre">Month</span></code>, then <code class="docutils literal"><span
+ class="pre">Week</span></code>, etc. Hence the following <em>does</em>
+result in associativity and Just Works:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">,</span><span
+ class="mi">29</span><span class="p">)</span> <span class="o">+</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">Day</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span> <span
+ class="o">+</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Month</span><span class="p">(</span><span class="mi">1</span><span
+ class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span
+ class="o">-</span><span class="mi">01</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">1</span><span class="p">,</span><span class="mi">29</span><span
+ class="p">)</span> <span class="o">+</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Month</span><span class="p">(</span><span
+ class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">Day</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span
+ class="o">-</span><span class="mi">01</span>
+</pre>
+</div>
+</div>
+<p>Tricky? Perhaps. What is an innocent <a class="reference internal"
+ href="../stdlib/dates.html#module-Dates" title="Dates"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Dates</span></code></a>
+user to do? The bottom line is to be aware that explicitly forcing a
+certain associativity, when dealing with months, may lead to some
+unexpected results, but otherwise, everything should work as expected.
+Thankfully, that’s pretty much the extent of the odd cases in
+date-period arithmetic when dealing with time in UT (avoiding the
+“joys” of dealing with daylight savings, leap seconds, etc.).</p>
+</div>
+<div class="section" id="adjuster-functions">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<div id="tts_button">
+<h3><span id="result_box" class="short_text" lang="ja"><span class="">ア
+ジャスター</span><span class="">機能</span></span></h3>
+</div>
+</div>
+</div>
+<h2><a class="headerlink" href="#adjuster-functions"
+ title="Permalink to this headline"></a></h2>
+<p>As convenient as date-period arithmetics are, often the kinds of
+calculations needed on dates take on a <em>calendrical</em> or <em>temporal</em>
+nature rather than a fixed number of periods. Holidays are a perfect
+example; most follow rules such as “Memorial Day = Last Monday of May”,
+or “Thanksgiving = 4th Thursday of November”. These kinds of temporal
+expressions deal with rules relative to the calendar, like first or
+last of the month, next Tuesday, or the first and third Wednesdays, etc.</p>
+<p>The <a class="reference internal"
+ href="../stdlib/dates.html#module-Dates" title="Dates"><code
+ class="xref jl jl-mod docutils literal"><span class="pre">Dates</span></code></a>
+module provides the <em>adjuster</em> API through several convenient
+methods that aid in simply and succinctly expressing temporal rules.
+The first group of adjuster methods deal with the first and last of
+weeks, months, quarters, and years. They each take a single <a
+ class="reference internal" href="../stdlib/dates.html#Dates.TimeType"
+ title="Dates.TimeType"><code class="xref jl jl-class docutils literal"><span
+ class="pre">TimeType</span></code></a> as input and return or <em>adjust
+to</em> the first or last of the desired period relative to the input.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="c"># Adjusts the input to the Monday of the input's week</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">firstdayofweek</span><span class="p">(</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">,</span><span class="mi">7</span><span class="p">,</span><span
+ class="mi">16</span><span class="p">))</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">14</span>
+
+<span class="c"># Adjusts to the last day of the input's month</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">lastdayofmonth</span><span class="p">(</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">,</span><span class="mi">7</span><span class="p">,</span><span
+ class="mi">16</span><span class="p">))</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">31</span>
+
+<span class="c"># Adjusts to the last day of the input's quarter</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">lastdayofquarter</span><span
+ class="p">(</span><span class="n">Date</span><span class="p">(</span><span
+ class="mi">2014</span><span class="p">,</span><span class="mi">7</span><span
+ class="p">,</span><span class="mi">16</span><span class="p">))</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">09</span><span
+ class="o">-</span><span class="mi">30</span>
+</pre>
+</div>
+</div>
+<p>The next two higher-order methods, <a class="reference internal"
+ href="../stdlib/dates.html#Dates.tonext" title="Dates.tonext"><code
+ class="xref jl jl-func docutils literal"><span class="pre">tonext()</span></code></a>,
+and <a class="reference internal"
+ href="../stdlib/dates.html#Dates.toprev" title="Dates.toprev"><code
+ class="xref jl jl-func docutils literal"><span class="pre">toprev()</span></code></a>,
+generalize working with temporal expressions by taking a <code
+ class="xref jl jl-class docutils literal"><span class="pre">DateFunction</span></code>
+as first argument, along with a starting <a class="reference internal"
+ href="../stdlib/dates.html#Dates.TimeType" title="Dates.TimeType"><code
+ class="xref jl jl-class docutils literal"><span class="pre">TimeType</span></code></a>.
+A <code class="xref jl jl-class docutils literal"><span class="pre">DateFunction</span></code>
+is just a function, usually anonymous, that takes a single <a
+ class="reference internal" href="../stdlib/dates.html#Dates.TimeType"
+ title="Dates.TimeType"><code class="xref jl jl-class docutils literal"><span
+ class="pre">TimeType</span></code></a> as input and returns a <code
+ class="docutils literal"><span class="pre">Bool</span></code>, <code
+ class="docutils literal"><span class="pre">true</span></code>
+indicating a satisfied adjustment criterion.
+For example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">istuesday</span> <span class="o">=</span> <span class="n">x</span><span
+ class="o">-&gt;</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">dayofweek</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">==</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Tuesday</span>  <span class="c"># Returns true if the day of the week of x is Tuesday</span>
+<span class="p">(</span><span class="n">anonymous</span> <span class="n">function</span><span
+ class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">tonext</span><span class="p">(</span><span
+ class="n">istuesday</span><span class="p">,</span> <span class="n">Date</span><span
+ class="p">(</span><span class="mi">2014</span><span class="p">,</span><span
+ class="mi">7</span><span class="p">,</span><span class="mi">13</span><span
+ class="p">))</span> <span class="c"># 2014-07-13 is a Sunday</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">15</span>
+
+<span class="c"># Convenience method provided for day of the week adjustments</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">tonext</span><span class="p">(</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">,</span><span class="mi">7</span><span class="p">,</span><span
+ class="mi">13</span><span class="p">),</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Tuesday</span><span class="p">)</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">15</span>
+</pre>
+</div>
+</div>
+<p>This is useful with the do-block syntax for more complex temporal
+expressions:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">Dates</span><span class="o">.</span><span class="n">tonext</span><span
+ class="p">(</span><span class="n">Date</span><span class="p">(</span><span
+ class="mi">2014</span><span class="p">,</span><span class="mi">7</span><span
+ class="p">,</span><span class="mi">13</span><span class="p">))</span> <span
+ class="k">do</span> <span class="n">x</span>
+          <span class="c"># Return true on the 4th Thursday of November (Thanksgiving)</span>
+          <span
+ class="n">Dates</span><span class="o">.</span><span class="n">dayofweek</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">==</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Thursday</span> <span class="o">&amp;&amp;</span>
+          <span
+ class="n">Dates</span><span class="o">.</span><span class="n">dayofweekofmonth</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">==</span> <span class="mi">4</span> <span class="o">&amp;&amp;</span>
+          <span
+ class="n">Dates</span><span class="o">.</span><span class="n">month</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">==</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">November</span>
+      <span class="k">end</span>
+<span class="mi">2014</span><span class="o">-</span><span class="mi">11</span><span
+ class="o">-</span><span class="mi">27</span>
+</pre>
+</div>
+</div>
+<p>The final method in the adjuster API is the <code
+ class="xref jl jl-func docutils literal"><span class="pre">recur()</span></code>
+function. <code class="xref jl jl-func docutils literal"><span
+ class="pre">recur()</span></code> vectorizes the adjustment process by
+taking a start and stop date (optionally specificed by a <code
+ class="xref jl jl-class docutils literal"><span class="pre">StepRange</span></code>),
+along with a <code class="xref jl jl-class docutils literal"><span
+ class="pre">DateFunction</span></code> to specify all valid
+dates/moments to be returned in the specified range. In this case, the <code
+ class="xref jl jl-class docutils literal"><span class="pre">DateFunction</span></code>
+is often referred to as the “inclusion” function because it specifies
+(by returning <code class="docutils literal"><span class="pre">true</span></code>)
+which dates/moments should be included in the returned vector of dates.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="c"># Pittsburgh street cleaning; Every 2nd Tuesday from April to November</span>
+<span class="c"># Date range from January 1st, 2014 to January 1st, 2015</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">dr</span> <span
+ class="o">=</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2014</span><span
+ class="p">):</span><span class="n">Dates</span><span class="o">.</span><span
+ class="n">Date</span><span class="p">(</span><span class="mi">2015</span><span
+ class="p">);</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">recur</span><span
+ class="p">(</span><span class="n">dr</span><span class="p">)</span> <span
+ class="k">do</span> <span class="n">x</span>
+           <span
+ class="n">Dates</span><span class="o">.</span><span class="n">dayofweek</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">==</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Tue</span> <span class="o">&amp;&amp;</span>
+           <span
+ class="n">Dates</span><span class="o">.</span><span class="n">April</span> <span
+ class="o">&lt;=</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">month</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">&lt;=</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Nov</span> <span class="o">&amp;&amp;</span>
+           <span
+ class="n">Dates</span><span class="o">.</span><span class="n">dayofweekofmonth</span><span
+ class="p">(</span><span class="n">x</span><span class="p">)</span> <span
+ class="o">==</span> <span class="mi">2</span>
+       <span class="k">end</span>
+ <span
+ class="mi">8</span><span class="o">-</span><span class="n">element</span> <span
+ class="n">Array</span><span class="p">{</span><span class="n">Date</span><span
+ class="p">,</span><span class="mi">1</span><span class="p">}:</span>
+  <span
+ class="mi">2014</span><span class="o">-</span><span class="mi">04</span><span
+ class="o">-</span><span class="mi">08</span>
+  <span class="mi">2014</span><span
+ class="o">-</span><span class="mi">05</span><span class="o">-</span><span
+ class="mi">13</span>
+  <span class="mi">2014</span><span class="o">-</span><span
+ class="mi">06</span><span class="o">-</span><span class="mi">10</span>
+  <span
+ class="mi">2014</span><span class="o">-</span><span class="mi">07</span><span
+ class="o">-</span><span class="mi">08</span>
+  <span class="mi">2014</span><span
+ class="o">-</span><span class="mi">08</span><span class="o">-</span><span
+ class="mi">12</span>
+  <span class="mi">2014</span><span class="o">-</span><span
+ class="mi">09</span><span class="o">-</span><span class="mi">09</span>
+  <span
+ class="mi">2014</span><span class="o">-</span><span class="mi">10</span><span
+ class="o">-</span><span class="mi">14</span>
+  <span class="mi">2014</span><span
+ class="o">-</span><span class="mi">11</span><span class="o">-</span><span
+ class="mi">11</span>
+</pre>
+</div>
+</div>
+<p>Additional examples and tests are available in <a
+ class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/test/dates/adjusters.jl">test/dates/adjusters.jl</a>.</p>
+</div>
+<div class="section" id="period-types">
+<h2><span id="result_box" class="short_text" lang="ja"><span>期間</span><span
+ class="">タイプ</span></span><a class="headerlink" href="#period-types"
+ title="Permalink to this headline"></a></h2>
+<p>Periods are a human view of discrete, sometimes irregular durations
+of time. Consider 1 month; it could represent, in days, a value of 28,
+29, 30, or 31 depending on the year and month context. Or a year could
+represent 365 or 366 days in the case of a leap year. <a
+ class="reference internal" href="../stdlib/dates.html#Dates.Period"
+ title="Dates.Period"><code class="xref jl jl-class docutils literal"><span
+ class="pre">Period</span></code></a> types are simple <code
+ class="docutils literal"><span class="pre">Int64</span></code>
+wrappers and are constructed by wrapping any <code
+ class="docutils literal"><span class="pre">Int64</span></code>
+convertible type, i.e. <code class="docutils literal"><span class="pre">Year(1)</span></code>
+or <code class="docutils literal"><span class="pre">Month(3.0)</span></code>.
+Arithmetic between <a class="reference internal"
+ href="../stdlib/dates.html#Dates.Period" title="Dates.Period"><code
+ class="xref jl jl-class docutils literal"><span class="pre">Period</span></code></a>
+of the same type behave like integers, and limited <code
+ class="docutils literal"><span class="pre">Period-Real</span></code>
+arithmetic is available.</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">y1</span> <span class="o">=</span> <span class="n">Dates</span><span
+ class="o">.</span><span class="n">Year</span><span class="p">(</span><span
+ class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span> <span class="n">year</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y2</span> <span
+ class="o">=</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Year</span><span class="p">(</span><span class="mi">2</span><span
+ class="p">)</span>
+<span class="mi">2</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y3</span> <span
+ class="o">=</span> <span class="n">Dates</span><span class="o">.</span><span
+ class="n">Year</span><span class="p">(</span><span class="mi">10</span><span
+ class="p">)</span>
+<span class="mi">10</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y1</span> <span
+ class="o">+</span> <span class="n">y2</span>
+<span class="mi">3</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">div</span><span
+ class="p">(</span><span class="n">y3</span><span class="p">,</span><span
+ class="n">y2</span><span class="p">)</span>
+<span class="mi">5</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y3</span> <span
+ class="o">-</span> <span class="n">y2</span>
+<span class="mi">8</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y3</span> <span
+ class="o">*</span> <span class="n">y2</span>
+<span class="mi">20</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y3</span> <span
+ class="o">%</span> <span class="n">y2</span>
+<span class="mi">0</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">y1</span> <span
+ class="o">+</span> <span class="mi">20</span>
+<span class="mi">21</span> <span class="n">years</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">div</span><span
+ class="p">(</span><span class="n">y3</span><span class="p">,</span><span
+ class="mi">3</span><span class="p">)</span> <span class="c"># mirrors integer division</span>
+<span class="mi">3</span> <span class="n">years</span>
+</pre>
+</div>
+</div>
+<p>See the <a class="reference external"
+ href="http://docs.julialang.org/en/latest/stdlib/dates/">API reference</a>
+for additional information on methods exported from the <a
+ class="reference internal" href="../stdlib/dates.html#module-Dates"
+ title="Dates"><code class="xref jl jl-mod docutils literal"><span
+ class="pre">Dates</span></code></a> module.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

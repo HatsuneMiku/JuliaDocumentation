@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>printf() and stdio in the Julia runtime — Julia Language 0.4.3
+documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Documentation of Julia’s Internals"
+ href="julia.html">
+  <link rel="next" title="Operator-sensitive promotion"
+ href="promote-op.html">
+  <link rel="prev" title="Working with LLVM" href="llvm.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav"> <nav data-toggle="wy-nav-shift"
+ class="wy-nav-side"> </nav>
+<div class="rst-content"> printf() and stdio in the Julia runtime<a
+ class="headerlink" href="#printf-and-stdio-in-the-julia-runtime"
+ title="Permalink to this headline">¶</a>
+<div role="main" class="document">
+<div class="section" id="printf-and-stdio-in-the-julia-runtime">
+<div class="section" id="libuv-wrappers-for-stdio">
+<h2>Libuv wrappers for stdio<a class="headerlink"
+ href="#libuv-wrappers-for-stdio" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">julia.h</span></code>
+defines <a class="reference external" href="http://docs.libuv.org">libuv</a>
+wrappers for the
+<code class="docutils literal"><span class="pre">stdio.h</span></code>
+streams:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">uv_stream_t</span> <span class="o">*</span><span
+ class="n">JL_STDIN</span><span class="p">;</span>
+<span class="kt">uv_stream_t</span> <span class="o">*</span><span
+ class="n">JL_STDOUT</span><span class="p">;</span>
+<span class="kt">uv_stream_t</span> <span class="o">*</span><span
+ class="n">JL_STDERR</span><span class="p">;</span>
+</pre>
+</div>
+</div>
+<p>... and corresponding output functions:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">int</span> <span class="nf">jl_printf</span><span
+ class="p">(</span><span class="kt">uv_stream_t</span> <span class="o">*</span><span
+ class="n">s</span><span class="p">,</span> <span class="k">const</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">format</span><span
+ class="p">,</span> <span class="p">...);</span>
+<span class="kt">int</span> <span class="nf">jl_vprintf</span><span
+ class="p">(</span><span class="kt">uv_stream_t</span> <span class="o">*</span><span
+ class="n">s</span><span class="p">,</span> <span class="k">const</span> <span
+ class="kt">char</span> <span class="o">*</span><span class="n">format</span><span
+ class="p">,</span> <span class="kt">va_list</span> <span class="n">args</span><span
+ class="p">);</span>
+</pre>
+</div>
+</div>
+<p>These <code class="docutils literal"><span class="pre">printf</span></code>
+functions are used by <code class="code docutils literal"><span
+ class="pre">julia/{src,ui}/*.c</span></code> wherever stdio
+is needed to ensure that output buffering is handled in a unified
+way.</p>
+<p>In special cases, like signal handlers, where the full <code
+ class="docutils literal"><span class="pre">libuv</span></code>
+infrastructure is too heavy, <code
+ class="xref jl jl-func docutils literal"><span class="pre">jl_safe_printf()</span></code>
+can be used to
+<a class="reference internal"
+ href="../stdlib/io-network.html#Base.write" title="Base.write"><code
+ class="xref jl jl-func docutils literal"><span class="pre">write(2)</span></code></a>
+directly to <code class="xref jl jl-data docutils literal"><span
+ class="pre">STDERR_FILENO</span></code>:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="kt">void</span> <span class="nf">jl_safe_printf</span><span
+ class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span
+ class="o">*</span><span class="n">str</span><span class="p">,</span> <span
+ class="p">...);</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="interface-between-jl-std-and-julia-code">
+<h2>Interface between JL_STD* and Julia code<a class="headerlink"
+ href="#interface-between-jl-std-and-julia-code"
+ title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDIN" title="Base.STDIN"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDIN</span></code></a>,
+<a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDOUT</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDERR" title="Base.STDERR"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDERR</span></code></a>
+are
+bound to the <code class="code docutils literal"><span class="pre">JL_STD*</span></code>
+<a class="reference external" href="http://docs.libuv.org">libuv</a>
+streams
+defined in the runtime.</p>
+<p>Julia’s <code class="xref c c-func docutils literal"><span
+ class="pre">__init__()</span></code> function (in <code
+ class="docutils literal"><span class="pre">base/sysimg.jl</span></code>)
+calls
+<code class="xref c c-func docutils literal"><span class="pre">reinit_stdio()</span></code>
+(in <code class="docutils literal"><span class="pre">base/stream.jl</span></code>)
+to create Julia objects
+for <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDIN" title="Base.STDIN"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDIN</span></code></a>,
+<a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDOUT" title="Base.STDOUT"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDOUT</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/io-network.html#Base.STDERR" title="Base.STDERR"><code
+ class="xref jl jl-data docutils literal"><span class="pre">Base.STDERR</span></code></a>.</p>
+<p><code class="xref c c-func docutils literal"><span class="pre">reinit_stdio()</span></code>
+uses <a class="reference internal" href="../stdlib/c.html#Base.ccall"
+ title="Base.ccall"><code class="xref jl jl-func docutils literal"><span
+ class="pre">ccall()</span></code></a> to retrieve pointers to
+<code class="code docutils literal"><span class="pre">JL_STD*</span></code>
+and calls <code class="xref c c-func docutils literal"><span
+ class="pre">jl_uv_handle_type()</span></code> to inspect
+the type of each stream. It then creates a Julia <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Base.File</span></code>,
+<code class="xref jl jl-obj docutils literal"><span class="pre">Base.TTY</span></code>
+or <code class="xref jl jl-obj docutils literal"><span class="pre">Base.Pipe</span></code>
+object to represent each
+stream, e.g.:</p>
+<div class="highlight-sh">
+<div class="highlight">
+<pre><span class="nv">$ </span>julia -e <span class="s1">'typeof((STDIN, STDOUT, STDERR))'</span>
+<span class="o">(</span>TTY,TTY,TTY<span class="o">)</span>
+
+<span class="nv">$ </span>julia -e <span class="s1">'println(typeof((STDIN, STDOUT, STDERR)))'</span> &lt; /dev/null 2&gt;/dev/null<br><span
+ class="o">(</span>Base.FS.File,TTY,Base.FS.File<span class="o">)</span>
+
+<span class="nv">$ </span><span class="nb">echo </span>hello <span
+ class="p">|</span> julia -e <span class="s1">'println(typeof((STDIN, STDOUT, STDERR)))'</span> <span
+ class="p">|</span> cat<br><span class="o">(</span>Pipe,Pipe,TTY<span
+ class="o">)</span>
+</pre>
+</div>
+</div>
+<p>The <a class="reference internal"
+ href="../stdlib/io-network.html#Base.read" title="Base.read"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Base.read()</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/io-network.html#Base.write" title="Base.write"><code
+ class="xref jl jl-func docutils literal"><span class="pre">Base.write()</span></code></a>
+methods for these
+streams use <a class="reference internal"
+ href="../stdlib/c.html#Base.ccall" title="Base.ccall"><code
+ class="xref jl jl-func docutils literal"><span class="pre">ccall()</span></code></a>
+to call <code class="docutils literal"><span class="pre">libuv</span></code>
+wrappers in <code class="code docutils literal"><span class="pre">src/jl_uv.c</span></code>,
+e.g.:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="n">stream</span><span class="p">.</span><span
+ class="nl">jl</span><span class="p">:</span> <span class="n">function</span> <span
+ class="n">write</span><span class="p">(</span><span class="n">s</span><span
+ class="o">::</span><span class="n">AsyncStream</span><span class="p">,</span> <span
+ class="n">p</span><span class="o">::</span><span class="n">Ptr</span><span
+ class="p">,</span> <span class="n">nb</span><span class="o">::</span><span
+ class="n">Integer</span><span class="p">)</span>
+               <span
+ class="o">-&gt;</span> <span class="n">ccall</span><span class="p">(</span><span
+ class="o">:</span><span class="n">jl_uv_write</span><span class="p">,</span> <span
+ class="p">...)</span>
+  <span class="n">jl_uv</span><span class="p">.</span><span
+ class="nl">c</span><span class="p">:</span>          <span class="o">-&gt;</span> <span
+ class="kt">int</span> <span class="n">jl_uv_write</span><span class="p">(</span><span
+ class="kt">uv_stream_t</span> <span class="o">*</span><span class="n">stream</span><span
+ class="p">,</span> <span class="p">...)</span>
+                        <span
+ class="o">-&gt;</span> <span class="n">uv_write</span><span class="p">(</span><span
+ class="n">uvw</span><span class="p">,</span> <span class="n">stream</span><span
+ class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span
+ class="p">...)</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="printf-during-initialisation">
+<h2>printf() during initialisation<a class="headerlink"
+ href="#printf-during-initialisation" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">libuv</span></code>
+streams relied upon by <code class="xref c c-func docutils literal"><span
+ class="pre">jl_printf()</span></code> etc., are not
+available until midway through initialisation of the runtime (see
+<code class="docutils literal"><span class="pre">init.c</span></code>, <code
+ class="xref c c-func docutils literal"><span class="pre">init_stdio()</span></code>).
+Error messages or warnings that need
+to be printed before this are routed to the standard C library
+<code class="xref c c-func docutils literal"><span class="pre">fwrite()</span></code>
+function by the following mechanism:</p>
+<p>In <code class="docutils literal"><span class="pre">sys.c</span></code>,
+the <code class="code docutils literal"><span class="pre">JL_STD*</span></code>
+stream pointers are statically initialised
+to integer constants: <code class="docutils literal"><span class="pre">STD*_FILENO</span>
+<span class="pre">(0,</span> <span class="pre">1</span> <span
+ class="pre">and</span> <span class="pre">2)</span></code>. In <code
+ class="docutils literal"><span class="pre">jl_uv.c</span></code> the
+<code class="xref c c-func docutils literal"><span class="pre">jl_write()</span></code>
+function checks its <code class="code docutils literal"><span
+ class="pre">uv_stream_t*</span> <span class="pre">stream</span></code>
+argument and calls <code class="xref c c-func docutils literal"><span
+ class="pre">fwrite()</span></code> if stream is set to <code
+ class="xref c c-macro docutils literal"><span class="pre">STDOUT_FILENO</span></code>
+or <code class="xref c c-macro docutils literal"><span class="pre">STDERR_FILENO</span></code>.</p>
+<p>This allows for uniform use of <code
+ class="xref c c-func docutils literal"><span class="pre">jl_printf()</span></code>
+throughout the
+runtime regardless of whether or not any particular piece of code
+is reachable before initialisation is complete.</p>
+</div>
+<div class="section" id="legacy-ios-c-library">
+<h2>Legacy ios.c library<a class="headerlink"
+ href="#legacy-ios-c-library" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="code docutils literal"><span class="pre">julia/src/support/ios.c</span></code>
+library is inherited from <a class="reference external"
+ href="https://github.com/JeffBezanson/femtolisp">femtolisp</a>.
+It provides cross-platform buffered file IO and in-memory temporary
+buffers.</p>
+<p><code class="code docutils literal"><span class="pre">ios.c</span></code>
+is still used by:</p>
+<ul class="simple">
+  <li><code class="code docutils literal"><span class="pre">julia/src/flisp/*.c</span></code></li>
+  <li><code class="code docutils literal"><span class="pre">julia/src/dump.c</span></code>
+– for serialisation file IO and for memory buffers.</li>
+  <li><code class="code docutils literal"><span class="pre">base/iostream.jl</span></code>
+– for file IO (see <code class="code docutils literal"><span
+ class="pre">base/fs.jl</span></code> for <code
+ class="docutils literal"><span class="pre">libuv</span></code>
+equivalent).</li>
+</ul>
+<p>Use of <code class="code docutils literal"><span class="pre">ios.c</span></code>
+in these modules is mostly self-contained and
+separated from the <code class="docutils literal"><span class="pre">libuv</span></code>
+I/O system. However, there is <a class="reference external"
+ href="https://github.com/JuliaLang/julia/blob/master/src/flisp/print.c#L654">one
+place</a>
+where femtolisp calls through to <code
+ class="xref c c-func docutils literal"><span class="pre">jl_printf()</span></code>
+with a legacy <code class="xref c c-type docutils literal"><span
+ class="pre">ios_t</span></code> stream.</p>
+<p>There is a hack in <code class="code docutils literal"><span
+ class="pre">ios.h</span></code> that makes the <code
+ class="xref c c-member docutils literal"><span class="pre">ios_t.bm</span></code>
+field line up with the <code class="code docutils literal"><span
+ class="pre">uv_stream_t.type</span></code> and ensures that
+the values used for <code class="code docutils literal"><span
+ class="pre">ios_t.bm</span></code> to not overlap with valid
+UV_HANDLE_TYPE values. This allows <code
+ class="xref c c-type docutils literal"><span class="pre">uv_stream_t</span></code>
+pointers
+to point to <code class="xref c c-type docutils literal"><span
+ class="pre">ios_t</span></code> streams.</p>
+<p>This is needed because <code class="xref c c-func docutils literal"><span
+ class="pre">jl_printf()</span></code> caller <code
+ class="xref c c-func docutils literal"><span class="pre">jl_static_show()</span></code>
+is passed an <code class="code docutils literal"><span class="pre">ios_t</span></code>
+stream by femtolisp’s <code class="xref c c-func docutils literal"><span
+ class="pre">fl_print()</span></code> function.
+Julia’s <code class="xref c c-func docutils literal"><span class="pre">jl_write()</span></code>
+function has special handling for this:</p>
+<div class="highlight-c">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="p">(</span><span class="n">stream</span><span
+ class="o">-&gt;</span><span class="n">type</span> <span class="o">&gt;</span> <span
+ class="n">UV_HANDLE_TYPE_MAX</span><span class="p">)</span> <span
+ class="p">{</span>
+    <span class="k">return</span> <span class="n">ios_write</span><span
+ class="p">((</span><span class="kt">ios_t</span><span class="o">*</span><span
+ class="p">)</span><span class="n">stream</span><span class="p">,</span> <span
+ class="n">str</span><span class="p">,</span> <span class="n">n</span><span
+ class="p">);</span>
+<span class="p">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="promote-op.html"
+ class="btn btn-neutral float-right"
+ title="Operator-sensitive promotion">Next </a> <a href="llvm.html"
+ class="btn btn-neutral" title="Working with LLVM"> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+<div class="wy-nav-content"> </div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

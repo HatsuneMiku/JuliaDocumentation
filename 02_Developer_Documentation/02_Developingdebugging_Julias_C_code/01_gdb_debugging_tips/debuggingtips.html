@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gdb debugging tips — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="up" title="Developing/debugging Julia’s C code"
+ href="C.html">
+  <link rel="next" title="Using Valgrind with Julia"
+ href="valgrind.html">
+  <link rel="prev" title="Reporting and analyzing crashes (segfaults)"
+ href="backtraces.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content"><br>
+<div role="main" class="document">
+<div class="section" id="gdb-debugging-tips"><span id="devdocs-gdb"></span>
+<h1>gdb debugging tips<a class="headerlink" href="#gdb-debugging-tips"
+ title="Permalink to this headline">¶</a></h1>
+<div class="section" id="displaying-julia-variables">
+<h2>Displaying Julia variables<a class="headerlink"
+ href="#displaying-julia-variables" title="Permalink to this headline">¶</a></h2>
+<p>Within <code class="docutils literal"><span class="pre">gdb</span></code>,
+any <code class="docutils literal"><span class="pre">jl_value_t*</span></code>
+object <code class="docutils literal"><span class="pre">obj</span></code>
+can be displayed using</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">call</span> <span class="n">jl_</span><span class="p">(</span><span
+ class="n">obj</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>The object will be displayed in the julia session, not in the gdb
+session.
+This is a useful way to discover the types and values of objects being
+manipulated by Julia’s C code.</p>
+<p>Similarly, if you’re debugging some of julia’s internals (e.g.,
+<code class="docutils literal"><span class="pre">inference.jl</span></code>),
+you can print <code class="docutils literal"><span class="pre">obj</span></code>
+using</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">ccall</span><span class="p">(:</span><span
+ class="n">jl_</span><span class="p">,</span> <span class="n">Void</span><span
+ class="p">,</span> <span class="p">(</span><span class="kt">Any</span><span
+ class="p">,),</span> <span class="n">obj</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>This is a good way to circumvent problems that arise from the order
+in which julia’s output streams are initialized.</p>
+<p>Julia’s flisp interpreter uses <code class="docutils literal"><span
+ class="pre">value_t*</span></code> objects; these can be displayed
+with <code class="docutils literal"><span class="pre">call</span> <span
+ class="pre">fl_print(ios_stdout,</span> <span class="pre">obj)</span></code>.</p>
+</div>
+<div class="section" id="useful-julia-variables-for-inspecting">
+<h2>Useful Julia variables for Inspecting<a class="headerlink"
+ href="#useful-julia-variables-for-inspecting"
+ title="Permalink to this headline">¶</a></h2>
+<p>While the addresses of many variables, like singletons, can be be
+useful to print for many failures,
+there are a number of additional variables (see julia.h for a complete
+list) that are even more useful.</p>
+<ul class="simple">
+  <li>(when in <code class="docutils literal"><span class="pre">jl_apply_generic</span></code>)
+    <code class="docutils literal"><span class="pre">f-&gt;linfo</span></code>
+and <code class="docutils literal"><span class="pre">jl_uncompress_ast(f-&gt;linfo,</span>
+    <span class="pre">f-&gt;linfo-&gt;ast)</span></code> :: for
+figuring out a bit about the call-stack</li>
+  <li><code class="docutils literal"><span class="pre">jl_lineno</span></code>
+and <code class="docutils literal"><span class="pre">jl_filename</span></code>
+:: for figuring out what line in a test to go start debugging from (or
+figure out how far into a file has been parsed)</li>
+  <li><code class="docutils literal"><span class="pre">$1</span></code>
+:: not really a variable, but still a useful shorthand for referring to
+the result of the last gdb command (such as <code
+ class="docutils literal"><span class="pre">print</span></code>)</li>
+  <li><code class="docutils literal"><span class="pre">jl_options</span></code>
+:: sometimes useful, since it lists all of the command line options
+that were successfully parsed</li>
+  <li><code class="docutils literal"><span class="pre">jl_uv_stderr</span></code>
+:: because who doesn’t like to be able to interact with stdio</li>
+</ul>
+</div>
+<div class="section"
+ id="useful-julia-functions-for-inspecting-those-variables">
+<h2>Useful Julia functions for Inspecting those variables<a
+ class="headerlink"
+ href="#useful-julia-functions-for-inspecting-those-variables"
+ title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+  <li><code class="docutils literal"><span class="pre">gdblookup($rip)</span></code>
+:: For looking up the current function and line. (use <code
+ class="docutils literal"><span class="pre">$eip</span></code> on i686
+platforms)</li>
+  <li><code class="docutils literal"><span class="pre">jlbacktrace()</span></code>
+:: For dumping the current julia backtrace stack to stderr. Only usable
+after <code class="docutils literal"><span class="pre">record_backtrace()</span></code>
+has been called.</li>
+  <li><code class="docutils literal"><span class="pre">jl_dump_llvm_value(Value*)</span></code>
+:: For invoking <code class="docutils literal"><span class="pre">Value-&gt;dump()</span></code>
+in gdb, where it doesn’t work natively. For example, <code
+ class="docutils literal"><span class="pre">f-&gt;linfo-&gt;functionObject</span></code>,
+    <code class="docutils literal"><span class="pre">f-&gt;linfo-&gt;specFunctionObject</span></code>,
+and <code class="docutils literal"><span class="pre">to_function(f-&gt;linfo)</span></code>.</li>
+  <li><code class="docutils literal"><span class="pre">Type-&gt;dump()</span></code>
+:: only works in lldb. Note: add something like <code
+ class="docutils literal"><span class="pre">;1</span></code> to prevent
+lldb from printing its prompt over the output</li>
+  <li><code class="docutils literal"><span class="pre">jl_eval_string("expr")</span></code>
+:: for invoking side-effects to modify the current state or to lookup
+symbols</li>
+  <li><code class="docutils literal"><span class="pre">jl_typeof(jl_value_t*)</span></code>
+:: for extracting the type tag of a julia value (in gdb, call <code
+ class="docutils literal"><span class="pre">macro</span> <span
+ class="pre">define</span> <span class="pre">jl_typeof</span> <span
+ class="pre">jl_typeof</span></code> first, or pick something short
+like <code class="docutils literal"><span class="pre">ty</span></code>
+for the first arg to define a shorthand)</li>
+</ul>
+</div>
+<div class="section" id="inserting-breakpoints-for-inspection-from-gdb">
+<h2>Inserting breakpoints for inspection from gdb<a class="headerlink"
+ href="#inserting-breakpoints-for-inspection-from-gdb"
+ title="Permalink to this headline">¶</a></h2>
+<p>In your <code class="docutils literal"><span class="pre">gdb</span></code>
+session, set a breakpoint in <code class="docutils literal"><span
+ class="pre">jl_breakpoint</span></code> like so:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="k">break</span> <span class="n">jl_breakpoint</span>
+</pre>
+</div>
+</div>
+<p>Then within your Julia code, insert a call to <code
+ class="docutils literal"><span class="pre">jl_breakpoint</span></code>
+by adding</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">ccall</span><span class="p">(:</span><span
+ class="n">jl_breakpoint</span><span class="p">,</span> <span class="n">Void</span><span
+ class="p">,</span> <span class="p">(</span><span class="kt">Any</span><span
+ class="p">,),</span> <span class="n">obj</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">obj</span></code>
+can be any variable or tuple you want to be accessible in the
+breakpoint.</p>
+<p>It’s particularly helpful to back up to the <code
+ class="docutils literal"><span class="pre">jl_apply</span></code>
+frame, from which you can display the arguments to a function using,
+e.g.,</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">call</span> <span class="n">jl_</span><span class="p">(</span><span
+ class="n">args</span><span class="p">[</span><span class="mi">0</span><span
+ class="p">])</span>
+</pre>
+</div>
+</div>
+<p>Another useful frame is <code class="docutils literal"><span
+ class="pre">to_function(jl_lambda_info_t</span> <span class="pre">*li,</span>
+<span class="pre">bool</span> <span class="pre">cstyle)</span></code>.
+The <code class="docutils literal"><span class="pre">jl_lambda_info_t*</span></code>
+argument is a struct with a reference to the final AST sent into the
+compiler. However, the AST at this point will usually be compressed; to
+view the AST, call <code class="docutils literal"><span class="pre">jl_uncompress_ast</span></code>
+and then pass the result to <code class="docutils literal"><span
+ class="pre">jl_</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="c">#2  0x00007ffff7928bf7 in to_function (li=0x2812060, cstyle=false) at codegen.cpp:584</span>
+<span class="mi">584</span>          <span class="n">abort</span><span
+ class="p">();</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">jl_</span><span class="p">(</span><span
+ class="n">jl_uncompress_ast</span><span class="p">(</span><span
+ class="n">li</span><span class="p">,</span> <span class="n">li</span><span
+ class="o">.</span><span class="n">ast</span><span class="p">))</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="inserting-breakpoints-upon-certain-conditions">
+<h2>Inserting breakpoints upon certain conditions<a class="headerlink"
+ href="#inserting-breakpoints-upon-certain-conditions"
+ title="Permalink to this headline">¶</a></h2>
+<div class="section" id="loading-a-particular-file">
+<h3>Loading a particular file<a class="headerlink"
+ href="#loading-a-particular-file" title="Permalink to this headline">¶</a></h3>
+<p>Let’s say the file is <code class="docutils literal"><span
+ class="pre">sysimg.jl</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="k">break</span> <span class="n">jl_load</span> <span class="k">if</span> <span
+ class="n">strcmp</span><span class="p">(</span><span class="n">fname</span><span
+ class="p">,</span> <span class="s">"sysimg.jl"</span><span class="p">)</span><span
+ class="o">==</span><span class="mi">0</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="calling-a-particular-method">
+<h3>Calling a particular method<a class="headerlink"
+ href="#calling-a-particular-method" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="k">break</span> <span class="n">jl_apply_generic</span> <span
+ class="k">if</span> <span class="n">strcmp</span><span class="p">(</span><span
+ class="n">F</span><span class="o">-&gt;</span><span class="n">name</span><span
+ class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span
+ class="s">"method_to_break"</span><span class="p">)</span><span
+ class="o">==</span><span class="mi">0</span>
+</pre>
+</div>
+</div>
+<p>Since this function is used for every call, you will make everything
+1000x slower if you do this.</p>
+</div>
+</div>
+<div class="section"
+ id="debugging-during-julia-s-build-process-bootstrap">
+<h2>Debugging during julia’s build process (bootstrap)<a
+ class="headerlink"
+ href="#debugging-during-julia-s-build-process-bootstrap"
+ title="Permalink to this headline">¶</a></h2>
+<p>Errors that occur during <code class="docutils literal"><span
+ class="pre">make</span></code> need special handling. Julia is built
+in two stages, constructing
+<code class="docutils literal"><span class="pre">sys0</span></code> and
+<code class="docutils literal"><span class="pre">sys.ji</span></code>.
+To see what commands are running at the time of failure, use <code
+ class="docutils literal"><span class="pre">make</span> <span
+ class="pre">VERBOSE=1</span></code>.</p>
+<p>At the time of this writing, you can debug build errors during the <code
+ class="docutils literal"><span class="pre">sys0</span></code> phase
+from the <code class="docutils literal"><span class="pre">base</span></code>
+directory using:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">/</span><span class="n">base</span><span
+ class="o">$</span> <span class="n">gdb</span> <span class="o">--</span><span
+ class="n">args</span> <span class="o">../</span><span class="n">usr</span><span
+ class="o">/</span><span class="n">bin</span><span class="o">/</span><span
+ class="n">julia</span><span class="o">-</span><span class="n">debug</span> <span
+ class="o">-</span><span class="n">C</span> <span class="n">native</span> <span
+ class="o">--</span><span class="n">build</span> <span class="o">../</span><span
+ class="n">usr</span><span class="o">/</span><span class="n">lib</span><span
+ class="o">/</span><span class="n">julia</span><span class="o">/</span><span
+ class="n">sys0</span> <span class="n">sysimg</span><span class="o">.</span><span
+ class="n">jl</span>
+</pre>
+</div>
+</div>
+<p>You might need to delete all the files in <code
+ class="docutils literal"><span class="pre">usr/lib/julia/</span></code>
+to get this to work.</p>
+<p>You can debug the <code class="docutils literal"><span class="pre">sys.ji</span></code>
+phase using:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">/</span><span class="n">base</span><span
+ class="o">$</span> <span class="n">gdb</span> <span class="o">--</span><span
+ class="n">args</span> <span class="o">../</span><span class="n">usr</span><span
+ class="o">/</span><span class="n">bin</span><span class="o">/</span><span
+ class="n">julia</span><span class="o">-</span><span class="n">debug</span> <span
+ class="o">-</span><span class="n">C</span> <span class="n">native</span> <span
+ class="o">--</span><span class="n">build</span> <span class="o">../</span><span
+ class="n">usr</span><span class="o">/</span><span class="n">lib</span><span
+ class="o">/</span><span class="n">julia</span><span class="o">/</span><span
+ class="n">sys</span> <span class="o">-</span><span class="n">J</span> <span
+ class="o">../</span><span class="n">usr</span><span class="o">/</span><span
+ class="n">lib</span><span class="o">/</span><span class="n">julia</span><span
+ class="o">/</span><span class="n">sys0</span><span class="o">.</span><span
+ class="n">ji</span> <span class="n">sysimg</span><span class="o">.</span><span
+ class="n">jl</span>
+</pre>
+</div>
+</div>
+<p>By default, any errors will cause Julia to exit, even under gdb. To
+catch an error “in the act”, set a breakpoint
+in <code class="docutils literal"><span class="pre">jl_error</span></code>
+(there are several other useful spots, for specific kinds of failures,
+including: <code class="docutils literal"><span class="pre">jl_too_few_args</span></code>,
+<code class="docutils literal"><span class="pre">jl_too_many_args</span></code>,
+and <code class="docutils literal"><span class="pre">jl_throw</span></code>).</p>
+<p>Once an error is caught, a useful technique is to walk up the stack
+and examine the function by inspecting
+the related call to <code class="docutils literal"><span class="pre">jl_apply</span></code>.
+To take a real-world example:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">Breakpoint</span> <span class="mi">1</span><span
+ class="p">,</span> <span class="n">jl_throw</span> <span class="p">(</span><span
+ class="n">e</span><span class="o">=</span><span class="mh">0x7ffdf42de400</span><span
+ class="p">)</span> <span class="n">at</span> <span class="n">task</span><span
+ class="o">.</span><span class="n">c</span><span class="p">:</span><span
+ class="mi">802</span>
+<span class="mi">802</span> <span class="p">{</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">jl_</span><span class="p">(</span><span
+ class="n">e</span><span class="p">)</span>
+<span class="n">ErrorException</span><span class="p">(</span><span
+ class="s">"auto_unbox: unable to determine argument type"</span><span
+ class="p">)</span>
+<span class="o">$</span><span class="mi">2</span> <span class="o">=</span> <span
+ class="n">void</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">bt</span> <span class="mi">10</span>
+<span class="c">#0  jl_throw (e=0x7ffdf42de400) at task.c:802</span>
+<span class="c">#1  0x00007ffff65412fe in jl_error (str=0x7ffde56be000 &lt;_j_str267&gt; "auto_unbox:</span>
+   <span
+ class="n">unable</span> <span class="n">to</span> <span class="n">determine</span> <span
+ class="n">argument</span> <span class="n">type</span><span class="s">")</span>
+<span class="s">   at builtins.c:39</span>
+<span class="s">#2  0x00007ffde56bd01a in julia_convert_16886 ()</span>
+<span class="s">#3  0x00007ffff6541154 in jl_apply (f=0x7ffdf367f630, args=0x7fffffffc2b0, nargs=2) at julia.h:1281</span>
+<span class="s">...</span>
+</pre>
+</div>
+</div>
+<p>The most recent <code class="docutils literal"><span class="pre">jl_apply</span></code>
+is at frame #3, so we can go back there and look at the AST for the
+function
+<code class="docutils literal"><span class="pre">julia_convert_16886</span></code>.
+This is the uniqued name for some method of <code
+ class="docutils literal"><span class="pre">convert</span></code>. <code
+ class="docutils literal"><span class="pre">f</span></code> in this
+frame is a
+<code class="docutils literal"><span class="pre">jl_function_t*</span></code>,
+so we can look at the type signature, if any, from the <code
+ class="docutils literal"><span class="pre">specTypes</span></code>
+field:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">f</span> <span class="mi">3</span>
+<span class="c">#3  0x00007ffff6541154 in jl_apply (f=0x7ffdf367f630, args=0x7fffffffc2b0, nargs=2) at julia.h:1281</span>
+<span class="mi">1281</span>            <span class="k">return</span> <span
+ class="n">f</span><span class="o">-&gt;</span><span class="n">fptr</span><span
+ class="p">((</span><span class="n">jl_value_t</span><span class="o">*</span><span
+ class="p">)</span><span class="n">f</span><span class="p">,</span> <span
+ class="n">args</span><span class="p">,</span> <span class="n">nargs</span><span
+ class="p">);</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">f</span><span class="o">-&gt;</span><span
+ class="n">linfo</span><span class="o">-&gt;</span><span class="n">specTypes</span>
+<span class="o">$</span><span class="mi">4</span> <span class="o">=</span> <span
+ class="p">(</span><span class="n">jl_tupletype_t</span> <span class="o">*</span><span
+ class="p">)</span> <span class="mh">0x7ffdf39b1030</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">jl_</span><span class="p">(</span> <span
+ class="n">f</span><span class="o">-&gt;</span><span class="n">linfo</span><span
+ class="o">-&gt;</span><span class="n">specTypes</span> <span class="p">)</span>
+<span class="n">Tuple</span><span class="p">{</span><span class="n">Type</span><span
+ class="p">{</span><span class="kt">Float32</span><span class="p">},</span> <span
+ class="kt">Float64</span><span class="p">}</span>           <span
+ class="c"># &lt;-- type signature for julia_convert_16886</span>
+</pre>
+</div>
+</div>
+<p>Then, we can look at the AST for this function:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">jl_</span><span class="p">(</span> <span
+ class="n">jl_uncompress_ast</span><span class="p">(</span><span
+ class="n">f</span><span class="o">-&gt;</span><span class="n">linfo</span><span
+ class="p">,</span> <span class="n">f</span><span class="o">-&gt;</span><span
+ class="n">linfo</span><span class="o">-&gt;</span><span class="n">ast</span><span
+ class="p">)</span> <span class="p">)</span>
+<span class="n">Expr</span><span class="p">(:</span><span class="n">lambda</span><span
+ class="p">,</span> <span class="n">Array</span><span class="p">{</span><span
+ class="kt">Any</span><span class="p">,</span> <span class="mi">1</span><span
+ class="p">}[:</span><span class="c">#s29, :x], Array{Any, 1}[Array{Any, 1}[], Array{Any, 1}[Array{Any, 1}[:#s29, :Any, 0], Array{Any, 1}[:x, :Any, 0]], Array{Any, 1}[], 0], Expr(:body,</span>
+<span class="n">Expr</span><span class="p">(:</span><span class="n">line</span><span
+ class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span
+ class="p">:</span><span class="n">float</span><span class="o">.</span><span
+ class="n">jl</span><span class="p">)::</span><span class="kt">Any</span><span
+ class="p">,</span>
+<span class="n">Expr</span><span class="p">(:</span><span class="k">return</span><span
+ class="p">,</span> <span class="n">Expr</span><span class="p">(:</span><span
+ class="n">call</span><span class="p">,</span> <span class="p">:</span><span
+ class="n">box</span><span class="p">,</span> <span class="p">:</span><span
+ class="kt">Float32</span><span class="p">,</span> <span class="n">Expr</span><span
+ class="p">(:</span><span class="n">call</span><span class="p">,</span> <span
+ class="p">:</span><span class="n">fptrunc</span><span class="p">,</span> <span
+ class="p">:</span><span class="kt">Float32</span><span class="p">,</span> <span
+ class="p">:</span><span class="n">x</span><span class="p">)::</span><span
+ class="kt">Any</span><span class="p">)::</span><span class="kt">Any</span><span
+ class="p">)::</span><span class="kt">Any</span><span class="p">)::</span><span
+ class="kt">Any</span><span class="p">)::</span><span class="kt">Any</span>
+</pre>
+</div>
+</div>
+<p>Finally, and perhaps most usefully, we can force the function to be
+recompiled in order to step through the
+codegen process. To do this, clear the cached <code
+ class="docutils literal"><span class="pre">functionObject</span></code>
+from the <code class="docutils literal"><span class="pre">jl_lamdbda_info_t*</span></code>:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">f</span><span class="o">-&gt;</span><span
+ class="n">linfo</span><span class="o">-&gt;</span><span class="n">functionObject</span>
+<span class="o">$</span><span class="mi">8</span> <span class="o">=</span> <span
+ class="p">(</span><span class="n">void</span> <span class="o">*</span><span
+ class="p">)</span> <span class="mh">0x1289d070</span>
+<span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">set</span> <span class="n">f</span><span class="o">-&gt;</span><span
+ class="n">linfo</span><span class="o">-&gt;</span><span class="n">functionObject</span> <span
+ class="o">=</span> <span class="n">NULL</span>
+</pre>
+</div>
+</div>
+<p>Then, set a breakpoint somewhere useful (e.g. <code
+ class="docutils literal"><span class="pre">emit_function</span></code>,
+<code class="docutils literal"><span class="pre">emit_expr</span></code>,
+<code class="docutils literal"><span class="pre">emit_call</span></code>,
+etc.), and run
+codegen:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="p">(</span><span class="n">gdb</span><span class="p">)</span> <span
+ class="n">p</span> <span class="n">jl_compile</span><span class="p">(</span><span
+ class="n">f</span><span class="p">)</span>
+<span class="o">...</span> <span class="c"># your breakpoint here</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="mozilla-s-record-and-replay-framework-rr">
+<h2>Mozilla’s Record and Replay Framework (rr)<a class="headerlink"
+ href="#mozilla-s-record-and-replay-framework-rr"
+ title="Permalink to this headline">¶</a></h2>
+<p>Julia now works out of the box with <a class="reference external"
+ href="http://rr-project.org/">rr,</a> the lightweight recording and
+deterministic debugging framework from Mozilla. This allows you to
+replay the trace of an execution
+deterministically. The replayed execution’s address spaces, register
+contents, syscall data etc
+are exactly the same in every run.</p>
+<p>A recent version of <code class="docutils literal"><span class="pre">rr</span></code>
+(3.1.0 or higher) is required.</p>
+</div>
+</div>
+</div>
+<footer> </footer>
+<div class="rst-footer-buttons" role="navigation"
+ aria-label="footer navigation"> <a href="valgrind.html"
+ class="btn btn-neutral float-right" title="Using Valgrind with Julia">Next
+<span class="fa fa-arrow-circle-right"></span></a> <a
+ href="backtraces.html" class="btn btn-neutral"
+ title="Reporting and analyzing crashes (segfaults)"><span
+ class="fa fa-arrow-circle-left"></span> Previous</a> </div>
+<hr>
+<div role="contentinfo">
+<p> </p>
+</div>
+<a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a>
+provided by <a href="https://readthedocs.org">Read the Docs</a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>

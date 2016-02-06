@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>定数</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">定数<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nothing </td>
+      <td style="vertical-align: top;">The singleton instance of type
+Void, used by convention when there is no value to return (as in a C
+void function). Can be converted to an empty Nullable value.<br>
+      </td>
+      <td style="vertical-align: top;">nothing </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">OS_NAME </td>
+      <td style="vertical-align: top;">A symbol representing the name
+of the operating system. Possible values are :Linux, :Darwin (OS X), or
+:Windows.<br>
+      </td>
+      <td style="vertical-align: top;">OS_NAME </td>
+      <td style="vertical-align: top;">:Windows<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ARGS </td>
+      <td style="vertical-align: top;">An array of the command line
+arguments passed to Julia, as strings.<br>
+      </td>
+      <td style="vertical-align: top;">ARGS </td>
+      <td style="vertical-align: top;">0-element Array{UTF8String,1}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">C_NULL </td>
+      <td style="vertical-align: top;">The C null pointer constant,
+sometimes used when calling external code.<br>
+      </td>
+      <td style="vertical-align: top;">C_NULL </td>
+      <td style="vertical-align: top;">Ptr{Void} @0x0000000000000000<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">CPU_CORES </td>
+      <td style="vertical-align: top;">The number of CPU cores in the
+system.<br>
+      </td>
+      <td style="vertical-align: top;">CPU_CORES<br>
+      </td>
+      <td style="vertical-align: top;">4<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">WORD_SIZE </td>
+      <td style="vertical-align: top;">Standard word size on the
+current machine, in bits.<br>
+      </td>
+      <td style="vertical-align: top;">WORD_SIZE </td>
+      <td style="vertical-align: top;">64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">VERSION</td>
+      <td style="vertical-align: top;">An object describing which
+version of Julia is in use.<br>
+      </td>
+      <td style="vertical-align: top;">VERSION</td>
+      <td style="vertical-align: top;">v"0.4.3"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">LOAD_PATH</td>
+      <td style="vertical-align: top;">An array of paths (as strings)
+where the require function looks for code.<br>
+      </td>
+      <td style="vertical-align: top;">LOAD_PATH</td>
+      <td style="vertical-align: top;">2-element Array{ByteString,1}:<br>
+&nbsp;"D:\\Julia-0.4.3\\local\\share\\julia\\site\\v0.4"<br>
+&nbsp;"D:\\Julia-0.4.3\\share\\julia\\site\\v0.4"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">JULIA_HOME</td>
+      <td style="vertical-align: top;">A string containing the full
+path to the directory containing the julia executable.<br>
+      </td>
+      <td style="vertical-align: top;">JULIA_HOME</td>
+      <td style="vertical-align: top;">"D:\\Julia-0.4.3\\bin"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ANY</td>
+      <td style="vertical-align: top;">Equivalent to Any for dispatch
+purposes, but signals the compiler to skip code generation
+specialization for that field<br>
+      </td>
+      <td style="vertical-align: top;">ANY<br>
+      </td>
+      <td style="vertical-align: top;">ANY<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<p>See also:</p>
+<p><a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/08_Constants/io-network.html#Base.STDIN"
+ title="Base.STDIN"><code class="xref jl jl-data docutils literal"><span
+ class="pre">STDIN</span></code></a>
+<a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/08_Constants/io-network.html#Base.STDOUT"
+ title="Base.STDOUT"><code class="xref jl jl-data docutils literal"><span
+ class="pre">STDOUT</span></code></a>
+<a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/08_Constants/io-network.html#Base.STDERR"
+ title="Base.STDERR"><code class="xref jl jl-data docutils literal"><span
+ class="pre">STDERR</span></code></a>
+<a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/08_Constants/base.html#Base.ENV"
+ title="Base.ENV"><code class="xref jl jl-data docutils literal"><span
+ class="pre">ENV</span></code></a>
+<a class="reference internal"
+ href="file:///C:/Users/Saito/Desktop/Julia/%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB/Julia%20Documentation/Standard%20Library/08_Constants/io-network.html#Base.ENDIAN_BOM"
+ title="Base.ENDIAN_BOM"><code class="xref jl jl-data docutils literal"><span
+ class="pre">ENDIAN_BOM</span></code></a>
+<code class="xref jl jl-data docutils literal"><span class="pre">MS_ASYNC</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">MS_INVALIDATE</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">MS_SYNC</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">DL_LOAD_PATH</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_DEEPBIND</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_LOCAL</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_NOLOAD</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_LAZY</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_NOW</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_GLOBAL</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_NODELETE</span></code>
+<code class="xref jl jl-data docutils literal"><span class="pre">RTLD_FIRST</span></code></p>
+<br>
+<br>
+</body>
+</html>

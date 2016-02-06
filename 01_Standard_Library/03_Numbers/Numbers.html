@@ -1,0 +1,1150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>数</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Standard Numeric Types</span><br>
+Bool Int8 UInt8 Int16 UInt16 Int32 UInt32 Int64 UInt64 Int128 UInt128
+Float16 Float32 Float64 Complex64 Complex128<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bin(n[, pad])<br>
+      </td>
+      <td style="vertical-align: top;">nを2進数の文字列にする．padは桁数<br>
+      </td>
+      <td style="vertical-align: top;">bin(10,16) </td>
+      <td style="vertical-align: top;">"0000000000001010"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hex(n[, pad])<br>
+      </td>
+      <td style="vertical-align: top;">ｎを16進数の文字列にする．padは桁数<br>
+      </td>
+      <td style="vertical-align: top;">hex(255,4) </td>
+      <td style="vertical-align: top;">"00ff"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dec(n[, pad])<br>
+      </td>
+      <td style="vertical-align: top;">ｎを10進数の文字列にする．padは桁数<br>
+      </td>
+      <td style="vertical-align: top;">dec(123,5) </td>
+      <td style="vertical-align: top;">"00123"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">oct(n[, pad])<br>
+      </td>
+      <td style="vertical-align: top;">ｎを8進数の文字列にする．padは桁数 </td>
+      <td style="vertical-align: top;">oct(120,6) </td>
+      <td style="vertical-align: top;">"000170"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">base(base, n[, pad])</span></code> </td>
+      <td style="vertical-align: top;">n進数でnをp桁の文字列で表す．<br>
+      </td>
+      <td style="vertical-align: top;">base(8, 255,8) </td>
+      <td style="vertical-align: top;">"00000377" </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">digits(n[, base][, pad])<br>
+      </td>
+      <td style="vertical-align: top;">nをbase進数でpad桁を下一桁から配列に収まる．<br>
+      </td>
+      <td style="vertical-align: top;">digits(123,8,5) </td>
+      <td style="vertical-align: top;">5-element Array{Int64,1}:<br>
+&nbsp;3<br>
+&nbsp;7<br>
+&nbsp;1<br>
+&nbsp;0<br>
+&nbsp;0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">digits!(array, n[, base])<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">arrayにnをbase進数した下一桁から配列arraに収める<br>
+      </td>
+      <td style="vertical-align: top;">aaa=[1,2,3]<br>
+digits!(aaa, 800,10)<br>
+aaa</td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+3-element Array{Int64,1}:<br>
+&nbsp;0<br>
+&nbsp;0<br>
+&nbsp;8<br>
+3-element Array{Int64,1}:<br>
+&nbsp;0<br>
+&nbsp;0<br>
+&nbsp;8<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bits(n)<br>
+      </td>
+      <td style="vertical-align: top;">nを64bitの2進数の文字列にする．<br>
+      </td>
+      <td style="vertical-align: top;">bits(65)</td>
+      <td style="vertical-align: top;">"00000000000000000000000000000000<br>
+00000000000000000000000001000001"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parse(type, str[, base])<br>
+      </td>
+      <td style="vertical-align: top;">Parse a string as a number. If
+the type is an integer type, then a base can be specified (the default
+is 10). If the type is a floating point type, the string is parsed as a
+decimal floating point number. If the string does not contain a valid
+number, an error is raised.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tryparse(type, str[, base])<br>
+      </td>
+      <td style="vertical-align: top;">Like parse, but returns a
+Nullable of the requested type. The result will be null if the string
+does not contain a valid number.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">big(x)<br>
+      </td>
+      <td style="vertical-align: top;">Convert a number to a maximum
+precision representation (typically BigInt or BigFloat). See BigFloat
+for information about some pitfalls with floating-point numbers.<br>
+      </td>
+      <td style="vertical-align: top;">big(8000)</td>
+      <td style="vertical-align: top;">8000<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">signed(x)<br>
+      </td>
+      <td style="vertical-align: top;">Convert a number to a signed
+integer. If the argument is unsigned, it is reinterpreted as signed
+without checking for overflow.<br>
+      </td>
+      <td style="vertical-align: top;">signed(0b000111)</td>
+      <td style="vertical-align: top;">7<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">unsigned(x) <br>
+→ Unsigned<br>
+      </td>
+      <td style="vertical-align: top;">Convert a number to an unsigned
+integer. If the argument is signed, it is reinterpreted as unsigned
+without checking for negative values.<br>
+      </td>
+      <td style="vertical-align: top;">unsigned(-45)</td>
+      <td style="vertical-align: top;">0xffffffffffffffd3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">float(x)<br>
+      </td>
+      <td style="vertical-align: top;">xをフラット型にする．<br>
+      </td>
+      <td style="vertical-align: top;">float(5)</td>
+      <td style="vertical-align: top;">5.0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">significand(x)<br>
+      </td>
+      <td style="vertical-align: top;">Extract the significand(s)
+(a.k.a. mantissa), in binary representation, of a floating-point number
+or array. If x is a non-zero finite number, than the result will be a
+number of the same type on the interval [1,2)[1,2). Otherwise x is
+returned.<br>
+      </td>
+      <td style="vertical-align: top;">significand(15.2)/15.2<br>
+significand(15.2)<br>
+      </td>
+      <td style="vertical-align: top;">0.125<br>
+1.9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">exponent(x) <br>
+→ Int<br>
+      </td>
+      <td style="vertical-align: top;">Get the exponent of a normalized
+floating-point number.<br>
+      </td>
+      <td style="vertical-align: top;">exponent(5.2)</td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">complex(r[, i])<br>
+      </td>
+      <td style="vertical-align: top;">rに実部，iに虚部を入れて複素数a+biを作成する．<br>
+      </td>
+      <td style="vertical-align: top;">complex(5,9)</td>
+      <td style="vertical-align: top;">5 + 9im</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bswap(n)<br>
+      </td>
+      <td style="vertical-align: top;">2進数を16進数の数値に変換する</td>
+      <td style="vertical-align: top;">bswap(0b10011)</td>
+      <td style="vertical-align: top;">0x13<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">num2hex(f)<br>
+      </td>
+      <td style="vertical-align: top;">数値を16進数16桁の文字列にする．<br>
+      </td>
+      <td style="vertical-align: top;">num2hex(16)</td>
+      <td style="vertical-align: top;">"0000000000000010"<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hex2num(str)<br>
+      </td>
+      <td style="vertical-align: top;">Convert a hexadecimal string to
+the floating point number it represents<br>
+      </td>
+      <td style="vertical-align: top;">hex2num("0ff")</td>
+      <td style="vertical-align: top;">3.57f-43<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hex2bytes(s::ASCIIString)<br>
+      </td>
+      <td style="vertical-align: top;">Convert an arbitrarily long
+hexadecimal string to its binary representation. Returns an
+Array{UInt8,1}, i.e. an array of bytes.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bytes2hex(bin_arr::Array{UInt8,
+1})<br>
+      </td>
+      <td style="vertical-align: top;">Convert an array of bytes to its
+hexadecimal representation. All characters are in lower-case. Returns
+an ASCIIString.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">General Number Functions and
+Constants：一般的な記号定数と定数</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">one(x)<br>
+      </td>
+      <td style="vertical-align: top;">xにどんな値を入れても1を返す<br>
+      </td>
+      <td style="vertical-align: top;">one(5)<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">zero(x)</span></code></td>
+      <td style="vertical-align: top;">配列の要素すべてに0代入する<br>
+      </td>
+      <td style="vertical-align: top;">A=[1,2,3]<br>
+zero(A)</td>
+      <td style="vertical-align: top;">3-element Array{Int64,1}:<br>
+&nbsp;1<br>
+&nbsp;2<br>
+&nbsp;3<br>
+3-element Array{Int64,1}:<br>
+&nbsp;0<br>
+&nbsp;0<br>
+&nbsp;0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pi<br>
+      <code class="descname">π</code><br>
+      </td>
+      <td style="vertical-align: top;">円周率のπ<br>
+      </td>
+      <td style="vertical-align: top;"> pi</td>
+      <td style="vertical-align: top;">ππ = 3.1415926535897...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">im<br>
+      </td>
+      <td style="vertical-align: top;">複素数のiのこと<br>
+      </td>
+      <td style="vertical-align: top;">5im<br>
+      </td>
+      <td style="vertical-align: top;">0 + 5im</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">e<br>
+eu<br>
+      </td>
+      <td style="vertical-align: top;">ネピア数<br>
+      </td>
+      <td style="vertical-align: top;">eu<br>
+      </td>
+      <td style="vertical-align: top;">e = 2.7182818284590...</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">catalan<br>
+      </td>
+      <td style="vertical-align: top;">Catalan’s constant<br>
+      </td>
+      <td style="vertical-align: top;">catalan</td>
+      <td style="vertical-align: top;">catalan = 0.9159655941772...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">γ<br>
+eulergamma<br>
+      </td>
+      <td style="vertical-align: top;">Euler’s constant<br>
+      </td>
+      <td style="vertical-align: top;">eulergamma</td>
+      <td style="vertical-align: top;">γγ = 0.5772156649015...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">φ<br>
+golden<br>
+      </td>
+      <td style="vertical-align: top;">The golden ratio<br>
+      </td>
+      <td style="vertical-align: top;">golden</td>
+      <td style="vertical-align: top;">φφ = 1.6180339887498...<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Inf<br>
+      </td>
+      <td style="vertical-align: top;">無限の記号<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname">Inf</code></td>
+      <td style="vertical-align: top;">Inf<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Inf32<br>
+      </td>
+      <td style="vertical-align: top;">Positive infinity of type Float32<br>
+      </td>
+      <td style="vertical-align: top;">Inf32<br>
+      </td>
+      <td style="vertical-align: top;">Inf32<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Inf16<br>
+      </td>
+      <td style="vertical-align: top;">Positive infinity of type Float16<br>
+      </td>
+      <td style="vertical-align: top;">Inf16<br>
+      </td>
+      <td style="vertical-align: top;">Inf16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">NaN<br>
+      </td>
+      <td style="vertical-align: top;">数値をまだ代入していないA not-a-number value
+of type Float64<br>
+      </td>
+      <td style="vertical-align: top;">NaN<br>
+      </td>
+      <td style="vertical-align: top;">NaN<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">NaN32<br>
+      </td>
+      <td style="vertical-align: top;">A not-a-number value of type
+Float32<br>
+      </td>
+      <td style="vertical-align: top;">NaN32<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname">NaN32</code></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">NaN16<br>
+      </td>
+      <td style="vertical-align: top;">A not-a-number value of type
+Float16<br>
+      </td>
+      <td style="vertical-align: top;">NaN16<br>
+      </td>
+      <td style="vertical-align: top;">NaN16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issubnormal(f) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">ｆが浮動小数型の値ならtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">issubnormal(1.2)<br>
+issubnormal(3.57f-43)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isfinite(f) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">無限ではないかtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">isfinite(Inf)<br>
+isfinite(5)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isinf(f) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">無限か，true or false<br>
+      </td>
+      <td style="vertical-align: top;">isinf(Inf)<br>
+isinf(0.3)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isnan(f) → Bool<br>
+      </td>
+      <td style="vertical-align: top;">値がさささあたあた値が定まっていないtrue or false</td>
+      <td style="vertical-align: top;">isnan(5)<br>
+isnan(NaN)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">inf(f)<br>
+      </td>
+      <td style="vertical-align: top;">fに小数型の値を入れるとInfにする<br>
+      </td>
+      <td style="vertical-align: top;">inf(0.35) </td>
+      <td style="vertical-align: top;">nf<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nan(f)<br>
+      </td>
+      <td style="vertical-align: top;">ｆに小数型の値を入れるとNaNにする<br>
+      </td>
+      <td style="vertical-align: top;">nan(5.5)<br>
+      </td>
+      <td style="vertical-align: top;">NaN</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nextfloat(f)<br>
+      </td>
+      <td style="vertical-align: top;">fに小数型の値を入れると，16桁で四捨五入で1つ後の小数型にする<br>
+      </td>
+      <td style="vertical-align: top;">nextfloat(5.1)<br>
+      </td>
+      <td style="vertical-align: top;">5.1000000000000005</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">prevfloat(f) <br>
+→ AbstractFloa<br>
+      </td>
+      <td style="vertical-align: top;">ｆに小数型の値を入れると，16桁で1つ前の小数型にする<br>
+      </td>
+      <td style="vertical-align: top;">prevfloat(1.235)</td>
+      <td style="vertical-align: top;">1.2349999999999999</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isinteger(x) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">整数型かtrue or false<br>
+      </td>
+      <td style="vertical-align: top;">isinteger(1.23)<br>
+isinteger(1.0)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isreal(x) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">実数型か複素数かtrue or false<br>
+      </td>
+      <td style="vertical-align: top;"> isreal(5)<br>
+isreal(1+2im)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Float32(x[, mode::RoundingMode])<br>
+      </td>
+      <td style="vertical-align: top;">Create a Float32 from x. If x is
+not exactly
+representable then mode determines how x is rounded.<br>
+See get_rounding for available rounding modes.<br>
+      </td>
+      <td style="vertical-align: top;">Float32(1/3, RoundDown)<br>
+Float32(1/3, RoundUp)<br>
+      </td>
+      <td style="vertical-align: top;">0.3333333f0<br>
+      <br>
+0.33333334f0<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Float64(x[, mode::RoundingMode])<br>
+      </td>
+      <td style="vertical-align: top;">Create a Float64 from x. If x is
+not exactly
+representable then mode determines how x is rounded.<br>
+&nbsp;See get_rounding for available rounding modes.<br>
+      </td>
+      <td style="vertical-align: top;">Float64(pi, RoundDown)<br>
+Float64(pi, RoundUp)<br>
+      </td>
+      <td style="vertical-align: top;">3.141592653589793<br>
+      <br>
+3.1415926535897936<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">BigInt(x)<br>
+      </td>
+      <td style="vertical-align: top;">xに長い桁の整数指定できる<br>
+      </td>
+      <td style="vertical-align: top;">BigInt(*******)<br>
+      </td>
+      <td style="vertical-align: top;">*******</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">BigFloat(x)<br>
+      </td>
+      <td style="vertical-align: top;">xに長い桁の小数型指定できる<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname">BigFloat</code><span
+ class="sig-paren">(</span><em></em><span class="sig-paren">*******)</span></td>
+      <td style="vertical-align: top;">*******<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get_rounding(T)<br>
+      </td>
+      <td style="vertical-align: top;">Get the current floating point
+rounding mode for
+type T, controlling the rounding of basic arithmetic functions (+(),
+-(), *(), /() and sqrt()) and type conversion.<br>
+Valid modes are RoundNearest, RoundToZero, RoundUp,
+RoundDown, and RoundFromZero (BigFloat only).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">set_rounding(T, mode)<br>
+      </td>
+      <td style="vertical-align: top;">Set the rounding mode of
+floating point type T,
+controlling the rounding of basic arithmetic functions (+(), -(), *(),
+/() and sqrt()) and type conversion.<br>
+Note that this may affect other types, for instance
+changing the rounding mode of Float64 will change the rounding mode of
+Float32. See get_rounding for available modes<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">with_rounding(f::Function, T,
+mode)<br>
+      </td>
+      <td style="vertical-align: top;">Change the rounding mode of
+floating point type T
+for the duration of f. It is logically equivalent to:<br>
+See get_rounding for available rounding modes.<br>
+      </td>
+      <td style="vertical-align: top;">old = get_rounding(T)<br>
+set_rounding(T, mode)<br>
+f()<br>
+set_rounding(T, old) </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get_zero_subnormals() → Bool<br>
+      </td>
+      <td style="vertical-align: top;">Returns false if operations on
+subnormal floating-point values (“denormals”) obey rules for IEEE
+arithmetic, and true if they might be converted to zeros.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">set_zero_subnormals(yes::Bool) →
+Bool<br>
+      </td>
+      <td style="vertical-align: top;">If yes is false, subsequent
+floating-point
+operations follow rules for IEEE arithmetic on subnormal values
+(“denormals”). Otherwise, floating-point operations are permitted (but
+not required) to convert subnormal inputs or outputs to zero. Returns
+true unless yes==true but the hardware does not support zeroing of
+subnormal numbers.<br>
+&nbsp;&nbsp;&nbsp; set_zero_subnormals(true) can speed up some
+computations on some hardware. However, it can break identities such as
+(x-y==0) == (x==y).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Integer：整数</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">count_ones(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">xのバイナリ表現における1の数。<br>
+      </td>
+      <td style="vertical-align: top;">
+      <pre><span class="n">count_ones</span><span class="p">(</span><span
+ class="mi">7</span><span class="p">)</span></pre>
+      </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">count_zeros(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">Number of zeros in the binary
+representation of x.<br>
+xのバイナリ表現におけるゼロの数。<br>
+      </td>
+      <td style="vertical-align: top;">count_zeros(Int32(2 ^ 16 - 1))<br>
+      </td>
+      <td style="vertical-align: top;">16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">leading_zeros(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">Number of zeros leading the
+binary representation of x.<br>
+xのバイナリ表現を先行ゼロの数。<br>
+      </td>
+      <td style="vertical-align: top;">leading_zeros(Int32(1))<br>
+      </td>
+      <td style="vertical-align: top;">31<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">leading_ones(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;">Number of ones leading the
+binary representation of x.<br>
+xのバイナリ表現をリードするものの数。<br>
+      </td>
+      <td style="vertical-align: top;">leading_ones(UInt32(2 ^ 32 - 2))<br>
+      </td>
+      <td style="vertical-align: top;">31<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">trailing_zeros(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの</span><span class="">2進数表記</span>の
+0<span>の数。</span></span> </td>
+      <td style="vertical-align: top;">trailing_zeros(2)<br>
+      </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">trailing_ones(x::Integer) <br>
+→ Integer<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの</span>2進数表記<span class="">の</span><span
+ class="">1の数</span><span class="">。</span></span><br>
+      </td>
+      <td style="vertical-align: top;">trailing_ones(3)<br>
+      </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isprime(x::Integer) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">素数ならtrue，合成数ならfalse<br>
+      </td>
+      <td style="vertical-align: top;">isprime(3)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isprime(x::BigInt[, reps = 25]) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">Probabilistic primality test.
+Returns true if x is prime; and false if x is not prime with high
+probability. The false positive rate is about 0.25^reps. reps = 25 is
+considered safe for cryptographic applications (Knuth, Seminumerical
+Algorithms).<br>
+      </td>
+      <td style="vertical-align: top;">isprime(big(3))<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">primes([lo, ]hi)<br>
+      </td>
+      <td style="vertical-align: top;">loからhiまでの素数を配列で返す<br>
+      </td>
+      <td style="vertical-align: top;">primes(12) </td>
+      <td style="vertical-align: top;">&nbsp;Array{Int64,1}:<br>
+&nbsp; 2<br>
+&nbsp; 3<br>
+&nbsp; 5<br>
+&nbsp; 7<br>
+&nbsp;11<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">primesmask([lo, ]hi)<br>
+      </td>
+      <td style="vertical-align: top;">loからhiまで素数か合成数かtrue or
+falseで配列で返す．<br>
+      </td>
+      <td style="vertical-align: top;">primesmask(10) </td>
+      <td style="vertical-align: top;">10-element BitArray{1}:<br>
+&nbsp;false<br>
+&nbsp; true<br>
+&nbsp; true<br>
+&nbsp;false<br>
+&nbsp; true<br>
+&nbsp;false<br>
+&nbsp; true<br>
+&nbsp;false<br>
+&nbsp;false<br>
+&nbsp;false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isodd(x::Integer) <br>
+→ Bool<br>
+      </td>
+      <td style="vertical-align: top;">奇数ならtrue偶数ならfalse<br>
+      </td>
+      <td style="vertical-align: top;">isodd(9)<br>
+isodd(10)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">iseven(x::Integer) <br>
+→ Boo<br>
+      </td>
+      <td style="vertical-align: top;">偶数ならtrue 奇数ならfalse<br>
+      </td>
+      <td style="vertical-align: top;">iseven(9)<br>
+iseven(10)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">BigFloats：<br>
+      </span>The BigFloat type implements arbitrary-precision
+floating-point arithmetic using the GNU MPFR library.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">precision(num::AbstractFloat)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>仮数部</span><span>のビット</span><span>の</span><span>有
+効数</span><span class="">で定義されているように</span><span class="">、</span><span
+ class="">浮動</span><span class="">小数点数</span><span class="">の</span><span
+ class="">精度</span><span>を取得します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">precision(0.123456789) </td>
+      <td style="vertical-align: top;">53<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get_bigfloat_precision()<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>現在、</span><span>ビッグ</span><span>フロート</span><span>演
+算に</span><span>使用される</span><span>（</span><span>ビット）</span><span>の精度</span><span
+ class="">を取得します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">get_bigfloat_precision()<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">256 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">set_bigfloat_precision(x::Int64)<br>
+      </td>
+      <td style="vertical-align: top;">（ビット単位）の精度を設定することはビッグフロート演算に使用されま
+す。<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;set_bigfloat_precision(1234567890)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">1234567890 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">with_bigfloat_precision(f::Function,
+precision::Integer)<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>F</span><span>の期間</span><span
+ class="">（ビット）</span><span>ビッグ</span><span>フロート</span><span>演算</span><span>精
+度</span><span>を</span><span>変更します</span><span class="">。</span><span>それは</span><span>論
+理的に</span><span>等価です。</span></span> </td>
+      <td style="vertical-align: top;">old = get_bigfloat_precision()<br>
+set_bigfloat_precision(precision)<br>
+f()<br>
+set_bigfloat_precision(old) </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Random Numbers<br>
+      </span>Random number generation in Julia uses the Mersenne
+Twister library via MersenneTwister objects. Julia has a global RNG,
+which is used by default. Other RNG types can be plugged in by
+inheriting the AbstractRNG type; they can then be used to have multiple
+streams of random numbers. Besides MersenneTwister, Julia also provides
+the RandomDevice RNG type, which is a wrapper over the OS provided
+entropy.<br>
+Most functions related to random generation accept an optional
+AbstractRNG as the first argument, rng , which defaults to the global
+one if not provided. Morever, some of them accept optionally dimension
+specifications dims... (which can be given as a tuple) to generate
+arrays of random values.<br>
+A MersenneTwister or RandomDevice RNG can generate random numbers of
+the following types: Float16, Float32, Float64, Bool, Int8, UInt8,
+Int16, UInt16, Int32, UInt32, Int64, UInt64, Int128, UInt128, BigInt
+(or complex numbers of those types). Random floating point numbers are
+generated uniformly in \([0, 1)\). As BigInt represents unbounded
+integers, the interval must be specified (e.g. rand(big(1:6))).<span
+ style="font-weight: bold;"><br>
+      </span> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">srand([rng][, seed])<br>
+      </td>
+      <td style="vertical-align: top;">Reseed the random number
+generator. If a seed is provided, the RNG will give a reproducible
+sequence of numbers, otherwise Julia will get entropy from the system.
+For MersenneTwister, the seed may be a non-negative integer, a vector
+of UInt32 integers or a filename, in which case the seed is read from a
+file. RandomDevice does not support seeding.<br>
+      </td>
+      <td style="vertical-align: top;">julia&gt; srand() </td>
+      <td style="vertical-align: top;"><a href="srand.txt">srand.txt</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">MersenneTwister([seed])<br>
+      </td>
+      <td style="vertical-align: top;">Create a MersenneTwister RNG
+object. Different RNG objects can have their own seeds, which may be
+useful for generating different streams of random numbers.<br>
+      </td>
+      <td style="vertical-align: top;">MersenneTwister() </td>
+      <td style="vertical-align: top;"><a href="MersenneTwister.txt">MersenneTwister.txt</a>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">RandomDevice()<br>
+      </td>
+      <td style="vertical-align: top;">Create a RandomDevice RNG
+object. Two such objects will always generate different streams of
+random numbers.<br>
+      </td>
+      <td style="vertical-align: top;">RandomDevice() </td>
+      <td style="vertical-align: top;">RandomDevice(UInt128[0x00000000000000000000000000000000])<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rand([rng][, S][, dims...])<br>
+      </td>
+      <td style="vertical-align: top;">Pick a random element or array
+of random elements
+from the set of values specified by S; S can be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * an indexable collection
+(for example 1:n or ['x','y','z']), or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * a type: the set of values
+to pick from is then equivalent to typemin(S):typemax(S) for integers
+(this is not applicable to BigInt), and to \([0, 1)\) for floating
+point numbers;<br>
+&nbsp;&nbsp;&nbsp; S defaults to Float64.<br>
+      </td>
+      <td style="vertical-align: top;">rand() </td>
+      <td style="vertical-align: top;">0.6190745201509371<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rand!([rng, ]A[, coll])<br>
+      </td>
+      <td style="vertical-align: top;">Populate the array A with random
+values. If the indexable collection coll is specified, the values are
+picked randomly from coll. This is equivalent to copy!(A,&nbsp;
+rand(rng, coll, size(A))) or copy!(A, rand(rng, eltype(A), size(A)))
+but without allocating a new array.<br>
+      </td>
+      <td style="vertical-align: top;">rand!([1 2;3 4]) </td>
+      <td style="vertical-align: top;">2x2 Array{Int64,2}:<br>
+&nbsp; 5374339654614230281&nbsp; 8476911266194179366<br>
+&nbsp;-6235997354052830045&nbsp; 1688430820911805772<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bitrand([rng][, dims...])<br>
+      </td>
+      <td style="vertical-align: top;">Generate a BitArray of random
+boolean values.<br>
+      </td>
+      <td style="vertical-align: top;">julia&gt; bitrand() </td>
+      <td style="vertical-align: top;">0-dimensional BitArray{0}:<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randn([rng][, dims...])<br>
+      </td>
+      <td style="vertical-align: top;">Generate a normally-distributed
+random number with mean 0 and standard deviation 1. Optionally generate
+an array of normally-distributed random numbers.<br>
+      </td>
+      <td style="vertical-align: top;">randn() </td>
+      <td style="vertical-align: top;">-0.5065006619867979<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randn!([rng, ]A::Array{Float64,
+N})<br>
+      </td>
+      <td style="vertical-align: top;">Fill the array A with
+normally-distributed (mean 0, standard deviation 1) random numbers.
+Also see the rand function.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randexp([rng][, dims...])<br>
+      </td>
+      <td style="vertical-align: top;">Generate a random number
+according to the exponential distribution with scale 1. Optionally
+generate an array of such random numbers.<br>
+      </td>
+      <td style="vertical-align: top;">randexp() </td>
+      <td style="vertical-align: top;">0.9982697999821747<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randexp!([rng,
+]A::Array{Float64, N})<br>
+      </td>
+      <td style="vertical-align: top;">Fill the array A with random
+numbers following the exponential distribution (with scale 1).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">randjump(r::MersenneTwister,
+jumps[, jumppoly]) <br>
+→ Vector{MersenneTwister}<br>
+      </td>
+      <td style="vertical-align: top;">Create an array of the size
+jumps of initialized MersenneTwister RNG objects where the first RNG
+object given as a parameter and following MersenneTwister RNGs in the
+array initialized such that a state of the RNG object in the array
+would be moved forward (without generating numbers) from a previous RNG
+object array element on a particular number of steps encoded by the
+jump polynomial jumppoly.<br>
+Default jump polynomial moves forward MersenneTwister RNG state by
+10^20 steps.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

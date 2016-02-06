@@ -1,0 +1,2664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>エッセンシャル</title>
+</head>
+<body>
+<span style="font-weight: bold;">Juliaの紹介</span><br>
+The Julia standard library contains a range of functions and macros
+appropriate for performing scientific and numerical computing, but is
+also as broad as those of many general purpose programming languages.
+Additional functionality is available from a growing collection of
+available packages. Functions are grouped by topic below.<br>
+Some general notes:<br>
+&nbsp;&nbsp;&nbsp; Except for functions in built-in modules (Pkg,
+Collections, Test and Profile), all functions documented here are
+directly available for use in programs.<br>
+&nbsp;&nbsp;&nbsp; To use module functions, use import Module to import
+the module, and Module.fn(x) to use the functions.<br>
+&nbsp;&nbsp;&nbsp; Alternatively, using Module will import all exported
+Module functions into the current namespace.<br>
+&nbsp;&nbsp;&nbsp; By convention, function names ending with an
+exclamation point (!) modify their arguments. Some functions have both
+modifying (e.g., sort!) and non-modifying (sort) versions.<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Getting Around</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">exit([code])</span></code><span
+ class="sig-paren"></span> </td>
+      <td style="vertical-align: top;">quit()とcontrol-Dをプロンプトで実行するのと同じ<br>
+初期値はコード0，プロセス処理が完了したら終了する．<br>
+      </td>
+      <td style="vertical-align: top;">exit()<br>
+      </td>
+      <td style="vertical-align: top;">アプリケーション終了<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">quit</code><span
+ class="sig-paren">(</span><span class="sig-paren">)</span> </td>
+      <td style="vertical-align: top;">アプリケーション終了<br>
+      </td>
+      <td style="vertical-align: top;">quit()<br>
+      </td>
+      <td style="vertical-align: top;">アプリケーション終了します<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">atexit(f)<br>
+      </td>
+      <td style="vertical-align: top;">Register a zero-argument
+function f() to be called at process exit. atexit() hooks are called in
+last in first out (LIFO) order and run before object finalizers.<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+atexit(f) </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">atreplinit(f)</span></code><span
+ class="sig-paren"></span> </td>
+      <td style="vertical-align: top;">Register a one-argument function
+to be called before the REPL interface is initialized in interactive
+sessions; this is useful to customize the interface. The argument of f
+is the REPL object. This function should be called from within the
+.juliarc.jl initialization file.<br>
+      </td>
+      <td style="vertical-align: top;"><code class="descname"><span
+ style="font-family: sans-serif;">function(f(x))<br>
+x^2<br>
+end<br>
+atreplinit(f)</span></code> </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code class="descname">isinteractive</code><span
+ class="sig-paren">(</span><span class="sig-paren">)</span> <br>
+→ Bool </td>
+      <td style="vertical-align: top;">Determine whether Julia is
+running an interactive session.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;isinteractive()<br>
+      </td>
+      <td style="vertical-align: top;">true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">whos([io,] [Module,]
+[pattern::Regex])<br>
+      </td>
+      <td style="vertical-align: top;">Print information about exported
+global variables in
+a module, optionally restricted to those matching pattern.<br>
+The memory consumption estimate is an approximate
+lower bound on the size of the internal structure of the object.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base.summarysize(obj;
+exclude=Union{Module, Function, DataType, TypeName})<br>
+&nbsp;→ Int<br>
+      </td>
+      <td style="vertical-align: top;">Compute the amount of memory
+used by all unique objects reachable from the argument. Keyword
+argument exclude specifies a type of objects to exclude from the
+traversal.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">edit(file::AbstractString[,
+line])<br>
+      </td>
+      <td style="vertical-align: top;">Edit a file optionally providing
+a line number to
+edit at. Returns to the julia prompt when you quit the editor.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">edit(function[, types])<br>
+      </td>
+      <td style="vertical-align: top;">Edit the definition of a
+function, optionally
+specifying a tuple of types to indicate which method to edit.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@edit()<br>
+      </td>
+      <td style="vertical-align: top;">Evaluates the arguments to the
+function call,
+determines their types, and calls the edit function on the resulting
+expression.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">less(file::AbstractString[,
+line])<br>
+      </td>
+      <td style="vertical-align: top;">Show a file using the default
+pager, optionally
+providing a starting line number. Returns to the julia prompt when you
+quit the pager.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">less(function[, types])<br>
+      </td>
+      <td style="vertical-align: top;">Show the definition of a
+function using the default
+pager, optionally specifying a tuple of types to indicate which method
+to see.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@less()<br>
+      </td>
+      <td style="vertical-align: top;">Evaluates the arguments to the
+function call,
+determines their types, and calls the less function on the resulting
+expression.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">clipboard(x)<br>
+      </td>
+      <td style="vertical-align: top;">クリップボードにxを入れる<br>
+      </td>
+      <td style="vertical-align: top;">clipboard("copy")<br>
+      </td>
+      <td style="vertical-align: top;">copy[クリップボード]<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">clipboard() <br>
+→ AbstractString<br>
+      </td>
+      <td style="vertical-align: top;">クリップボードに入っている内容を出す<br>
+      </td>
+      <td style="vertical-align: top;">clipboard()<br>
+      </td>
+      <td style="vertical-align: top;">"クリップボードの内容"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">reload(name::AbstractString)<br>
+      </td>
+      <td style="vertical-align: top;">Force reloading of a package,
+even if it has been loaded before. This is intended for use during
+package development as code is modified.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">require(module::Symbol)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; This function is
+part of the implementation of using
+/ import, if a module is not already defined in Main. It can also be
+called directly to force reloading a module, regardless of whether it
+has been loaded before (for example, when interactively developing
+libraries).<br>
+&nbsp;&nbsp;&nbsp; Loads a source files, in the context of the Main
+module, on every active node, searching standard locations for files.
+require is considered a top-level operation, so it sets the current
+include path but does not use it to search for files (see help for
+include). This function is typically used to load library code, and is
+implicitly called by using to load packages.<br>
+&nbsp;&nbsp;&nbsp; When searching for files, require first looks in the
+current working directory, then looks for package code under Pkg.dir(),
+then tries paths in the global array LOAD_PATH.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Base.compilecache(module::ByteString)<br>
+      </td>
+      <td style="vertical-align: top;">Creates a precompiled cache file
+for module (see help for require) and all of its dependencies. This can
+be used to reduce package load times. Cache files are stored in
+LOAD_CACHE_PATH[1], which defaults to ~/.julia/lib/VERSION. See Module
+initialization and precompilation for important notes.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">__precompile__(isprecompilable::Bool=true)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp; Specify
+whether the file calling this function is
+precompilable. If isprecompilable is true, then __precompile__ throws
+an exception when the file is loaded by using/import/require unless the
+file is being precompiled, and in a module file it causes the module to
+be automatically precompiled when it is imported. Typically,
+__precompile__() should occur before the module declaration in the
+file, or better yet VERSION &gt;= v"0.4" &amp;&amp; __precompile__() in
+order to be backward-compatible with Julia 0.3.<br>
+&nbsp;&nbsp;&nbsp; If a module or file is not safely precompilable, it
+should call __precompile__(false) in order to throw an error if Julia
+attempts to precompile it.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">include(path::AbstractString)<br>
+      </td>
+      <td style="vertical-align: top;">Evaluate the contents of a
+source file in the current context. During including, a task-local
+include path is set to the directory containing the file. Nested calls
+to include will search relative to that path. All paths refer to files
+on node 1 when running in parallel, and files will be fetched from node
+1. This function is typically used to load source interactively, or to
+combine files in packages that are broken into multiple source files.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">include_string(code::AbstractString[,
+filename])<br>
+      </td>
+      <td style="vertical-align: top;">Like include, except reads code
+from the given string rather than from a file. Since there is no file
+path involved, no path processing or fetching from node 1 is done.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">include_dependency(path::AbstractString)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp; In a module,
+declare that the file specified by path
+(relative or absolute) is a dependency for precompilation; that is, the
+module will need to be recompiled if this file changes.<br>
+&nbsp;&nbsp;&nbsp; This is only needed if your module depends on a file
+that is not used via include. It has no effect outside of compilation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">apropos(string)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp; Search
+through all documentation for a string,
+ignoring case.<br>
+      </td>
+      <td style="vertical-align: top;">apropos(string)<br>
+      </td>
+      <td style="vertical-align: top;">apropos(string).txt<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">which(f, types)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp; Returns the
+method of f (a Method object) that would
+be called for arguments of the given types.<br>
+&nbsp;&nbsp;&nbsp; If types is an abstract type, then the method that
+would be called by invoke is returned.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">which(symbol)<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; Return the module
+in which the binding for the
+variable referenced by symbol was created.<br>
+      </td>
+      <td style="vertical-align: top;">k=:k<br>
+which(k)<br>
+      </td>
+      <td style="vertical-align: top;">:k<br>
+Main<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@which()<br>
+      </td>
+      <td style="vertical-align: top;">Applied to a function call, it
+evaluates the arguments to the specified function call, and returns the
+Method object for the method that would be called for those arguments.
+Applied to a variable, it returns the module in which the variable was
+bound. It calls out to the which function.<br>
+      </td>
+      <td style="vertical-align: top;">@which() </td>
+      <td style="vertical-align: top;">ERROR: wrong number of arguments<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">methods(f[, types])<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp;&nbsp; Returns the
+method table for f.<br>
+&nbsp;&nbsp;&nbsp; If types is specified, returns an array of methods
+whose types match.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">methodswith(typ[, module or
+function][, showparents]) </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; Return an array of
+methods with an argument of type
+typ. If optional showparents is true, also return arguments with a
+parent type of typ, excluding type Any.<br>
+&nbsp;&nbsp;&nbsp; The optional second argument restricts the search to
+a particular module or function.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@show() </td>
+      <td style="vertical-align: top;">Show an expression and result,
+returning the result.<br>
+      </td>
+      <td style="vertical-align: top;">@show()<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">versioninfo([verbose::Bool]) </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; Print information
+about the version of Julia in use.
+If the verbose argument is true, detailed system information is shown
+as well.<br>
+      </td>
+      <td style="vertical-align: top;">versioninfo() </td>
+      <td style="vertical-align: top;">Julia Version 0.4.3<br>
+Commit a2f713d (2016-01-12 21:37 UTC)<br>
+Platform Info:<br>
+&nbsp; System: Windows (x86_64-w64-mingw32)<br>
+&nbsp; CPU: Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz<br>
+&nbsp; WORD_SIZE: 64<br>
+&nbsp; BLAS: libopenblas (USE64BITINT DYNAMIC_ARCH NO_AFFINITY
+Sandybridge)<br>
+&nbsp; LAPACK: libopenblas64_<br>
+&nbsp; LIBM: libopenlibm<br>
+&nbsp; LLVM: libLLVM-3.3<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">workspace() </td>
+      <td style="vertical-align: top;">&nbsp;&nbsp; Replace the
+top-level module (Main) with a new one,
+providing a clean workspace. The previous Main module is made available
+as LastMain. A previously-loaded package can be accessed using a
+statement such as using LastMain.Package.<br>
+&nbsp;&nbsp;&nbsp; This function should only be used interactively.<br>
+      </td>
+      <td style="vertical-align: top;">workspace()<br>
+      </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ans </td>
+      <td style="vertical-align: top;">&nbsp; A variable referring to
+the last computed value,
+automatically set at the interactive prompt.<br>
+      </td>
+      <td style="vertical-align: top;">ans<br>
+      </td>
+      <td style="vertical-align: top;">直前の答え<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">すべてのオブジェク
+ト<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">is(x, y) → Bool<br>
+===(x, y) → Bool<br>
+≡(x, y) → Bool </td>
+      <td style="vertical-align: top;">Determine whether x and y are
+identical, in the
+sense that no program could distinguish them. Compares mutable objects
+by address in memory, and compares immutable objects (such as numbers)
+by contents at the bit level. This function is sometimes called egal.<br>
+      </td>
+      <td style="vertical-align: top;">is(2, 3)<br>
+is(2, 2)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isa(x, type) → Bool </td>
+      <td style="vertical-align: top;">Determine whether x is of the
+given type.<br>
+      </td>
+      <td style="vertical-align: top;"> isa(2+2im,Complex) </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isequal(x, y) </td>
+      <td style="vertical-align: top;">Similar to ==, except treats all
+floating-point NaN
+values as equal to each other, and treats -0.0 as unequal to 0.0. The
+default implementation of isequal calls ==, so if you have a type that
+doesn’t have these floating-point subtleties then you probably only
+need to define ==.<br>
+&nbsp; isequal is the comparison function used by hash
+tables (Dict). isequal(x,y) must imply that hash(x) == hash(y).<br>
+&nbsp; This typically means that if you define your own ==
+function then you must define a corresponding hash (and vice versa).
+Collections typically implement isequal by calling isequal recursively
+on all contents.<br>
+&nbsp; Scalar types generally do not need to implement
+isequal separate from ==, unless they represent floating-point numbers
+amenable to a more efficient implementation than that provided as a
+generic fallback (based on isnan, signbit, and ==).<br>
+      </td>
+      <td style="vertical-align: top;">isequal(1,2)<br>
+isequal(1,1)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+true<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isless(x, y) </td>
+      <td style="vertical-align: top;">Test whether x is less than y,
+according to a
+canonical total order. Values that are normally unordered, such as NaN,
+are ordered in an arbitrary but consistent fashion. This is the default
+comparison used by sort. Non-numeric types with a canonical total order
+should implement this function. Numeric types only need to implement it
+if they have special values such as NaN.<br>
+      </td>
+      <td style="vertical-align: top;">isless(1,2)<br>
+isless(2,1)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ifelse(condition::Bool, x, y) </td>
+      <td style="vertical-align: top;">&nbsp;Return x if condition is
+true, otherwise return y.
+This differs from ? or if in that it is an ordinary function, so all
+the arguments are evaluated first. In some cases, using ifelse instead
+of an if statement can eliminate the branch in generated code and
+provide higher performance in tight loops.<br>
+      </td>
+      <td style="vertical-align: top;"> ifelse(true,1,2) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lexcmp(x, y) </td>
+      <td style="vertical-align: top;">Compare x and y
+lexicographically and return -1, 0,
+or 1 depending on whether x is less than, equal to, or greater than y,
+respectively. This function should be defined for lexicographically
+comparable types, and lexless will call lexcmp by default.<br>
+      </td>
+      <td style="vertical-align: top;"> lexcmp(1, 2) </td>
+      <td style="vertical-align: top;">-1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">lexless(x, y) </td>
+      <td style="vertical-align: top;">&nbsp;Determine whether x is
+lexicographically less than y.<br>
+      </td>
+      <td style="vertical-align: top;">lexless(1, 2)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">typeof(x) </td>
+      <td style="vertical-align: top;">Get the concrete type of x.<br>
+      </td>
+      <td style="vertical-align: top;">typeof(1) </td>
+      <td style="vertical-align: top;">Int64<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tuple(xs...) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">指定された</span><span>オブジェクト</span><span>の</span><span>タ
+プル</span><span>を構築します。</span></span> </td>
+      <td style="vertical-align: top;"> tuple(1,2) </td>
+      <td style="vertical-align: top;">(1,2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ntuple(f::Function, n) </td>
+      <td style="vertical-align: top;">&nbsp;Create a tuple of length
+n, computing each element
+as f(i), where i is the index of the element.<br>
+      </td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end;<br>
+ntuple(f,2) </td>
+      <td style="vertical-align: top;">(1,4)<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">object_id(x) </td>
+      <td style="vertical-align: top;">Get a unique integer id for x.
+object_id(x)==object_id(y) if and only if is(x,y).<br>
+      </td>
+      <td style="vertical-align: top;">object_id(1) </td>
+      <td style="vertical-align: top;">0x9f22f901d97fd6e9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">hash(x[, h::UInt]) </td>
+      <td style="vertical-align: top;">Compute an integer hash code
+such that isequal(x,y)
+implies hash(x)==hash(y). The optional second argument h is a hash code
+to be mixed with the result.<br>
+&nbsp; New types should implement the 2-argument form,
+typically by calling the 2-argument hash method recursively in order to
+mix hashes of the contents with each other (and with h). Typically, any
+type that implements hash should also implement its own == (hence
+isequal) to guarantee the property mentioned above.<br>
+      </td>
+      <td style="vertical-align: top;">hash(1) </td>
+      <td style="vertical-align: top;">0x02011ce34bce797f<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">finalizer(x, function) </td>
+      <td style="vertical-align: top;">Register a function f(x) to be
+called when there are
+no program-accessible references to x. The behavior of this function is
+unpredictable if x is of a bits type.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">finalize(x) </td>
+      <td style="vertical-align: top;">Immediately run finalizers
+registered for object x.<br>
+      </td>
+      <td style="vertical-align: top;">finalize(2) </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">copy(x) </td>
+      <td style="vertical-align: top;">xの内容をクリップボードに送る<br>
+      </td>
+      <td style="vertical-align: top;">copy(2) </td>
+      <td style="vertical-align: top;">2　クリップボードに格納される<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deepcopy(x) </td>
+      <td style="vertical-align: top;">Create a deep copy of x:
+everything is copied
+recursively, resulting in a fully independent object. For example,
+deep-copying an array produces a new array whose elements are deep
+copies of the original elements. Calling deepcopy on an object should
+generally have the same effect as serializing and then deserializing it.<br>
+As a special case, functions can only be actually
+deep-copied if they are anonymous, otherwise they are just copied. The
+difference is only relevant in the case of closures, i.e. functions
+which may contain hidden internal references.<br>
+While it isn’t normally necessary, user-defined
+types can override the default deepcopy behavior by defining a
+specialized version of the function deepcopy_internal(x::T,
+dict::ObjectIdDict) (which shouldn’t otherwise be used), where T is the
+type to be specialized for, and dict keeps track of objects copied so
+far within the recursion. Within the definition, deepcopy_internal
+should be used in place of deepcopy, and the dict variable should be
+updated as appropriate before returning.<br>
+      </td>
+      <td style="vertical-align: top;">deepcopy(123) </td>
+      <td style="vertical-align: top;">123<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isdefined([object, ]index |
+symbol) </td>
+      <td style="vertical-align: top;">Tests whether an assignable
+location is defined. The
+arguments can be an array and index, a composite object and field name
+(as a symbol), or a module and a symbol. With a single symbol argument,
+tests whether a global variable with that name is defined in
+current_module().<br>
+      </td>
+      <td style="vertical-align: top;">isdefined(:l)<br>
+k=:k<br>
+isdefined(k)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      <br>
+true<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">convert(T, x) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>型T</span><span>の</span><span>値</span><span>に</span><span>X</span><span>を
+変換します</span><br>
+      <span>Tが</span><span>整数型</span><span>である</span><span>場合</span><span>、</span><span>InexactError</span><span>は、</span><span>x
+は</span><span>、例えば</span><span>、</span><span>T</span><span>によって</span><span>表
+現可能</span><span>でない場合</span><span>、xが</span><span>整数値</span><span>でない</span><span
+ class="">場合に発生</span><span>、</span><span>または</span><span>Tで</span><span>サ
+ポートされている範囲</span><span class="">外である</span><span class="">こと</span><span
+ class="">になります</span></span> </td>
+      <td style="vertical-align: top;">convert(Int, 3.0)<br>
+convert(Int, 3.5)<br>
+      <br>
+&nbsp; <br>
+      <br>
+      <br>
+      <br>
+x = 1/3<br>
+convert(Float32, x)<br>
+convert(Rational{Int32}, x)<br>
+convert(Rational{Int64}, x)&nbsp;</td>
+      <td style="vertical-align: top;">3<br>
+ERROR: InexactError()<br>
+in convert at int.jl:209<br>
+If T is a AbstractFloat or Rational type, then it
+will return the closest value to x representable by T.<br>
+      <br>
+0.3333333333333333<br>
+0.33333334f0<br>
+1//3<br>
+      <br>
+6004799503160661//18014398509481984<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">promote(xs...) </td>
+      <td style="vertical-align: top;">内包型のダブル<br>
+      </td>
+      <td style="vertical-align: top;">promote(tuple(1,2)) </td>
+      <td style="vertical-align: top;">((1,2),)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">oftype(x, y) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xの型</span><span>（</span><span>変換</span><span
+ class="">（</span><span class="">typeof演算</span><span>（</span><span>x）は</span><span>、</span><span>y）
+の</span><span>）</span><span>にyと</span><span>変換します</span><span class="">。</span></span>
+      </td>
+      <td style="vertical-align: top;">oftype(1, 5) </td>
+      <td style="vertical-align: top;">5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">widen(type | x) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>引数が</span><span>タイプ</span><span>である場合は</span><span>、</span><span>「</span><span>よ
+り大きい</span><span>」</span><span>型を返す</span><span>（</span><span>数値型</span><span>の
+ために</span><span>、</span><span>これ</span><span>は、少なくとも</span><span>同じくらい</span><span>の
+範囲</span><span>や</span><span>引数として</span><span>精度、</span><span>通常は</span><span>そ
+れ以上と</span><span>型になります</span><span>）</span><span>。</span><span>それ以外の場合は</span><span>、
+引数x</span><span>を</span><span>広げる</span><span>ために</span><span>変換されます</span><span>（</span><span>typeof
+演算</span><span>（</span><span class="">x））の</span><span class="">。</span></span><br>
+      </td>
+      <td style="vertical-align: top;">widen(Int32)<br>
+widen(1.5f0)&nbsp;</td>
+      <td style="vertical-align: top;">Int64<br>
+1.5<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">identity(x) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">恒等関数</span><span class="">。</span><span
+ class="">その引数</span><span>を返します</span><span class="">。</span></span> </td>
+      <td style="vertical-align: top;">identity(3) </td>
+      <td style="vertical-align: top;">3<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Types </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">super(T::DataType) </td>
+      <td style="vertical-align: top;">Return the supertype of DataType
+Type2.<br>
+      </td>
+      <td style="vertical-align: top;">super(Complex)<br>
+      </td>
+      <td style="vertical-align: top;">Number </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">issubtype(type1, type2)</td>
+      <td style="vertical-align: top;">Return true if and only if all
+values of type1 are
+also of type2. Can also be written using the &lt;: infix operator as
+type1 &lt;: t</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">&lt;:(T1, T2)</td>
+      <td style="vertical-align: top;">Subtype operator, equivalent to
+issubtype(T1,T2).</td>
+      <td style="vertical-align: top;">&lt;:(Int,Complex)<br>
+      </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">subtypes(T::DataType)</td>
+      <td style="vertical-align: top;">Return a list of immediate
+subtypes of DataType T.
+Note that all currently loaded subtypes are included, including those
+not visible in the current module.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">typemin(T)</td>
+      <td style="vertical-align: top;">The lowest value representable
+by the given (real)
+numeric DataType T.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">typemax(T)</td>
+      <td style="vertical-align: top;">The highest value representable
+by the given (real)
+numeric DataType.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">realmin(T)</td>
+      <td style="vertical-align: top;">The smallest in absolute value
+non-subnormal value
+representable by the given floating-point DataType T.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">realmax(T)</td>
+      <td style="vertical-align: top;">The highest finite value
+representable by the given
+floating-point DataType T.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">maxintfloat(T)</td>
+      <td style="vertical-align: top;">The largest integer losslessly
+representable by the
+given floating-point DataType T.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">sizeof(T)</td>
+      <td style="vertical-align: top;">Size, in bytes, of the canonical
+binary
+representation of the given DataType T, if any.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eps(T)</td>
+      <td style="vertical-align: top;">The distance between 1.0 and the
+next larger
+representable floating-point value of DataType T. Only floating-point
+types are sensible arguments.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eps()</td>
+      <td style="vertical-align: top;">The distance between 1.0 and the
+next larger
+representable floating-point value of Float64.</td>
+      <td style="vertical-align: top;">&nbsp;eps()</td>
+      <td style="vertical-align: top;">2.220446049250313e-16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eps(x)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>xと</span><span>xと同じ</span><span>データ型</span><span>の
+次</span><span>に大きい</span><span>浮動小数点数表現</span><span>の間の距離</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;">eps(2.0) </td>
+      <td style="vertical-align: top;">4.440892098500626e-16<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">promote_type(type1, type2)</td>
+      <td style="vertical-align: top;">Determine a type big enough to
+hold values of each
+argument type without loss, whenever possible. In some cases, where no
+type exists to which both types can be promoted losslessly, some loss
+is tolerated; for example, promote_type(Int64,Float64) returns Float64
+even though strictly, not all Int64 values can be represented exactly
+as Float64 values.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">promote_rule(type1, type2)</td>
+      <td style="vertical-align: top;">Specifies what type should be
+used by promote when
+given values of types type1 and type2. This function should not be
+called directly, but should have definitions added to it for new types
+as appropriate.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getfield(value, name::Symbol)</td>
+      <td style="vertical-align: top;">Extract a named field from a
+value of composite
+type. The syntax a.b calls getfield(a, :b), and the syntax a.(b) calls
+getfield(a, b).</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setfield!(value, name::Symbol, x)</td>
+      <td style="vertical-align: top;">Assign x to a named field in
+value of composite
+type. The syntax a.b = c calls setfield!(a, :b, c), and the syntax
+a.(b) = c calls setfield!(a, b, c).<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fieldoffsets(type)</td>
+      <td style="vertical-align: top;">The byte offset of each field of
+a type relative to
+the data start. For example, we could use it in the following manner to
+summarize information about a struct type:<br>
+&nbsp; <br>
+      </td>
+      <td style="vertical-align: top;">fieldoffsets(typeof(1))<br>
+structinfo(T) =
+[zip(fieldoffsets(T),fieldnames(T),T.types)...];<br>
+structinfo(StatStruct)<br>
+      </td>
+      <td style="vertical-align: top;">0-element Array{Int64,1}<br>
+12-element
+Array{Tuple{Int64,Symbol,DataType},1}:<br>
+&nbsp;(0,:device,UInt64)<br>
+&nbsp;(8,:inode,UInt64)<br>
+&nbsp;(16,:mode,UInt64)<br>
+&nbsp;(24,:nlink,Int64)<br>
+&nbsp;(32,:uid,UInt64)<br>
+&nbsp;(40,:gid,UInt64)<br>
+&nbsp;(48,:rdev,UInt64)<br>
+&nbsp;(56,:size,Int64)<br>
+&nbsp;(64,:blksize,Int64)<br>
+&nbsp;(72,:blocks,Int64)<br>
+&nbsp;(80,:mtime,Float64)<br>
+&nbsp;(88,:ctime,Float64)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fieldtype(T, name::Symbol |
+index::Int)</td>
+      <td style="vertical-align: top;">&nbsp;Determine the declared
+type of a field (specified by
+name or index) in a composite DataType T.</td>
+      <td style="vertical-align: top;">fieldtype(Complex,1) </td>
+      <td style="vertical-align: top;">T&lt;:Real<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isimmutable(v)</td>
+      <td style="vertical-align: top;">Return true iff value v is
+immutable. See Immutable
+Composite Types for a discussion of immutability. Note that this
+function works on values, so if you give it a type, it will tell you
+that a value of DataType is mutable.</td>
+      <td style="vertical-align: top;">isimmutable([2,3]) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isbits(T)</td>
+      <td style="vertical-align: top;">&nbsp;Return true if T is a
+“plain data” type, meaning it
+is immutable and contains no references to other values. Typical
+examples are numeric types such as UInt8, Float64, and Complex{Float64}.<br>
+      </td>
+      <td style="vertical-align: top;">isbits(Complex{Float64})<br>
+isbits(Complex)<br>
+      </td>
+      <td style="vertical-align: top;">true<br>
+false </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isleaftype(T)</td>
+      <td style="vertical-align: top;">&nbsp;Determine whether T is a
+concrete type that can have
+instances, meaning its only subtypes are itself and None (but T itself
+is not None).</td>
+      <td style="vertical-align: top;"> isleaftype(Complex) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">typejoin(T, S) </td>
+      <td style="vertical-align: top;">&nbsp;Compute a type that
+contains both T and S. </td>
+      <td style="vertical-align: top;">typejoin(Complex,Real) </td>
+      <td style="vertical-align: top;">Number<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">typeintersect(T, S) </td>
+      <td style="vertical-align: top;">Compute a type that contains the
+intersection of T
+and S. Usually this will be the smallest such type or one close to it.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">typeintersect(Complex,Real) </td>
+      <td style="vertical-align: top;">Union{}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Val{c}() </td>
+      <td style="vertical-align: top;">Create a “value type” out of c,
+which must be an
+isbits value. The intent of this construct is to be able to dispatch on
+constants, e.g., f(Val{false}) allows you to dispatch directly (at
+compile-time) to an implementation f(::Type{Val{false}}), without
+having to test the boolean value at runtime.&nbsp;</td>
+      <td style="vertical-align: top;">Val{'1'}() </td>
+      <td style="vertical-align: top;">Val{'1'}()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@enum EnumName EnumValue1[=x]
+EnumValue2[=y] </td>
+      <td style="vertical-align: top;">&nbsp;Create an Enum type with
+name EnumName and enum
+member values of EnumValue1 and EnumValue2 with optional assigned
+values of x and y, respectively. EnumName can be used just like other
+types and enum member values as regular values, such as<br>
+julia&gt; @enum FRUIT apple=1 orange=2 kiwi=3<br>
+julia&gt; f(x::FRUIT) = "I'm a FRUIT with value:
+$(Int(x))"<br>
+f (generic function with 1 method)<br>
+julia&gt; f(apple)<br>
+"I'm a FRUIT with value: 1" </td>
+      <td style="vertical-align: top;">@enum EnumName </td>
+      <td style="vertical-align: top;">ERROR: ArgumentError: no
+arguments given for Enum EnumName<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">instances(T::Type) </td>
+      <td style="vertical-align: top;">Return a collection of all
+instances of the given
+type, if applicable. Mostly used for enumerated types (see @enum). </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Generic
+Functions</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">method_exists(f, Tuple type)<br>
+→ Bool </td>
+      <td style="vertical-align: top;">Determine whether the given
+generic function has a
+method matching the given Tuple of argument types.<br>
+      <br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">method_exists(length,
+Tuple{Array})<br>
+      <br>
+&nbsp;</td>
+      <td style="vertical-align: top;">true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">applicable(f, args...) → Bool </td>
+      <td style="vertical-align: top;">Determine whether the given
+generic function has a
+method applicable to the given arguments.</td>
+      <td style="vertical-align: top;">function f(x, y)<br>
+&nbsp;x + y<br>
+end;<br>
+applicable(f, 1)<br>
+applicable(f, 1, 2)<br>
+      <br>
+&nbsp;</td>
+      <td style="vertical-align: top;"><br>
+      <br>
+      <br>
+false<br>
+true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">invoke(f, (types...), args...) </td>
+      <td style="vertical-align: top;">Invoke a method for the given
+generic function
+matching the specified types (as a tuple), on the specified arguments.
+The arguments must be compatible with the specified types. This allows
+invoking a method other than the most specific matching method, which
+is useful when the behavior of a more general definition is explicitly
+needed (often as part of the implementation of a more specific method
+of the same function).<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">|&gt;(x, f) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>前の</span><span>引数</span><span>に</span><span>関
+数</span><span>を適用します。</span><span>これは</span><span>簡単な</span><span>関数</span><span>の</span><span
+ class="">連鎖</span><span class="">を可能にします</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;">function(f(x))<br>
+x^2<br>
+end<br>
+|&gt;(2, f)<br>
+[1:5;] |&gt; x-&gt;x.^2 |&gt;
+sum |&gt; inv </td>
+      <td style="vertical-align: top;">4<br>
+      <br>
+      <br>
+      <br>
+0.01818181818181818 </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">call(x, args...) </td>
+      <td style="vertical-align: top;">If x is not a Function, then
+x(args...) is
+equivalent to call(x, args...). This means that function-like behavior
+can be added to any type by defining new call methods. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Syntax</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">eval([m::Module, ]expr::Expr) </td>
+      <td style="vertical-align: top;">指定されたモジュール内の式を評価し、結果を返します。
+（裸のモジュールで定義されたものを除く）すべてのモジュールは、そのモジュール内の式を評価するevalの独自の1引数の定義を、持っています。<br>
+      </td>
+      <td style="vertical-align: top;">eval(100) </td>
+      <td style="vertical-align: top;">100<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@eval()</td>
+      <td style="vertical-align: top;">Evaluate an expression and
+return the value.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">evalfile(path::AbstractString)</td>
+      <td style="vertical-align: top;">Load the file using include,
+evaluate all
+expressions, and return the value of the last one.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">esc(e::ANY) </td>
+      <td style="vertical-align: top;">Only valid in the context of an
+Expr returned from a
+macro. Prevents the macro hygiene pass from turning embedded variables
+into gensym variables. See the Macros section of the Metaprogramming
+chapter of the manual for more details and examples.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"> esc("\$") </td>
+      <td style="vertical-align: top;">:($(Expr(:escape, "\$")))<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gensym([tag])<br>
+→Symbol<br>
+      </td>
+      <td style="vertical-align: top;">Generates a symbol which will
+not conflict with
+other variable names.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">gensym() </td>
+      <td style="vertical-align: top;">symbol("##7171")<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@gensym() </td>
+      <td style="vertical-align: top;">Generates a gensym symbol for a
+variable. For
+example, @gensym x y is transformed into x = gensym("x"); y =
+gensym("y"). </td>
+      <td style="vertical-align: top;">@gensym() </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parse(str, start; greedy=true,
+raise=true)<br>
+→Tuple{Int64,Int64}<br>
+      </td>
+      <td style="vertical-align: top;">Parse the expression string and
+return an expression
+(which could later be passed to eval for execution). start is the index
+of the first character to start parsing. If greedy is true (default),
+parse will try to consume as much input as it can; otherwise, it will
+stop as soon as it has parsed a valid expression. Incomplete but
+otherwise syntactically valid expressions will return Expr(:incomplete,
+"(error message)"). If raise is true (default), syntax errors other
+than incomplete expressions will raise an error. If raise is false,
+parse will return an expression that will raise an error upon
+evaluation. </td>
+      <td style="vertical-align: top;">parse("123456789", 1;
+greedy=true, raise=true) </td>
+      <td style="vertical-align: top;">(123456789,10)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">parse(str; raise=true)<br>
+→Int64<br>
+      </td>
+      <td style="vertical-align: top;">Parse the expression string
+greedily, returning a
+single expression. An error is thrown if there are additional
+characters after the first expression. If raise is true (default),
+syntax errors will raise an error; otherwise, parse will return an
+expression that will raise an error upon evaluation. </td>
+      <td style="vertical-align: top;">parse("123"; raise=true) </td>
+      <td style="vertical-align: top;">123<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4">
+      <h2>Nullables</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Nullable(x)<br>
+→Nullable{Int64}<br>
+      </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>値</span><span>が存在するかどうかを示す</span><span>タイプNULL可能</span><span>、</span><span>の</span><span>オ
+ブジェクト</span><span>に</span><span>値x</span><span>を</span><span>ラップします。</span>
+      <span class="hps">NULL可能</span><span>（</span><span>x）は</span><span>、
+空でない</span><span>ラッパー</span><span>が得られ</span><span>、</span><span>かつ</span><span>NULL
+可能</span><span class="atn">{</span><span>T</span><span>}は</span><span>（</span><span>）</span><span>型
+T</span><span>の</span><span>値</span><span>が含まれている場合があり</span><span>、ラッパー</span><span
+ class="">の</span><span class="">空の</span><span class="">インスタンス</span><span
+ class="">を生成します</span></span> </td>
+      <td style="vertical-align: top;">Nullable(1.0) </td>
+      <td style="vertical-align: top;">Nullable(1.0)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get(x) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>NULL可能</span><span>オブジェクトの値</span><span>にアクセスするため</span><span>の
+x</span><span>を</span><span>しようとしました</span><span>。</span><span>それが</span><span
+ class="">存在する場合は</span><span>値を返します</span><span>。</span><span>そうでない場合は
+null</span><span>例外</span><span>をスローします</span><span class="">。</span></span><br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">get(x, y) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>NULL可能</span><span class="atn">{</span><span>TO</span><span>}
+オブジェクト</span><span>、</span><span>xの</span><span>値にアクセス</span><span>しようとし
+ました</span><span>。</span><span>それが</span><span>存在する場合は</span><span>値を返します</span><span>。</span><span>そ
+うでなければ</span><span>、</span><span>リターンは</span><span>（</span><span>T</span><span>、</span><span>y）
+を</span><span class="">変換します。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isnull(x) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>つまり</span><span>、値</span><span>が欠落して</span><span>の
+Nullable</span><span class="">オブジェクトx</span><span class="">の</span><span
+ class="">ヌル</span><span class="">されていますか？</span></span> </td>
+      <td style="vertical-align: top;">isnull(ans) </td>
+      <td style="vertical-align: top;">false<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">System<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">run(command) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>バッククォート</span><span>で構成</span><span>コマンドオブジェクト</span><span>を</span><span>、</span><span>実
+行します</span><span>。</span><span>何</span><span>が非</span><span>ゼロの</span><span>ス
+テータス</span><span class="">で終了する</span><span class="">工程を含む</span><span>、</span><span>う
+まくいかない</span><span>場合は、エラー</span><span class="">をスローします</span><span
+ class="">。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">spawn(command)</td>
+      <td style="vertical-align: top;">Run a command object
+asynchronously, returning the
+resulting Process object.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DevNull</td>
+      <td style="vertical-align: top;">Used in a stream redirect to
+discard all data
+written to it. Essentially equivalent to /dev/null on Unix or NUL on
+Windows. Usage: run(`cat test.txt` |&gt; DevNull)</td>
+      <td style="vertical-align: top;">DevNull</td>
+      <td style="vertical-align: top;">Base.DevNullStream()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">success(command)</td>
+      <td style="vertical-align: top;">Run a command object,
+constructed with backticks,
+and tell whether it was successful (exited with a code of 0). An
+exception is raised if the process cannot be started.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">process_running(p::Process)</td>
+      <td style="vertical-align: top;">Determine whether a process is
+currently running.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">process_exited(p::Process)</td>
+      <td style="vertical-align: top;">Determine whether a process has
+exited.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">kill(p::Process, signum=SIGTERM)</td>
+      <td style="vertical-align: top;">Send a signal to a process. The
+default is to
+terminate the process.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Sys.set_process_title(title::AbstractString)</td>
+      <td style="vertical-align: top;">Set the process title. No-op on
+some operating
+systems. (not exported)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Sys.get_process_title()<br>
+→ASCIIString<br>
+      </td>
+      <td style="vertical-align: top;">Get the process title. On some
+systems, will always
+return empty string. (not exported)</td>
+      <td style="vertical-align: top;">Sys.get_process_title() </td>
+      <td style="vertical-align: top;">"julia"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">readandwrite(command)</td>
+      <td style="vertical-align: top;">Starts running a command
+asynchronously, and returns
+a tuple (stdout,stdin,process) of the output stream and input stream of
+the process, and the process object itself.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ignorestatus(command)</td>
+      <td style="vertical-align: top;">Mark a command object so that
+running it will not
+throw an error if the result code is non-zero.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">detach(command)</td>
+      <td style="vertical-align: top;">Mark a command object so that it
+will be run in a
+new process group, allowing it to outlive the julia process, and not
+have Ctrl-C interrupts passed to it.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">setenv(command, env;
+dir=working_dir)</td>
+      <td style="vertical-align: top;">Set environment variables to use
+when running the
+given command. env is either a dictionary mapping strings to strings,
+an array of strings of the form "var=val", or zero or more
+"var"=&gt;val pair arguments. In order to modify (rather than replace)
+the existing environment, create env by copy(ENV) and then setting
+env["var"]=val as desired, or use withenv.<br>
+The dir keyword argument can be used to specify a
+working directory for the command.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">withenv(f::Function, kv::Pair...)</td>
+      <td style="vertical-align: top;">Execute f() in an environment
+that is temporarily
+modified (not replaced as in setenv) by zero or more "var"=&gt;val
+arguments kv. withenv is generally used via the withenv(kv...) do ...
+end syntax. A value of nothing can be used to temporarily unset an
+environment variable (if it is set). When withenv returns, the original
+environment has been restored.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pipeline(from, to, ...)</td>
+      <td style="vertical-align: top;">Create a pipeline from a data
+source to a
+destination. The source and destination can be commands, I/O streams,
+strings, or results of other pipeline calls. At least one argument must
+be a command. Strings refer to filenames. When called with more than
+two arguments, they are chained together from left to right. For
+example pipeline(a,b,c) is equivalent to pipeline(pipeline(a,b),c).
+This provides a more concise way to specify multi-stage pipelines.<br>
+Examples:<br>
+run(pipeline(`ls`, `grep
+xyz`))<br>
+&nbsp;run(pipeline(`ls`,
+"out.txt"))<br>
+&nbsp;run(pipeline("out.txt",
+`grep xyz`))</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">pipeline(command; stdin, stdout,
+stderr, append=false)</td>
+      <td style="vertical-align: top;">Redirect I/O to or from the
+given command. Keyword
+arguments specify which of the command’s streams should be redirected.
+append controls whether file output appends to the file. This is a more
+general version of the 2-argument pipeline function. pipeline(from, to)
+is equivalent to pipeline(from, stdout=to) when from is a command, and
+to pipe(to, stdin=from) when from is another kind of data source.<br>
+Examples:<br>
+run(pipeline(`dothings`,
+stdout="out.txt", stderr="errs.txt"))<br>
+&nbsp;run(pipeline(`update`,
+stdout="log.txt", append=true))</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gethostname() <br>
+→ AbstractString</td>
+      <td style="vertical-align: top;">Get the local machine’s host
+name</td>
+      <td style="vertical-align: top;">gethostname() </td>
+      <td style="vertical-align: top;">"host
+name"<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getipaddr() <br>
+→ AbstractString</td>
+      <td style="vertical-align: top;">Get the IP address of the local
+machine, as a string
+of the form “x.x.x.x”</td>
+      <td style="vertical-align: top;">getipaddr() </td>
+      <td style="vertical-align: top;">ip"192.168.0.5"<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">getpid() <br>
+→ Int32</td>
+      <td style="vertical-align: top;">Get julia’s process ID.</td>
+      <td style="vertical-align: top;">getpid() </td>
+      <td style="vertical-align: top;">12072<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">time()<br>
+→Float64<br>
+      </td>
+      <td style="vertical-align: top;">Get the system time in seconds
+since the epoch, with
+fairly high (typically, microsecond) resolution.</td>
+      <td style="vertical-align: top;">time()</td>
+      <td style="vertical-align: top;">1.454127000467e9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">time_ns()</td>
+      <td style="vertical-align: top;">Get the time in nanoseconds. The
+time corresponding
+to 0 is undefined, and wraps every 5.8 years.</td>
+      <td style="vertical-align: top;">time_ns()</td>
+      <td style="vertical-align: top;">0x0001db8afc5a8b56<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">tic()</td>
+      <td style="vertical-align: top;">Set a timer to be read by the
+next call to toc() or
+toq(). The macro call @time expr can also be used to time evaluation.<br>
+      </td>
+      <td style="vertical-align: top;">tic() </td>
+      <td style="vertical-align: top;">0x0001872da1731276<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">toc()</td>
+      <td style="vertical-align: top;">Print and return the time
+elapsed since the last
+tic().</td>
+      <td style="vertical-align: top;">toc() </td>
+      <td style="vertical-align: top;">elapsed time: 16.678173549
+seconds<br>
+16.678173549<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">toq()</td>
+      <td style="vertical-align: top;">Return, but do not print, the
+time elapsed since the
+last tic().<br>
+      </td>
+      <td style="vertical-align: top;">toq() </td>
+      <td style="vertical-align: top;">ERROR: toc() without tic()<br>
+&nbsp;in toq at util.jl:78<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@time()</td>
+      <td style="vertical-align: top;">A macro to execute an
+expression, printing the time
+it took to execute, the number of allocations, and the total number of
+bytes its execution caused to be allocated, before returning the value
+of the expression.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">ERROR: wrong number of arguments<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@timev()</td>
+      <td style="vertical-align: top;">This is a verbose version of the
+@time macro. It
+first prints the same information as @time, then any non-zero memory
+allocation counters, and then returns the value of the expression.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">ERROR: wrong number of arguments<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@timed()</td>
+      <td style="vertical-align: top;">A macro to execute an
+expression, and return the
+value of the expression, elapsed time, total bytes allocated, garbage
+collection time, and an object with various memory allocation counters.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">ERROR: wrong number of arguments<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@elapsed()</td>
+      <td style="vertical-align: top;">A macro to evaluate an
+expression, discarding the
+resulting value, instead returning the number of seconds it took to
+execute as a floating-point number.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@allocated()</td>
+      <td style="vertical-align: top;">A macro to evaluate an
+expression, discarding the
+resulting value, instead returning the total number of bytes allocated
+during evaluation of the expression. Note: the expression is evaluated
+inside a local function, instead of the current context, in order to
+eliminate the effects of compilation, however, there still may be some
+allocations due to JIT compilation. This also makes the results
+inconsistent with the @time macros, which do not try to adjust for the
+effects of compilation.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EnvHash() <br>
+→ EnvHash</td>
+      <td style="vertical-align: top;">A singleton of this type
+provides a hash table
+interface to environment variables.<br>
+es.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ENV </td>
+      <td style="vertical-align: top;">Reference to the singleton
+EnvHash, providing a
+dictionary interface to system environment variabl </td>
+      <td style="vertical-align: top;">ENV<br>
+      </td>
+      <td style="vertical-align: top;">ENV.txt<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@unix() </td>
+      <td style="vertical-align: top;">Given @unix? a : b, do a on Unix
+systems (including
+Linux and OS X) and b elsewhere. See documentation for Handling
+Platform Variations in the Calling C and Fortran Code section of the
+manual. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@osx() </td>
+      <td style="vertical-align: top;">Given @osx? a : b, do a on OS X
+and b elsewhere. See
+documentation for Handling Platform Variations in the Calling C and
+Fortran Code section of the manual.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@linux() </td>
+      <td style="vertical-align: top;">Given @linux? a : b, do a on
+Linux and b elsewhere.
+See documentation for Handling Platform Variations in the Calling C and
+Fortran Code section of the manual.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@windows() </td>
+      <td style="vertical-align: top;">Given @windows? a : b, do a on
+Windows and b
+elsewhere. See documentation for Handling Platform Variations in the
+Calling C and Fortran Code section of the manual. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Errors</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">error(message::AbstractString) </td>
+      <td style="vertical-align: top;">&nbsp;Raise an ErrorException
+with the given message<br>
+エラーメッセージを作成してエラーが起きたことにする<br>
+      </td>
+      <td style="vertical-align: top;">error("OverFollow") </td>
+      <td style="vertical-align: top;">ERROR: OverFollow<br>
+&nbsp;in error at error.jl:21<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">throw(e)</td>
+      <td style="vertical-align: top;">&nbsp;Throw an object as an
+exception</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rethrow([e])</td>
+      <td style="vertical-align: top;">Throw an object without changing
+the current
+exception backtrace. The default argument is the current exception (if
+called within a catch block).<br>
+直前に出たエラー<br>
+      </td>
+      <td style="vertical-align: top;">rethrow() </td>
+      <td style="vertical-align: top;">ERROR: OverFollow<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">backtrace()</td>
+      <td style="vertical-align: top;">Get a backtrace object for the
+current program point.</td>
+      <td style="vertical-align: top;">backtrace() </td>
+      <td style="vertical-align: top;">14-element Array{Ptr{Void},1}:<br>
+&nbsp;Ptr{Void} @0x0000000064f6dcde<br>
+&nbsp;Ptr{Void} @0x0000000064f6e5d8<br>
+&nbsp;Ptr{Void} @0x000000000fcd8d3f<br>
+&nbsp;Ptr{Void} @0x000000000fcd8ce4<br>
+&nbsp;Ptr{Void} @0x0000000064f16445<br>
+&nbsp;Ptr{Void} @0x0000000064f65fae<br>
+&nbsp;Ptr{Void} @0x0000000064f6541e<br>
+&nbsp;Ptr{Void} @0x0000000064f7cb9a<br>
+&nbsp;Ptr{Void} @0x0000000064f230d4<br>
+&nbsp;Ptr{Void} @0x0000000003f73fd0<br>
+&nbsp;Ptr{Void} @0x0000000003f73bfb<br>
+&nbsp;Ptr{Void} @0x0000000064f1638b<br>
+&nbsp;Ptr{Void} @0x0000000003f63625<br>
+&nbsp;Ptr{Void} @0x0000000064f6dff9<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">catch_backtrace()</td>
+      <td style="vertical-align: top;">&nbsp;Get the backtrace of the
+current exception, for use
+within catch blocks.</td>
+      <td style="vertical-align: top;">catch_backtrace() </td>
+      <td style="vertical-align: top;">0-element Array{Ptr{Void},1}<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">assert(cond)</td>
+      <td style="vertical-align: top;">&nbsp;Throw an AssertionError if
+cond is false. Also
+available as the macro @assert expr.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@assert cond [text]</td>
+      <td style="vertical-align: top;">Throw an AssertionError if cond
+is false. Preferred
+syntax for writing assertions. Message text is optionally displayed
+upon assertion failure.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ArgumentError(msg)</td>
+      <td style="vertical-align: top;">&nbsp;The parameters to a
+function call do not match a
+valid signature. Argument msg is a descriptive error string.</td>
+      <td style="vertical-align: top;">ArgumentError("ああんんたたおおかかししいい") </td>
+      <td style="vertical-align: top;">ArgumentError("ああんんたたおおかかししいい")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">AssertionError([msg])</td>
+      <td style="vertical-align: top;">The asserted condition did not
+evalutate to true.
+Optional argument msg is a descriptive error string.</td>
+      <td style="vertical-align: top;">AssertionError("壊壊れる") </td>
+      <td style="vertical-align: top;">AssertionError("壊壊れる")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">BoundsError([a][, i])</td>
+      <td style="vertical-align: top;">An indexing operation into an
+array, a, tried to
+access an out-of-bounds element, i.</td>
+      <td style="vertical-align: top;">BoundsError() </td>
+      <td style="vertical-align: top;">BoundsError(#undef,#undef)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DimensionMismatch([msg])</td>
+      <td style="vertical-align: top;">The objects called do not have
+matching
+dimensionality. Optional argument msg is a descriptive error string.</td>
+      <td style="vertical-align: top;">DimensionMismatch("一応") </td>
+      <td style="vertical-align: top;">DimensionMismatch("一応")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DivideError()</td>
+      <td style="vertical-align: top;">Integer division was attempted
+with a denominator
+value of 0.</td>
+      <td style="vertical-align: top;">DivideError()<br>
+      </td>
+      <td style="vertical-align: top;">DivideError()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DomainError()</td>
+      <td style="vertical-align: top;">&nbsp;The arguments to a
+function or constructor are
+outside the valid domain.</td>
+      <td style="vertical-align: top;">DomainError()<br>
+      </td>
+      <td style="vertical-align: top;">DomainError()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">EOFError()</td>
+      <td style="vertical-align: top;">&nbsp;No more data was available
+to read from a file or
+stream.</td>
+      <td style="vertical-align: top;">EOFError()<br>
+      </td>
+      <td style="vertical-align: top;">EOFError()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ErrorException(msg)</td>
+      <td style="vertical-align: top;">&nbsp;Generic error type. The
+error message, in the .msg
+field, may provide more specific details.</td>
+      <td style="vertical-align: top;">ErrorException("たたいいへへんん") </td>
+      <td style="vertical-align: top;">ErrorException("たたいいへへんん")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">InexactError()<br>
+→InexactError<br>
+      </td>
+      <td style="vertical-align: top;">Type conversion cannot be done
+exactly.</td>
+      <td style="vertical-align: top;">InexactError()<br>
+      </td>
+      <td style="vertical-align: top;">InexactError() </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">InterruptException()<br>
+→InterruptException<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;The process was stopped by
+a terminal interrupt
+(CTRL+C).</td>
+      <td style="vertical-align: top;">InterruptException()<br>
+      </td>
+      <td style="vertical-align: top;">InterruptException()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">KeyError(key)</td>
+      <td style="vertical-align: top;">&nbsp;An indexing operation into
+an Associative (Dict) or
+Set like object tried to access or delete a non-existent element.</td>
+      <td style="vertical-align: top;">KeyError("a") </td>
+      <td style="vertical-align: top;">KeyError("a")<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">LoadError(file::AbstractString,
+line::Int, error)</td>
+      <td style="vertical-align: top;">&nbsp;An error occurred while
+includeing, requireing, or
+using a file. The error specifics should be available in the .error
+field.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">MethodError(f, args)</td>
+      <td style="vertical-align: top;">&nbsp;A method with the required
+type signature does not
+exist in the given generic function.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">NullException()<br>
+→NullException<br>
+      </td>
+      <td style="vertical-align: top;">An attempted access to a
+Nullable with no defined
+value.</td>
+      <td style="vertical-align: top;">NullException() </td>
+      <td style="vertical-align: top;">NullException() </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">OutOfMemoryError()<br>
+→OutOfMemoryError<br>
+      </td>
+      <td style="vertical-align: top;">&nbsp;An operation allocated too
+much memory for either
+the system or the garbage collector to handle properly.</td>
+      <td style="vertical-align: top;">OutOfMemoryError()<br>
+      </td>
+      <td style="vertical-align: top;">OutOfMemoryError()<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ReadOnlyMemoryError()</td>
+      <td style="vertical-align: top;">&nbsp;An operation tried to
+write to memory that is
+read-only.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">OverflowError()</td>
+      <td style="vertical-align: top;">&nbsp;The result of an
+expression is too large for the
+specified type and will cause a wraparound.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ParseError(msg)</td>
+      <td style="vertical-align: top;">The expression passed to the
+parse function could
+not be interpreted as a valid Julia expression.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ProcessExitedException()</td>
+      <td style="vertical-align: top;">&nbsp;After a client Julia
+process has exited, further
+attempts to reference the dead child will throw this exception.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">StackOverflowError()</td>
+      <td style="vertical-align: top;">The function call grew beyond
+the size of the call
+stack. This usually happens when a call recurses infinitely.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">SystemError(prefix::AbstractString[,
+errno::Int32]) </td>
+      <td style="vertical-align: top;">&nbsp;A system call failed with
+an error code (in the
+errno global variable). </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">TypeError(func::Symbol,
+context::AbstractString, expected::Type, got) </td>
+      <td style="vertical-align: top;">&nbsp;A type assertion failure,
+or calling an intrinsic
+function with an incorrect argument type. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">UndefRefError() </td>
+      <td style="vertical-align: top;">&nbsp;The item or field is not
+defined for the given
+object.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">UndefVarError(var::Symbol) </td>
+      <td style="vertical-align: top;">A symbol in the current scope is
+not defined. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">InitError(mod::Symbol, error) </td>
+      <td style="vertical-align: top;">&nbsp;An error occurred when
+running a module’s __init__
+function. The actual error thrown is available in the .error field. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr style="font-weight: bold;">
+      <td style="vertical-align: top;" rowspan="1" colspan="4">Events<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Timer(callback::Function, delay,
+repeat=0) </td>
+      <td style="vertical-align: top;">Create a timer to call the given
+callback function.
+The callback is passed one argument, the timer object itself. The
+callback will be invoked after the specified initial delay, and then
+repeating with the given repeat interval. If repeat is 0, the timer is
+only triggered once. Times are in seconds. A timer is stopped and has
+its resources freed by calling close on it.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Timer(delay, repeat=0) </td>
+      <td style="vertical-align: top;">&nbsp;Create a timer that wakes
+up tasks waiting for it
+(by calling wait on the timer object) at a specified interval. Times
+are in seconds. Waiting tasks are woken with an error when the timer is
+closed (by close). Use isopen to check whether a timer is still active.
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4">
+      <h2>Reflection</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">module_name(m::Module) <br>
+→ Symbol </td>
+      <td style="vertical-align: top;">Get the name of a Module as a
+Symbol.<br>
+      </td>
+      <td style="vertical-align: top;">module_name(current_module()) <br>
+      </td>
+      <td style="vertical-align: top;">:Main<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">module_parent(m::Module) <br>
+→ Module</td>
+      <td style="vertical-align: top;">&nbsp;Get a module’s enclosing
+Module. Main is its own
+parent, as is LastMain after workspace().</td>
+      <td style="vertical-align: top;">module_parent(current_module()) <br>
+      </td>
+      <td style="vertical-align: top;">Main<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">current_module() <br>
+→ Module</td>
+      <td style="vertical-align: top;">Get the dynamically current
+Module, which is the
+Module code is currently being read from. In general, this is not the
+same as the module containing the call to this function.</td>
+      <td style="vertical-align: top;">current_module() </td>
+      <td style="vertical-align: top;">Main<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fullname(m::Module)</td>
+      <td style="vertical-align: top;">&nbsp;Get the fully-qualified
+name of a module as a tuple
+of symbols. For example, fullname(Base.Pkg) gives (:Base,:Pkg), and
+fullname(Main) gives ().<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">names(x::Module[, all=false[,
+imported=false]])</td>
+      <td style="vertical-align: top;">Get an array of the names
+exported by a Module, with
+optionally more Module globals according to the additional parameters.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nfields(x::DataType) → Int</td>
+      <td style="vertical-align: top;">&nbsp;Get the number of fields
+of a DataType.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fieldnames(x::DataType)</td>
+      <td style="vertical-align: top;">&nbsp;Get an array of the fields
+of a DataType.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isconst([m::Module, ]s::Symbol)<br>
+&nbsp;→ Bool</td>
+      <td style="vertical-align: top;">Determine whether a global is
+declared const in a
+given Module. The default Module argument is current_module().</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">isgeneric(f::Function) → Bool </td>
+      <td style="vertical-align: top;">&nbsp;Determine whether a
+Function is generic. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">function_name(f::Function) <br>
+→ Symbol </td>
+      <td style="vertical-align: top;">&nbsp;Get the name of a generic
+Function as a symbol, or
+:anonymous. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">function_module(f::Function,
+types) <br>
+→ Module </td>
+      <td style="vertical-align: top;">Determine the module containing
+a given definition
+of a generic function. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">functionloc(f::Function, types) </td>
+      <td style="vertical-align: top;">&nbsp;Returns a tuple
+(filename,line) giving the location
+of a generic Function definition. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">functionloc(m::Method) </td>
+      <td style="vertical-align: top;">Returns a tuple (filename,line)
+giving the location
+of a Method definition. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">Internals</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gc() </td>
+      <td style="vertical-align: top;">&nbsp;Perform garbage
+collection. This should not
+generally be used.<br>
+      </td>
+      <td style="vertical-align: top;">gc()<br>
+      </td>
+      <td style="vertical-align: top;">void<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">gc_enable(on::Bool)</td>
+      <td style="vertical-align: top;">&nbsp;Control whether garbage
+collection is enabled using
+a boolean argument (true for enabled, false for disabled). Returns
+previous GC state. Disabling garbage collection should be used only
+with extreme caution, as it can cause memory use to grow without bound.</td>
+      <td style="vertical-align: top;">gc_enable(true)<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">true </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">macroexpand(x)</td>
+      <td style="vertical-align: top;">&nbsp;Takes the expression x and
+returns an equivalent
+expression with all macros removed (expanded).<br>
+      </td>
+      <td style="vertical-align: top;">macroexpand(1) </td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">expand(x)</td>
+      <td style="vertical-align: top;">Takes the expression x and
+returns an equivalent
+expression in lowered form.</td>
+      <td style="vertical-align: top;">expand(2) </td>
+      <td style="vertical-align: top;">2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">code_lowered(f, types)</td>
+      <td style="vertical-align: top;">Returns an array of lowered ASTs
+for the methods
+matching the given generic function and type signature.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@code_lowered()</td>
+      <td style="vertical-align: top;">&nbsp;Evaluates the arguments to
+the function call,
+determines their types, and calls code_lowered() on the resulting
+expression.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">code_typed(f, types;
+optimize=true)</td>
+      <td style="vertical-align: top;">&nbsp;Returns an array of
+lowered and type-inferred ASTs
+for the methods matching the given generic function and type signature.
+The keyword argument optimize controls whether additional
+optimizations, such as inlining, are also applied.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@code_typed()</td>
+      <td style="vertical-align: top;">Evaluates the arguments to the
+function call,
+determines their types, and calls code_typed() on the resulting
+expression.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">code_warntype(f, types)</td>
+      <td style="vertical-align: top;">Displays lowered and
+type-inferred ASTs for the
+methods matching the given generic function and type signature. The
+ASTs are annotated in such a way as to cause “non-leaf” types to be
+emphasized (if color is available, displayed in red). This serves as a
+warning of potential type instability. Not all non-leaf types are
+particularly problematic for performance, so the results need to be
+used judiciously. See @code_warntype for more information.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@code_warntype()</td>
+      <td style="vertical-align: top;">Evaluates the arguments to the
+function call,
+determines their types, and calls code_warntype() on the resulting
+expression.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">code_llvm(f, types) </td>
+      <td style="vertical-align: top;">Prints the LLVM bitcodes
+generated for running the
+method matching the given generic function and type signature to STDOUT.<br>
+&nbsp;All metadata and dbg.* calls are removed from the
+printed bitcode. Use code_llvm_raw for the full IR.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@code_llvm() </td>
+      <td style="vertical-align: top;">&nbsp;Evaluates the arguments to
+the function call,
+determines their types, and calls code_llvm() on the resulting
+expression. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">code_native(f, types) </td>
+      <td style="vertical-align: top;">&nbsp;Prints the native assembly
+instructions generated
+for running the method matching the given generic function and type
+signature to STDOUT. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">@code_native() </td>
+      <td style="vertical-align: top;">Evaluates the arguments to the
+function call,
+determines their types, and calls code_native() on the resulting
+expression. </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">precompile(f,
+args::Tuple{Vararg{Any}}) </td>
+      <td style="vertical-align: top;">Compile the given function f for
+the argument tuple
+(of types) args, but do not execute it.<br>
+      <br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=Shift_JIS">
+  <title>信号処理</title>
+</head>
+<body>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" rowspan="1" colspan="4"><span
+ style="font-weight: bold;">信号処理(高速フーリエ変換)<br>
+      </span><span id="result_box" class="" lang="ja"><span>Julia</span><span>で</span><span>高
+速フーリエ変換</span><span>（</span><span>FFT</span><span>）</span><span>機能は</span><span>FFTW</span><span>か
+ら関数を</span><span>呼び出すことで</span><span>実現されます</span><span>。</span><span>デ
+フォルトでは</span><span>、</span><span>Julia</span><span>は、</span><span>マルチスレッ
+ド</span><span>FFTW</span><span>を使用していません</span><span>。</span><span>より高い</span><span>性
+能は、</span><span>マルチスレッド</span><span>を実験</span><span>によって得ることができます</span><span>。</span><span>中
+古</span><span class="">FFTW.set_num_threads</span><span class="">（</span><span
+ class="">NP</span><span class="">）は</span><span class="">、NP</span><span
+ class="">の</span><span class="">スレッドを使用</span><span class="">します</span><span
+ class="">。</span></span><span style="font-weight: bold;"><br>
+      </span> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">書式<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">機能<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">例題<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">結果<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fft(A[, dims]) </td>
+      <td style="vertical-align: top;">&nbsp;<span id="result_box"
+ class="" lang="ja"><span>オプション</span><span>暗くなる</span><span>の</span><span>引
+数</span><span>に沿って</span><span>変換するための</span><span>寸法</span><span>の</span><span>反
+復可能オブジェクト</span><span>のサブセット</span><span>（</span><span>例えば</span><span>、
+整数</span><span>、</span><span>範囲</span><span>、</span><span>タプル</span><span>、</span><span>ま
+たは配列</span><span>）を</span><span>指定する配列</span><span>Aの</span><span>多次元</span><span>FFT</span><span>を
+実行します</span><span>。</span><span>形質転換された</span><span>寸法</span><span>に沿って</span><span>サ
+イズ</span><span>が小さい</span><span>素数</span><span>の</span><span>積</span><span>で
+ある場合に</span><span>最も</span><span>効率的な</span><span>、</span> <span
+ class="hps">nextprod</span><span class="">（）を参照してください</span><span>。</span><span>さ
+らに大きな</span><span>効率化</span><span>のために</span><span></span><span>plan_fft</span></span><span
+ id="result_box" class="" lang="ja"><span>（</span><span>）</span></span><span
+ id="result_box" class="" lang="ja"><span class="">も参照してください</span><span>。</span><br>
+&nbsp;&nbsp;<span>一次元</span><span>FFT</span><span>は、</span><span
+ class="">によって定義される</span><span class="">ような1</span><span class="">次元の離散</span><span
+ class="">フーリエ</span><span>変換</span><span>（</span><span>DFT</span><span>）
+を計算します</span></span><br>
+&nbsp;DFT(A)[k]=∑n=1length(A)exp(－i2π(n－1)(k－1)length(A))A[n].<br>
+&nbsp;DFT&#8289;(A)[k]=∑n=1length&#8289;(A)exp&#8289;(－i2π(n－1)(k－1)length&#8289;(A))A[n].<br>
+多次元FFTは、単にA.より高い性能の各変換された次元に沿って、この操作はマルチスレッドで通常可能である実行します。あなたはNPプロセッサを持っ
+ている場合は、NPのスレッドを使用するFFTW.set_num_threads（NP）を使用します。 </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fft!(A[, dims]) </td>
+      <td style="vertical-align: top;">fft()と同じですが、その場で複雑な浮動小数点数の配列でなければ
+なりませんAに、動作します。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ifft(A[, dims]) </td>
+      <td style="vertical-align: top;">&nbsp;<span id="result_box"
+ class="short_text" lang="ja"><span>多次元</span><span>逆</span><span>FFT</span><span>。</span><br>
+&nbsp;&nbsp;<span>1</span><span class="">次元</span><span>逆FFT</span><span
+ class="">を計算</span></span><br>
+&nbsp;IDFT(A)[k]=1length(A)∑n=1length(A)exp(+i2π(n－1)(k－1)length(A))A
+[n].<br>
+&nbsp;IDFT&#8289;(A)[k]=1length&#8289;(A)∑n=1length&#8289;(A)exp&#8289;(+i2π(n－1)(k－1)length&#8289;
+(A))A[n].<br>
+多次元逆FFTは、単にAの各変換された次元に沿って、この操作を実行します </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ifft!(A[, dims]) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>ifft</span><span>（</span><span>）</span><span
+ class="">と同じですが、</span><span>は、A</span><span>上の</span><span>インプレース</span><span
+ class="">を運営</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bfft(A[, dims]) </td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>ifttt</span><span>（</span><span>）</span><span>に似ていますが、</span><span>非
+正規化</span><span>の逆</span><span>を計算します</span><span>（</span><span>後方</span><span>）</span><span>の
+逆</span><span>を</span><span>得るために</span><span>変換された</span><span>寸法</span><span>の</span><span>大
+きさ</span><span>の積で</span><span>除し</span><span>なければならない</span><span>、</span><span>変
+換</span><span>。</span> <span class="hps">（</span><span>これは、</span><span>い
+くつかのアプリケーション</span><span>の他の場所で</span><span>他の</span><span>計算ステップ</span><span
+ class="">と組み合わせることができる</span><span class="">スケーリング</span><span>ステップ</span><span>を</span><span>省
+略</span><span>ため</span><span>IFFT</span><span>（</span><span>）</span><span
+ class="">よりもわずかに</span><span class="">効率的</span><span class="">です</span><span>。</span><span
+ class="">）</span></span><br>
+&nbsp;BDFT(A)[k]=length(A)IDFT(A)[k]<br>
+&nbsp;BDFT&#8289;(A)[k]=length&#8289;(A)IDFT&#8289;(A)[k] </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">bfft!(A[, dims]) </td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>bfft</span><span>（</span><span
+ class="">）</span><span class="">と同じですが、</span><span>は、A</span><span>上の</span><span>イ
+ンプレース</span><span class="">を運営</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_fft(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span
+ title="Pre-plan an optimized FFT along given dimensions (dims) of arrays matching the shape and type of A. (The first two arguments have the same meaning as for fft().) Returns an object P which represents the linear operator computed by the">事
+前計画形状とAのタイプに一致する配列の指定された寸法（暗くなる）に沿って最適化されたFFTは（最初の2つの引数は、高速フーリエ変換のためのと同じ
+意味を持っている（）。）により計算された線形演算子を表すオブジェクトのPを返します。 </span><span
+ title="FFT, and which contains all of the information needed to compute fft(A, dims) quickly.
+&nbsp;&nbsp;">FFT、
+かつ迅速に高速フーリエ変換（A、暗くなり）を計算するために必要な情報がすべて含まれています。<br>
+&nbsp;&nbsp;</span><span title="To apply P to an array A, use P * A;">配列
+AにPを適用するには、P * Aを使用します。</span><span
+ title="in general, the syntax for applying plans is much like that of matrices.">一
+般的に、プランを適用するための構文は、行列のようなくらいです。 </span><span
+ title="(A plan can only be applied to arrays of the same size as the A for which the plan was created.) You can also apply a plan with a preallocated output array &#194; by calling A_mul_B!(&#194;, plan, A).">（計
+画は唯一の計画が作成されたAと同じサイズの配列に適用することができます。）また、A_mul_Bを呼び出すことによって、事前に割り当てられた出力配
+列Aとプランを適用することができます！（&#194;、計画、A）。</span><span
+ title="You can compute the inverse-transform plan by inv(P) and apply the inverse plan with P \ &#194; (the inverse plan is cached and reused for subsequent calls to inv or \), and apply the inverse plan to a pre-allocated output">あ
+なたはINV（P）によって逆変換計画を計算し、P
+\&#194;（逆プランがキャッシュされ、INVの後続の呼び出しに再利用または\されている）と逆のプランを適用し、事前に割り当てられた出力に逆プランを適用
+することができます</span><span title="array A with A_ldiv_B!(A, P, &#194;).
+&nbsp;&nbsp;">A_ldiv_B！
+（A、P、A）と配列A。<br>
+&nbsp;&nbsp;</span><span
+ title="The flags argument is a bitwise-or of FFTW planner flags, defaulting to FFTW.ESTIMATE.">flags
+引数はFFTW.ESTIMATEにデフォルト設定、ビット単位またはFFTWプランナーのフラグです。</span><span
+ title="e.g.">例えば</span><span
+ title="passing FFTW.MEASURE or FFTW.PATIENT will instead spend several seconds (or more) benchmarking different possible FFT algorithms and picking the fastest one;">FFTW.MEASURE
+を渡したりFFTW.PATIENTではなく、異なる可能なFFTアルゴリズムをベンチマーク（またはそれ以上）数秒を過ごすことになりますし、最速のも
+のを選びます。</span><span
+ title="see the FFTW manual for more information on planner flags.">プラン
+ナーのフラグの詳細については、FFTWマニュアルを参照してください。</span><span
+ title="The optional timelimit argument specifies a rough upper bound on the allowed planning time, in seconds.">オ
+プションのいるtimelimit引数は秒単位で、許可された計画時間にバインドされたラフ上位を指定します。 </span><span
+ title="Passing FFTW.MEASURE or FFTW.PATIENT may cause the input array A to be overwritten with zeros during plan creation.
+&nbsp;&nbsp;">FFTW.MEASURE
+またはFFTW.PATIENTを渡すと、入力配列Aは計画の作成中にゼロで上書きされる可能性があります。<br>
+&nbsp;&nbsp;</span><span
+ title="plan_fft!() is the same as plan_fft() but creates a plan that operates in-place on its argument (which must be an array of complex floating-point numbers).">plan_fft！
+（）plan_fft（）と同じですが、（複雑な浮動小数点数の配列でなければなりません）、その引数にその場で動作するプランを作成します。</span><span
+ title="plan_ifft() and so on are similar but produce plans that perform the equivalent of the inverse transforms ifft() and so on.">よ
+うにplan_ifft（）とは似ていますが、逆の同等のように（IFFTを変換）し、実行計画を生成します。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_ifft(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;">&nbsp;<span id="result_box"
+ class="short_text" lang="ja"><span>高速フーリエ変換</span></span>plan_iff<span
+ id="result_box" class="short_text" lang="ja"><span>（</span><span>）</span><span>と
+同じですが、</span><span>逆を実行</span><span class="">I</span><span class="">を変換</span><span>生
+成します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_bfft(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>高速フーリエ変換</span><span>plan_bfft（</span><span>）</span><span>と
+同じですが、</span><span>正規化されていない</span><span>後方</span><span>変換</span><span>を
+実行</span><span>プラン</span><span>を生成します</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_fft!(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;">&nbsp;<span id="result_box"
+ class="short_text" lang="ja"><span>plan_fft</span><span>（</span><span>）</span><span>と
+同じですが、</span><span>は、A</span><span>上の</span><span class="">インプレース</span><span
+ class="">を運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_ifft!(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;">&nbsp;plan_ifft!()<span
+ id="result_box" class="short_text" lang="ja"><span>と同じですが、</span><span>は、
+A</span><span>上の</span><span>インプレース</span><span class="">を運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_bfft!(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;">&nbsp;<span id="result_box"
+ class="short_text" lang="ja"><span>plan_bfft</span><span>（</span><span>）</span><span>と
+同じですが、</span><span>は、A</span><span>上の</span><span>インプレース</span><span
+ class="">を運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">rfft(A[, dims])</td>
+      <td style="vertical-align: top;">&nbsp;<span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>変換</span><span>という事実を利用</span><span>実
+数配列</span><span>Aの</span><span>多次元</span><span>FFTは</span><span>、</span><span>FFT</span><span>と
+比較して</span><span>約半分</span><span>の計算</span><span>時間とストレージ</span><span>コス
+トを節約</span><span>するために、</span><span>共役対称性</span><span>を持っています</span><span>（</span><span>）</span><span>。</span>
+      <span class="hps">A</span><span>は、</span><span>サイズ</span><span>を</span><span>（</span><span>N_1</span><span>、</span><span>...</span><span>、</span><span>n_d</span><span>）
+を持っていれば</span><span>、</span><span>結果は</span><span>サイズ</span><span>（</span><span>DIV</span><span>（</span><span>n_1,2</span><span>）</span><span>1</span><span>、</span><span>...</span><span>、</span><span>n_d</span><span>）
+を有しています</span><span>。</span><br>
+&nbsp;&nbsp;<span>オプション</span><span>暗くなる</span><span>引数</span><span>は、
+FFT</span><span>に似</span><span>変換する</span><span>A</span><span>の</span><span>1
+つ以上のディメンション</span><span>の</span><span>イテラブル</span><span class="">サブセット</span><span
+ class="">を</span><span>、</span><span>指定</span><span>（</span><span>）</span><span>。</span><span>代
+わりに</span><span>（</span><span>おおよそ</span><span>）</span><span>結果</span><span>に</span><span>A</span><span
+ class="">の最初の次元</span><span class="">を半分</span><span>の</span><span>、</span><span
+ class="">暗くなり</span><span>[1]</span><span>次元が</span><span>ある</span><span>（</span><span>大
+体</span><span>）</span><span>同じように</span><span>半減します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">irfft(A, d[, dims])</td>
+      <td style="vertical-align: top;">&nbsp;<span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>rfft</span><span>（</span><span>）</span><span>の</span><span>逆</span><span>は</span><span>：</span><span>複
+雑な配列</span><span>A</span><span>のために</span><span>、</span><span>その</span><span
+ class="">FFTは</span><span>前半に</span><span>得られる</span><span>対応する実</span><span>配
+列を与えます</span><span>。</span> <span class="hps">rfft</span><span>（</span><span>）</span><span
+ class="">については</span><span>、</span><span>暗くなり</span><span>1</span><span>を
+デフォルト</span><span>変換するための</span><span>寸法</span><span>の</span><span>任意の</span><span
+ class="">サブセット</span><span>です</span><span>：</span><span>暗くなり</span><span>は</span><span>（</span><span>と</span><span>div
+要素</span><span class="">を満たしている必要があります</span><span class="">がdims</span><span
+ class="atn">[</span><span>1</span><span>]</span><span>の次元</span><span>に
+沿って</span><span>変換された</span><span>実数配列</span><span>、</span><span>（</span><span>D</span><span>の</span><span>長
+さ</span><span>、</span><span>2</span><span>）</span><span>1</span><span
+ class="">であります</span><span>。</span><span>==</span><span>サイズ</span><span>（</span><span>A</span><span>、</span><span>暗
+くなり</span><span>[1]</span><span>）</span><span>（</span><span class="">このパ
+ラメータは、</span><span>以降</span><span class="">のサイズ</span><span>（</span><span>A</span><span>）</span><span>か
+ら推測</span><span>することはできません</span><span>両方</span><span>2</span><span>*</span><span
+ class="">サイズ</span><span>（</span><span class="">A</span><span>、</span><span
+ class="">暗くなり</span><span class="atn">[</span><span>1</span><span>]</span><span>）</span><span>
+- </span><span>2</span><span>だけでなく、</span><span>2</span><span>*</span><span>サ
+イズ</span><span>（</span><span>A</span><span>、</span><span>暗くなる</span><span
+ class="atn">[</span><span>1</span> <span class="hps">]</span><span>）</span><span>
+- </span><span class="">1</span><span class="">は、変換された</span><span>実数配列</span><span>の
+ための</span><span>有効な</span><span>サイズが</span><span>あります</span><span>）</span><span>。</span></span>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">brfft(A, d[, dims])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>（</span><span>FFT</span><span>に
+似ている）</span><span>が、</span><span>非正規化</span><span>逆</span><span>変換を計算</span><span>（</span><span>IFFT</span><span>に
+似</span><span>（</span><span>）</span><span>）</span><span>、</span><span>逆変
+換を</span><span>得るために、</span><span>（</span><span>実際の</span><span>出力配列</span><span>の</span><span>）</span><span>変
+換された</span><span>寸法</span><span>の</span><span>大きさ</span><span>の積で</span><span>除
+し</span><span class="">なければなりません</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_rfft(A [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>事前</span><span>計画</span><span>rfft</span><span>を
+除く</span><span>（</span><span>）</span><span>のFFTを</span><span>計画する</span><span>同
+様の</span><span>最適化された</span><span>実</span><span>入力</span><span>FFT</span><span>、</span><span>（</span><span>）</span><span>の
+代わりに</span><span>、FFTの</span><span>（</span><span>）</span><span>。</span><span>最
+初の二つの引数</span><span>、</span><span>および</span><span>変換された</span><span>結果のサ
+イズ</span><span>は</span><span>、</span><span>rfft</span><span>のための</span><span>（）
+と同じ</span><span>です</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_brfft(A, d [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>BR</span><span>の</span><span>FFT</span><span>を
+除く</span><span>（</span><span>）</span><span>のFFTを</span><span>計画する</span><span>同
+様の</span><span>最適化</span><span>リアルタイム</span><span>入力</span><span>変換</span><span>非
+正規化</span><span>前の</span><span>計画</span><span>、</span><span>（</span><span>）</span><span>の
+代わりに</span><span>rfft</span><span>の</span><span>（</span><span>）</span><span>。</span><span>最
+初の二つの引数</span><span>と</span><span>変換された</span><span class="">結果のサイズ</span><span>は</span><span>、</span><span>brfft</span><span>の
+ための</span><span class="">（）と同じ</span><span class="">です</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_irfft(A, d [, dims];
+flags=FFTW.ESTIMATE; timelimit=Inf)</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>事前</span><span>計画</span><span>IFFT</span><span>を
+除く</span><span>（</span><span>）</span><span>のFFTを</span><span>計画する</span><span>同
+様の</span><span>最適化された</span><span>逆</span><span>の実</span><span>入力</span><span>FFT</span><span>、</span><span>（</span><span>）</span><span>と</span><span>BR</span><span>の</span><span>FFT</span><span>（</span><span>）</span><span>、</span><span>そ
+れぞれ</span><span>。</span><span>最初の3つの引数</span><span>が</span><span>irfft</span><span>と
+同じ</span><span>意味を</span><span class="">持っています</span><span>（</span><span
+ class="">）</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dct(A[, dims])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>多次元</span><span>タイプII</span><span>離
+散コサイン変換</span><span>DCT</span><span>の</span><span>単一の</span><span>正規化を</span><span>使
+用して</span><span>、</span><span>配列A</span><span>の</span><span>（</span><span>DCT）
+を</span><span>実行します。</span><span>オプション</span><span>暗くなる</span><span>引数</span><span>に
+沿って</span><span>変換するための</span><span>寸法</span><span>の</span><span>反復可能オブ
+ジェクト</span><span>のサブセット</span><span>（</span><span>例えば</span><span
+ class="">、整数</span><span>、</span><span>範囲</span><span>、</span><span>タプル</span><span>、</span><span>ま
+たは配列</span><span>）を指定します。</span><span>形質転換された</span><span class="">寸法</span><span
+ class="">に沿って</span><span class="">サイズ</span><span>が小さい</span><span>素数</span><span>の</span><span>積</span><span>で
+ある場合に</span><span>最も</span><span>効率的な</span><span>、</span> <span
+ class="hps">nextprod</span><span class="">（）を参照してください</span><span>。</span><span>ま
+た、</span><span>さらに大きな</span><span>効率化</span><span>のために</span><span>（</span><span>）</span><span>plan_dct</span><span
+ class="">を参照してください</span><span class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">dct!(A[, dims])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>dct!()</span><span>と同じ</span><span>除
+き、</span><span>それは</span><span>インプレース</span><span>実数または</span><span>複素数</span><span>浮
+動小数点値</span><span>の</span><span>配列でなければなりません</span><span>A</span><span
+ class="">上</span><span class="">、</span><span class="">動作すること</span><span
+ class="">。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">idct(A[, dims])</td>
+      <td style="vertical-align: top;">多次元逆離散コサイン変換配列A（DCT）を計算する（技術的には、タ
+イプIIIユニタリ正規化とDCT）。オプション暗くなる引数に沿って変換するための寸法の反復可能オブジェクトのサブセット（例えば、整数、範囲、タプ
+ル、または配列）を指定します。形質転換された寸法に沿ってサイズが小さい素数の積である場合に最も効率的な、
+nextprod（）を参照してください。また、さらに大きな効率化のために（）plan_idctを参照してください。<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">idct!(A[, dims])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span>idct!()</span><span>と
+同じですが</span><span>Aでの</span><span>インプレース</span><span>を運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_dct(A[, dims[, flags[,
+timelimit]]])</td>
+      <td style="vertical-align: top;">&nbsp;<span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>DCT</span><span>を</span><span>計
+算する関数</span><span>を生成する</span><span>以外</span><span>（</span><span>）</span><span>、</span><span>最
+適化された</span><span>離散コサイン変換</span><span>FFT</span><span>を計画</span><span>に
+類似</span><span>（</span><span>DCT）を</span><span>事前</span><span>計画します</span><span>（</span><span>）</span><span>。</span><span>最
+初の</span><span>2つの引数は</span><span>、DCT</span><span>と同じ</span><span>意味を</span><span>持っ
+ています</span><span>（</span><span class="">）</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_dct!(A[, dims[, flags[,
+timelimit]]])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span class="">plan_dct</span><span>（</span><span>）</span><span>と
+同じですが、</span><span>は、A</span><span>上の</span><span>インプレース</span><span
+ class="">を運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_idct(A[, dims[, flags[,
+timelimit]]])</td>
+      <td style="vertical-align: top;">&nbsp;<span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>事前</span><span>計画</span><span>最
+適化された</span><span>逆離散</span><span>コサイン変換</span><span>IDCT</span><span>を</span><span>計
+算する関数</span><span>を</span><span>（</span><span>）を製造</span><span>除いて</span><span>（</span><span>）</span><span>、</span><span>高
+速フーリエ変換</span><span>を</span><span>計画する</span><span>類似の</span><span>（</span><span>DCT）
+を</span><span>。</span><span class="">最初の</span><span>2つの引数は</span><span>、
+IDCT</span><span>のための</span><span>と同じ意味を</span><span>持っています</span><span>（</span><span>）</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_idct!(A[, dims[, flags[,
+timelimit]]])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span>計画</span><span>IDCT</span><span>（</span><span>）</span><span>と
+同じですが、</span><span>は、A</span><span>上の</span><span class="">インプレース</span><span>を
+運営</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fftshift(x)</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span>xの</span><span>各次元</span><span
+ class="">の</span><span>前半と後半</span><span>を</span><span>交換します。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fftshift(x, dim)</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span>配列x</span><span>の</span><span>特
+定のディメンション</span><span>の</span><span>前半と後半</span><span>を</span><span
+ class="">交換します。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ifftshift(x[, dim])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="short_text" lang="ja"><span class="">関数fftshift</span><span>の</span><span>効
+果</span><span>を元に戻します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filt(b, a, x[, si])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>オプションの</span><span>初期フィルタ</span><span>状
+態ベクトル</span><span>のsi</span><span>（</span><span>ゼロ</span><span>デフォルト</span><span>）</span><span>で</span><span>、</span><span>ベ
+クトルx</span><span>に</span><span class="">ベクトルa</span><span>と</span><span>b
+で</span><span>説明したフィルタ</span><span>を適用します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">filt!(out, b, a, x[, si])</td>
+      <td style="vertical-align: top;"><span tabindex="-1"
+ id="result_box" class="" lang="ja"><span>同じ</span><span>フィレ</span><span>と
+して</span><span>（</span><span>）</span><span>が、</span><span>その場で</span><span>そ
+れ</span><span>を修正するために</span><span>入力x</span><span>を</span><span
+ class="">別名になりうる</span><span>out引数</span><span>、</span><span>に結果を</span><span>書
+き込みます</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">deconv(b, a)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span class="">このような</span><span>ことを</span><span>ベクトルc</span><span>を
+構築</span><span>=</span><span>の</span><span>コンバージョン</span><span>（a、b）は、</span><span>+</span>
+      <span class="hps">R</span><span>、B</span><span>。</span><span
+ class="">多項式の</span><span>除算</span><span>に相当します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">conv(u, v)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>2つのベクトルの</span><span>畳み込み</span><span>。</span>
+      <span class="hps">FFTアルゴリズム</span><span class="">を使用します</span><span>。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">conv2(u, v, A)</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>ベクトル</span><span>uとv</span><span>。</span><span>によって</span><span>生
+成された</span><span>2</span><span>次元</span><span>分離可能</span><span>カーネルで</span><span>行
+列</span><span>A</span><span>の</span><span>2</span><span>次元</span><span
+ class="">コンボリューション</span><span>は、</span><span>2</span><span>次元</span><span>FFT
+アルゴリズム</span><span>を使用します</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">conv2(B, A)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span>行列</span><span>Aと</span><span>行列</span><span>B</span><span>の</span><span>2</span><span>次
+元</span><span>コンボリューション</span><span class="">は、</span><span class="">2</span><span
+ class="">-D</span> <span class="hps">FFT</span><span>アルゴリズムを</span><span>使
+用します</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">xcorr(u, v)</td>
+      <td style="vertical-align: top;"><span id="result_box"
+ class="short_text" lang="ja"><span class="">2つのベクトルの</span><span>相互相関</span><span>を
+計算します。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">r2r(A, kind[, dims])</td>
+      <td style="vertical-align: top;">
+      <div id="gt-src-c" class="g-unit">
+      <div id="gt-src-p"> </div>
+      </div>
+      <span id="result_box" class="" lang="ja"><span
+ title="The following functions are defined within the Base.FFTW module.
+&nbsp;">次
+の関数がBase.FFTWモジュール内で定義されています。<br>
+&nbsp;</span><span
+ title="Performs a multidimensional real-input/real-output (r2r) transform of type kind of the array A, as defined in the FFTW manual.">FFTW
+マニュアルで定義された多次元実入力/リアルタイム出力（R2R）は、配列Aのタイプの種類の変換を行います。</span><span
+ title="kind specifies either a discrete cosine transform of various types (FFTW.REDFT00, FFTW.REDFT01, FFTW.REDFT10, or FFTW.REDFT11), a discrete sine transform of various types (FFTW.RODFT00, FFTW.RODFT01, FFTW.RODFT10, or">種
+類は、いずれかを指定し、離散コサイン変換、離散サインは様々な種類（FFTW.RODFT00、FFTW.RODFT01、FFTW.RODFT10の
+変換、様々な種類（FFTW.REDFT00、FFTW.REDFT01、FFTW.REDFT10、またはFFTW.REDFT11）の変換、または</span><span
+ title="FFTW.RODFT11), a real-input DFT with halfcomplex-format output (FFTW.R2HC and its inverse FFTW.HC2R), or a discrete Hartley transform (FFTW.DHT).">FFTW.RODFT11）、
+実入力halfcomplex形式の出力とDFT（FFTW.R2HCとその逆FFTW.HC2R）、または離散ハートレー変換（FFTW.DHT）。</span><span
+ title="The kind argument may be an array or tuple in order to specify different transform types along the different dimensions of A;">親
+切な引数は、異なる次元に沿って異なる変換タイプを指定するために、配列やタプルであってもよいです。</span><span
+ title="kind[end] is used for any unspecified dimensions.">種類[終了]任意の不特定の
+寸法のために使用されます。 </span><span
+ title="See the FFTW manual for precise definitions of these transform types, at http://www.fftw.org/doc.
+&nbsp;&nbsp;">http:
+//www.fftw.org/docで、型を変換これらの正確な定義については、FFTWマニュアルを参照してください。<br>
+&nbsp;&nbsp;</span><span
+ title="The optional dims argument specifies an iterable subset of dimensions (e.g. an integer, range, tuple, or array) to transform along.">オ
+プションの引数に沿って変換するための寸法の反復可能オブジェクトのサブセット（例えば、整数、範囲、タプル、または配列）を指定暗くなり。</span><span
+ title="kind[i] is then the transform type for dims[i], with kind[end] being used for i &gt; length(kind).
+&nbsp;&nbsp;">種
+類[i]は、次に種類[終了]で、[i]は暗くなるの型を変換されたI&gt;の長さ（種類）のために使用されています。<br>
+&nbsp;&nbsp;</span><span
+ title="See also plan_r2r() to pre-plan optimized r2r transforms.">変換R2R
+最適化もplan_r2r（）するために事前の計画を参照してください。</span></span> </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">r2r!(A, kind[, dims])</td>
+      <td style="vertical-align: top;"><span id="result_box" class=""
+ lang="ja"><span>R2R</span><span>（</span><span>）</span><span>と同じですが、</span><span>イ
+ンプレース</span><span>実数または</span><span>複素数</span><span>浮動小数点数</span><span
+ class="">の配列でなければなりません</span><span>A</span><span>に</span><span>、</span><span>動
+作します。</span></span></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_r2r(A, kind[, dims[,
+flags[, timelimit]]])</td>
+      <td style="vertical-align: top;">&nbsp;変換（第3引数）ことを除いてBase.planのFFT
+（）に似てR2R変換最適化され、R2Rに対応する事前計画（）とR2R！（）、それぞれ。</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">plan_r2r!(A, kind[, dims[,
+flags[, timelimit]]])</td>
+      <td style="vertical-align: top;">！Base.planのFFT（）に似ていますが、R2R（）に対応。</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body>
+</html>

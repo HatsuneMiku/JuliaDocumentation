@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]--><!--[if gt IE 8]><!--><!--<![endif]-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Guide — Julia Language 0.4.3 documentation</title>
+  <link
+ href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto+Slab:400,700%7CInconsolata:400,700"
+ rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="stylesheet" href="../_static/julia.css" type="text/css">
+  <link rel="top" title="Julia Language 0.4.3 documentation"
+ href="../index.html">
+  <link rel="next" title="Frequently Asked Questions" href="faq.html">
+  <link rel="prev" title="Workflow Tips" href="workflow-tips.html">
+  <script
+ src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<div class="wy-nav-content">
+<div class="rst-content">
+<div role="main" class="document">
+<div class="section" id="style-guide"><span id="man-style-guide"></span>
+<h1><span id="result_box" class="short_text" lang="ja"><span class="">スタ
+イルガイド</span></span><a class="headerlink" href="#style-guide"
+ title="Permalink to this headline"></a></h1>
+<p>The following sections explain a few aspects of idiomatic Julia
+coding style.
+None of these rules are absolute; they are only suggestions to help
+familiarize
+you with the language and to help you choose among alternative designs.</p>
+<div class="section" id="write-functions-not-just-scripts">
+<h2><span id="result_box" class="short_text" lang="ja"><span>書き込み</span><span>機
+能</span><span class="">だけではなく、</span><span class="">スクリプト</span></span><a
+ class="headerlink" href="#write-functions-not-just-scripts"
+ title="Permalink to this headline"></a></h2>
+<p>Writing code as a series of steps at the top level is a quick way to
+get
+started solving a problem, but you should try to divide a program into
+functions as soon as possible. Functions are more reusable and
+testable,
+and clarify what steps are being done and what their inputs and outputs
+are.
+Furthermore, code inside functions tends to run much faster than top
+level
+code, due to how Julia’s compiler works.</p>
+<p>It is also worth emphasizing that functions should take arguments,
+instead
+of operating directly on global variables (aside from constants like <a
+ class="reference internal" href="../stdlib/numbers.html#Base.pi"
+ title="Base.pi"><code class="xref jl jl-const docutils literal"><span
+ class="pre">pi</span></code></a>).</p>
+</div>
+<div class="section" id="avoid-writing-overly-specific-types">
+<h2><span id="result_box" class="short_text" lang="ja"><span>過度に</span><span>固
+有の型</span><span>を</span><span class="">記述するのは避け</span></span><a
+ class="headerlink" href="#avoid-writing-overly-specific-types"
+ title="Permalink to this headline"></a></h2>
+<p>Code should be as generic as possible. Instead of writing:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="nb">convert</span><span class="p">(</span><span
+ class="n">Complex</span><span class="p">{</span><span class="kt">Float64</span><span
+ class="p">},</span> <span class="n">x</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>it’s better to use available generic functions:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">complex</span><span class="p">(</span><span
+ class="n">float</span><span class="p">(</span><span class="n">x</span><span
+ class="p">))</span>
+</pre>
+</div>
+</div>
+<p>The second version will convert <code class="docutils literal"><span
+ class="pre">x</span></code> to an appropriate type, instead of
+always the same type.</p>
+<p>This style point is especially relevant to function arguments. For
+example, don’t declare an argument to be of type <code
+ class="docutils literal"><span class="pre">Int</span></code> or <code
+ class="docutils literal"><span class="pre">Int32</span></code>
+if it really could be any integer, expressed with the abstract type
+<code class="docutils literal"><span class="pre">Integer</span></code>.
+In fact, in many cases you can omit the argument type
+altogether, unless it is needed to disambiguate from other method
+definitions, since a <a class="reference internal"
+ href="../stdlib/base.html#Base.MethodError" title="Base.MethodError"><code
+ class="xref jl jl-exc docutils literal"><span class="pre">MethodError</span></code></a>
+will be thrown anyway if a type
+is passed that does not support any of the requisite operations.
+(This is known as <a class="reference external"
+ href="https://en.wikipedia.org/wiki/Duck_typing">duck typing</a>.)</p>
+<p>For example, consider the following definitions of a function
+<code class="docutils literal"><span class="pre">addone</span></code>
+that returns one plus its argument:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">addone</span><span class="p">(</span><span
+ class="n">x</span><span class="p">::</span><span class="kt">Int</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">+</span> <span class="mi">1</span>             <span
+ class="c"># works only for Int</span>
+<span class="n">addone</span><span class="p">(</span><span class="n">x</span><span
+ class="p">::</span><span class="n">Integer</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span
+ class="n">one</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span>    <span class="c"># any integer type</span>
+<span class="n">addone</span><span class="p">(</span><span class="n">x</span><span
+ class="p">::</span><span class="n">Number</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span
+ class="n">one</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span>     <span class="c"># any numeric type</span>
+<span class="n">addone</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span
+ class="o">+</span> <span class="n">one</span><span class="p">(</span><span
+ class="n">x</span><span class="p">)</span>             <span class="c"># any type supporting + and one</span>
+</pre>
+</div>
+</div>
+<p>The last definition of <code class="docutils literal"><span
+ class="pre">addone</span></code> handles any type supporting
+<a class="reference internal" href="../stdlib/numbers.html#Base.one"
+ title="Base.one"><code class="xref jl jl-func docutils literal"><span
+ class="pre">one()</span></code></a> (which returns 1 in the same type
+as <code class="docutils literal"><span class="pre">x</span></code>,
+which
+avoids unwanted type promotion) and the <a class="reference internal"
+ href="../stdlib/math.html#Base.+" title="Base.+"><code
+ class="xref jl jl-obj docutils literal"><span class="pre">+</span></code></a>
+function with those
+arguments. The key thing to realize is that there is <em>no
+performance
+penalty</em> to defining <em>only</em> the general <code
+ class="docutils literal"><span class="pre">addone(x)</span> <span
+ class="pre">=</span> <span class="pre">x</span> <span class="pre">+</span>
+<span class="pre">one(x)</span></code>,
+because Julia will automatically compile specialized versions as
+needed. For example, the first time you call <code
+ class="docutils literal"><span class="pre">addone(12)</span></code>,
+Julia
+will automatically compile a specialized <code class="docutils literal"><span
+ class="pre">addone</span></code> function for
+<code class="docutils literal"><span class="pre">x::Int</span></code>
+arguments, with the call to <a class="reference internal"
+ href="../stdlib/numbers.html#Base.one" title="Base.one"><code
+ class="xref jl jl-func docutils literal"><span class="pre">one()</span></code></a>
+replaced by its inlined
+value <code class="docutils literal"><span class="pre">1</span></code>.
+Therefore, the first three definitions of <code
+ class="docutils literal"><span class="pre">addone</span></code>
+above are completely redundant.</p>
+</div>
+<div class="section" id="handle-excess-argument-diversity-in-the-caller">
+<h2><span id="result_box" class="short_text" lang="ja"><span class="">呼び
+出し側</span><span>に</span><span>余分な</span><span>引数</span><span>の</span><span>多
+様性を</span><span class="">扱います</span></span><a class="headerlink"
+ href="#handle-excess-argument-diversity-in-the-caller"
+ title="Permalink to this headline"></a></h2>
+<p>Instead of:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+ class="n">y</span><span class="p">)</span>
+    <span class="n">x</span> <span
+ class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span
+ class="n">x</span><span class="p">);</span> <span class="n">y</span> <span
+ class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span
+ class="n">y</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="k">end</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">x</span><span
+ class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>use:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> foo</span><span
+ class="p">(</span><span class="n">x</span><span class="p">::</span><span
+ class="kt">Int</span><span class="p">,</span> <span class="n">y</span><span
+ class="p">::</span><span class="kt">Int</span><span class="p">)</span>
+    <span
+ class="o">...</span>
+<span class="k">end</span>
+<span class="n">foo</span><span class="p">(</span><span class="kt">Int</span><span
+ class="p">(</span><span class="n">x</span><span class="p">),</span> <span
+ class="kt">Int</span><span class="p">(</span><span class="n">y</span><span
+ class="p">))</span>
+</pre>
+</div>
+</div>
+<p>This is better style because <code class="docutils literal"><span
+ class="pre">foo</span></code> does not really accept numbers of all
+types; it really needs <code class="docutils literal"><span class="pre">Int</span></code>
+s.</p>
+<p>One issue here is that if a function inherently requires integers,
+it
+might be better to force the caller to decide how non-integers should
+be converted (e.g. floor or ceiling). Another issue is that declaring
+more specific types leaves more “space” for future method definitions.</p>
+</div>
+<div class="section"
+ id="append-to-names-of-functions-that-modify-their-arguments">
+<h2><span id="result_box" class="short_text" lang="ja"><span>追加</span><span>！</span><span>そ
+の引数</span><span class="">を変更する</span><span class="">関数の名前</span><span
+ class="">に</span></span><a class="headerlink"
+ href="#append-to-names-of-functions-that-modify-their-arguments"
+ title="Permalink to this headline"></a></h2>
+<p>Instead of:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> double</span><span
+ class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span
+ class="n">Number</span><span class="p">}(</span><span class="n">a</span><span
+ class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span
+ class="n">T</span><span class="p">})</span>
+    <span class="k">for</span> <span
+ class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span
+ class="p">:</span><span class="n">endof</span><span class="p">(</span><span
+ class="n">a</span><span class="p">);</span> <span class="n">a</span><span
+ class="p">[</span><span class="n">i</span><span class="p">]</span> <span
+ class="o">*=</span> <span class="mi">2</span><span class="p">;</span> <span
+ class="k">end</span>
+    <span class="n">a</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>use:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">function</span><span class="nf"> double</span><span
+ class="o">!</span><span class="p">{</span><span class="n">T</span><span
+ class="o">&lt;:</span><span class="n">Number</span><span class="p">}(</span><span
+ class="n">a</span><span class="p">::</span><span class="n">AbstractArray</span><span
+ class="p">{</span><span class="n">T</span><span class="p">})</span>
+    <span
+ class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span
+ class="mi">1</span><span class="p">:</span><span class="n">endof</span><span
+ class="p">(</span><span class="n">a</span><span class="p">);</span> <span
+ class="n">a</span><span class="p">[</span><span class="n">i</span><span
+ class="p">]</span> <span class="o">*=</span> <span class="mi">2</span><span
+ class="p">;</span> <span class="k">end</span>
+    <span class="n">a</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>The Julia standard library uses this convention throughout and
+contains examples of functions with both copying and modifying forms
+(e.g., <a class="reference internal"
+ href="../stdlib/sort.html#Base.sort" title="Base.sort"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sort()</span></code></a>
+and <a class="reference internal"
+ href="../stdlib/sort.html#Base.sort%21" title="Base.sort!"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sort!()</span></code></a>),
+and others which are just modifying
+(e.g., <a class="reference internal"
+ href="../stdlib/collections.html#Base.push%21" title="Base.push!"><code
+ class="xref jl jl-func docutils literal"><span class="pre">push!()</span></code></a>,
+<a class="reference internal"
+ href="../stdlib/collections.html#Base.pop%21" title="Base.pop!"><code
+ class="xref jl jl-func docutils literal"><span class="pre">pop!()</span></code></a>,
+<a class="reference internal"
+ href="../stdlib/collections.html#Base.splice%21" title="Base.splice!"><code
+ class="xref jl jl-func docutils literal"><span class="pre">splice!()</span></code></a>).
+It is typical for
+such functions to also return the modified array for convenience.</p>
+</div>
+<div class="section" id="avoid-strange-type-unions">
+<h2><span id="result_box" class="short_text" lang="ja"><span>奇妙な</span><span>タ
+イプ</span><span>の</span><span class="">労働組合</span><span class="">を</span><span
+ class="">避けます</span></span><a class="headerlink"
+ href="#avoid-strange-type-unions" title="Permalink to this headline"></a></h2>
+<p>Types such as <code class="docutils literal"><span class="pre">Union{Function,AbstractString}</span></code>
+are often a sign that some design
+could be cleaner.</p>
+</div>
+<div class="section" id="avoid-type-unions-in-fields">
+<h2><span id="result_box" class="short_text" lang="ja"><span>フィールド</span><span
+ class="">内のタイプ</span><span class="">組合</span><span class="">を</span><span
+ class="">避けます</span></span><a class="headerlink"
+ href="#avoid-type-unions-in-fields" title="Permalink to this headline"></a></h2>
+<p>When creating a type such as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">type</span><span class="nc"> MyType</span>
+    <span
+ class="o">...</span>
+    <span class="n">x</span><span class="p">::</span><span
+ class="n">Union</span><span class="p">{</span><span class="n">Void</span><span
+ class="p">,</span><span class="n">T</span><span class="p">}</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>ask whether the option for <code class="docutils literal"><span
+ class="pre">x</span></code> to be <code class="docutils literal"><span
+ class="pre">nothing</span></code> (of type <code
+ class="docutils literal"><span class="pre">Void</span></code>)
+is really necessary. Here are some alternatives to consider:</p>
+<ul class="simple">
+  <li>Find a safe default value to initialize <code
+ class="docutils literal"><span class="pre">x</span></code> with</li>
+  <li>Introduce another type that lacks <code class="docutils literal"><span
+ class="pre">x</span></code></li>
+  <li>If there are many fields like <code class="docutils literal"><span
+ class="pre">x</span></code>, store them in a dictionary</li>
+  <li>Determine whether there is a simple rule for when <code
+ class="docutils literal"><span class="pre">x</span></code> is <code
+ class="docutils literal"><span class="pre">nothing</span></code>.
+For example, often the field will start as <code
+ class="docutils literal"><span class="pre">nothing</span></code> but
+get initialized at
+some well-defined point. In that case, consider leaving it undefined at
+first.</li>
+  <li>If <code class="docutils literal"><span class="pre">x</span></code>
+really needs to hold no value at some times, define it as <code
+ class="docutils literal"><span class="pre">::Nullable{T}</span></code>
+instead, as this guarantees type-stability in the code
+accessing this field (see <a class="reference internal"
+ href="types.html#man-nullable-types"><span>Nullable types</span></a>)</li>
+</ul>
+</div>
+<div class="section" id="avoid-elaborate-container-types">
+<h2><span id="result_box" class="short_text" lang="ja"><span>精巧な</span><span>コ
+ンテナタイプ</span><span>を</span><span class="">避けます</span></span><a
+ class="headerlink" href="#avoid-elaborate-container-types"
+ title="Permalink to this headline"></a></h2>
+<p>It is usually not much help to construct arrays like the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">a</span> <span class="o">=</span> <span class="n">Array</span><span
+ class="p">(</span><span class="n">Union</span><span class="p">{</span><span
+ class="kt">Int</span><span class="p">,</span><span class="n">AbstractString</span><span
+ class="p">,</span><span class="n">Tuple</span><span class="p">,</span><span
+ class="n">Array</span><span class="p">},</span> <span class="n">n</span><span
+ class="p">)</span>
+</pre>
+</div>
+</div>
+<p>In this case <a class="reference internal"
+ href="../stdlib/arrays.html#Base.cell" title="Base.cell"><code
+ class="xref jl jl-func docutils literal"><span class="pre">cell(n)</span></code></a>
+is better. It is also more helpful to the compiler
+to annotate specific uses (e.g. <code class="docutils literal"><span
+ class="pre">a[i]::Int</span></code>) than to try to pack many
+alternatives into one type.</p>
+</div>
+<div class="section"
+ id="use-naming-conventions-consistent-with-julia-s-base">
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div id="gt-res-content" class="almost_half_cell">
+<div dir="ltr" style="">
+<h2><span id="result_box" class="short_text" lang="ja"><span>Julia</span><span>の
+ベース</span><span class="">と一致して</span><span>命名規則を</span><span>使用します</span><span>/</span></span></h2>
+</div>
+</div>
+<h2><a class="headerlink"
+ href="#use-naming-conventions-consistent-with-julia-s-base"
+ title="Permalink to this headline"></a></h2>
+<ul class="simple">
+  <li>modules and type names use capitalization and camel case: <code
+ class="docutils literal"><span class="pre">module</span> <span
+ class="pre">SparseMatrix</span></code>, <code class="docutils literal"><span
+ class="pre">immutable</span> <span class="pre">UnitRange</span></code>.</li>
+  <li>functions are lowercase (<a class="reference internal"
+ href="../stdlib/collections.html#Base.maximum" title="Base.maximum"><code
+ class="xref jl jl-func docutils literal"><span class="pre">maximum()</span></code></a>,
+    <a class="reference internal"
+ href="../stdlib/base.html#Base.convert" title="Base.convert"><code
+ class="xref jl jl-func docutils literal"><span class="pre">convert()</span></code></a>)
+and,
+when readable, with multiple words squashed together (<a
+ class="reference internal" href="../stdlib/base.html#Base.isequal"
+ title="Base.isequal"><code class="xref jl jl-func docutils literal"><span
+ class="pre">isequal()</span></code></a>, <a class="reference internal"
+ href="../stdlib/collections.html#Base.haskey" title="Base.haskey"><code
+ class="xref jl jl-func docutils literal"><span class="pre">haskey()</span></code></a>).
+When necessary, use underscores as word separators.
+Underscores are also used to indicate a combination of
+concepts (<a class="reference internal"
+ href="../stdlib/parallel.html#Base.remotecall_fetch"
+ title="Base.remotecall_fetch"><code
+ class="xref jl jl-func docutils literal"><span class="pre">remotecall_fetch()</span></code></a>
+as a more efficient implementation
+of <code class="docutils literal"><span class="pre">fetch(remotecall(...))</span></code>)
+or as modifiers (<a class="reference internal"
+ href="../stdlib/arrays.html#Base.sum_kbn" title="Base.sum_kbn"><code
+ class="xref jl jl-func docutils literal"><span class="pre">sum_kbn()</span></code></a>).</li>
+  <li>conciseness is valued, but avoid abbreviation
+(<a class="reference internal"
+ href="../stdlib/collections.html#Base.indexin" title="Base.indexin"><code
+ class="xref jl jl-func docutils literal"><span class="pre">indexin()</span></code></a>
+rather than <code class="docutils literal"><span class="pre">indxin()</span></code>)
+as it becomes difficult to
+remember whether and how particular words are abbreviated.</li>
+</ul>
+<p>If a function name requires multiple words, consider whether it
+might
+represent more than one concept and might be better split into pieces.</p>
+</div>
+<div class="section" id="don-t-overuse-try-catch">
+<h2>Don’t overuse try-catch</h2>
+酷使のtry-catchをしないでください<br>
+<br>
+<p>It is better to avoid errors than to rely on catching them.</p>
+</div>
+<div class="section" id="don-t-parenthesize-conditions">
+<h2>Don’t parenthesize conditions</h2>
+条件を括弧しないでください<br>
+<br>
+<p>Julia doesn’t require parens around conditions in <code
+ class="docutils literal"><span class="pre">if</span></code> and <code
+ class="docutils literal"><span class="pre">while</span></code>.
+Write:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span
+ class="n">b</span>
+</pre>
+</div>
+</div>
+<p>instead of:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span
+ class="o">==</span> <span class="n">b</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="don-t-overuse">
+<h2>Don’t overuse ...</h2>
+...しないで酷使<br>
+<p>Splicing function arguments can be addictive. Instead of <code
+ class="docutils literal"><span class="pre">[a...,</span> <span
+ class="pre">b...]</span></code>,
+use simply <code class="docutils literal"><span class="pre">[a;</span>
+<span class="pre">b]</span></code>, which already concatenates arrays.
+<a class="reference internal"
+ href="../stdlib/collections.html#Base.collect" title="Base.collect"><code
+ class="xref jl jl-func docutils literal"><span class="pre">collect(a)</span></code></a>
+is better than <code class="docutils literal"><span class="pre">[a...]</span></code>,
+but since <code class="docutils literal"><span class="pre">a</span></code>
+is already iterable
+it is often even better to leave it alone, and not convert it to an
+array.</p>
+</div>
+<div class="section" id="don-t-use-unnecessary-static-parameters">
+<h2>Don’t use unnecessary static parameters</h2>
+不要な静的パラメータを使用しないでください<br>
+<p>A function signature:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">foo</span><span class="p">{</span><span class="n">T</span><span
+ class="o">&lt;:</span><span class="n">Real</span><span class="p">}(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">T</span><span
+ class="p">)</span> <span class="o">=</span> <span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>should be written as:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">foo</span><span class="p">(</span><span class="n">x</span><span
+ class="p">::</span><span class="n">Real</span><span class="p">)</span> <span
+ class="o">=</span> <span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>instead, especially if <code class="docutils literal"><span
+ class="pre">T</span></code> is not used in the function body.
+Even if <code class="docutils literal"><span class="pre">T</span></code>
+is used, it can be replaced with <a class="reference internal"
+ href="../stdlib/base.html#Base.typeof" title="Base.typeof"><code
+ class="xref jl jl-func docutils literal"><span class="pre">typeof(x)</span></code></a>
+if convenient.
+There is no performance difference.
+Note that this is not a general caution against static parameters, just
+against uses where they are not needed.</p>
+<p>Note also that container types, specifically may need type
+parameters in
+function calls. See the FAQ <a class="reference internal"
+ href="faq.html#man-abstract-container-type"><span>How should I declare
+“abstract container type” fields?</span></a>
+for more information.</p>
+</div>
+<div class="section"
+ id="avoid-confusion-about-whether-something-is-an-instance-or-a-type">
+<h2>Avoid confusion about whether something is an instance or a type</h2>
+<span id="result_box" class="short_text" lang="ja"><span>何かが</span><span>イ
+ンスタンスまたは</span><span>タイプ</span><span>であるかどうか</span><span>について</span><span
+ class="">混乱を避けます</span></span><br>
+<p>Sets of definitions like the following are confusing:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">foo</span><span class="p">(::</span><span class="n">Type</span><span
+ class="p">{</span><span class="n">MyType</span><span class="p">})</span> <span
+ class="o">=</span> <span class="o">...</span>
+<span class="n">foo</span><span class="p">(::</span><span class="n">MyType</span><span
+ class="p">)</span> <span class="o">=</span> <span class="n">foo</span><span
+ class="p">(</span><span class="n">MyType</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>Decide whether the concept in question will be written as <code
+ class="docutils literal"><span class="pre">MyType</span></code> or
+<code class="docutils literal"><span class="pre">MyType()</span></code>,
+and stick to it.</p>
+<p>The preferred style is to use instances by default, and only add
+methods involving <code class="docutils literal"><span class="pre">Type{MyType}</span></code>
+later if they become necessary
+to solve some problem.</p>
+<p>If a type is effectively an enumeration, it should be defined as a
+single
+(ideally <code class="docutils literal"><span class="pre">immutable</span></code>)
+type, with the enumeration values being instances
+of it. Constructors and conversions can check whether values are valid.
+This design is preferred over making the enumeration an abstract type,
+with the “values” as subtypes.</p>
+</div>
+<div class="section" id="don-t-overuse-macros">
+<h2>Don’t overuse macros</h2>
+マクロを使いすぎないでください。<br>
+<p>Be aware of when a macro could really be a function instead.</p>
+<p>Calling <a class="reference internal"
+ href="../stdlib/base.html#Base.eval" title="Base.eval"><code
+ class="xref jl jl-func docutils literal"><span class="pre">eval()</span></code></a>
+inside a macro is a particularly dangerous warning sign;
+it means the macro will only work when called at the top level. If such
+a macro is written as a function instead, it will naturally have access
+to the run-time values it needs.</p>
+</div>
+<div class="section"
+ id="don-t-expose-unsafe-operations-at-the-interface-level">
+<h2>Don’t expose unsafe operations at the interface level<a
+ class="headerlink"
+ href="#don-t-expose-unsafe-operations-at-the-interface-level"
+ title="Permalink to this headline">¶</a></h2>
+<span id="result_box" class="short_text" lang="ja"><span>インターフェイスレベルで</span><span>危
+険な</span><span>操作を公開</span><span class="">しないでください</span></span><br>
+<p>If you have a type that uses a native pointer:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="k">type</span><span class="nc"> NativeType</span>
+    <span
+ class="n">p</span><span class="p">::</span><span class="n">Ptr</span><span
+ class="p">{</span><span class="n">UInt8</span><span class="p">}</span>
+    <span
+ class="o">...</span>
+<span class="k">end</span>
+</pre>
+</div>
+</div>
+<p>don’t write definitions like the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">getindex</span><span class="p">(</span><span
+ class="n">x</span><span class="p">::</span><span class="n">NativeType</span><span
+ class="p">,</span> <span class="n">i</span><span class="p">)</span> <span
+ class="o">=</span> <span class="n">unsafe_load</span><span class="p">(</span><span
+ class="n">x</span><span class="o">.</span><span class="n">p</span><span
+ class="p">,</span> <span class="n">i</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<p>The problem is that users of this type can write <code
+ class="docutils literal"><span class="pre">x[i]</span></code> without
+realizing
+that the operation is unsafe, and then be susceptible to memory bugs.</p>
+<p>Such a function should either check the operation to ensure it is
+safe, or
+have <code class="docutils literal"><span class="pre">unsafe</span></code>
+somewhere in its name to alert callers.</p>
+</div>
+<div class="section" id="don-t-overload-methods-of-base-container-types">
+<h2>Don’t overload methods of base container types</h2>
+<span id="result_box" class="short_text" lang="ja"><span>ベース</span><span>コ
+ンテナタイプ</span><span>の</span><span>メソッド</span><span>をオーバーロード</span><span
+ class="">しないでください</span></span><br>
+<p>It is possible to write definitions like the following:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">show</span><span class="p">(</span><span class="n">io</span><span
+ class="p">::</span><span class="n">IO</span><span class="p">,</span> <span
+ class="n">v</span><span class="p">::</span><span class="n">Vector</span><span
+ class="p">{</span><span class="n">MyType</span><span class="p">})</span> <span
+ class="o">=</span> <span class="o">...</span>
+</pre>
+</div>
+</div>
+<p>This would provide custom showing of vectors with a specific new
+element type.
+While tempting, this should be avoided. The trouble is that users will
+expect
+a well-known type like <code class="xref jl jl-func docutils literal"><span
+ class="pre">Vector()</span></code> to behave in a certain way, and
+overly
+customizing its behavior can make it harder to work with.</p>
+</div>
+<div class="section" id="be-careful-with-type-equality">
+<h2>Be careful with type equality</h2>
+<span id="result_box" class="short_text" lang="ja"><span>型</span><span>平
+等</span><span class="">に注意してください</span></span><br>
+<p>You generally want to use <a class="reference internal"
+ href="../stdlib/base.html#Base.isa" title="Base.isa"><code
+ class="xref jl jl-func docutils literal"><span class="pre">isa()</span></code></a>
+and <code class="docutils literal"><span class="pre">&lt;:</span></code>
+(<a class="reference internal" href="../stdlib/base.html#Base.issubtype"
+ title="Base.issubtype"><code class="xref jl jl-func docutils literal"><span
+ class="pre">issubtype()</span></code></a>) for testing types,
+not <code class="docutils literal"><span class="pre">==</span></code>.
+Checking types for exact equality typically only makes sense
+when comparing to a known concrete type (e.g. <code
+ class="docutils literal"><span class="pre">T</span> <span class="pre">==</span>
+<span class="pre">Float64</span></code>), or if you
+<em>really, really</em> know what you’re doing.</p>
+</div>
+<div class="section" id="do-not-write-x-f-x">
+<h2>Do not write <code class="docutils literal"><span class="pre">x-&gt;f(x)</span></code></h2>
+<div id="gt-src-c" class="g-unit">
+<div id="gt-src-p"> </div>
+</div>
+<div dir="ltr" style=""><span id="result_box" class="short_text"
+ lang="ja"><span class="hps">書かないでx-&gt;f(x)</span></span></div>
+<p>Since higher-order functions are often called with anonymous
+functions, it
+is easy to conclude that this is desirable or even necessary.
+But any function can be passed directly, without being “wrapped” in an
+anonymous function. Instead of writing <code class="docutils literal"><span
+ class="pre">map(x-&gt;f(x),</span> <span class="pre">a)</span></code>,
+write
+<a class="reference internal" href="../stdlib/collections.html#Base.map"
+ title="Base.map"><code class="xref jl jl-func docutils literal"><span
+ class="pre">map(f,</span> <span class="pre">a)</span></code></a>.</p>
+</div>
+<div class="section"
+ id="avoid-using-floats-for-numeric-literals-in-generic-code-when-possible">
+<h2>Avoid using floats for numeric literals in generic code when
+possible</h2>
+<span id="result_box" class="short_text" lang="ja"><span>可能な場合は</span><span
+ class="">汎用コード</span><span>で</span><span>数値リテラル</span><span>のための</span><span
+ class="">フロート</span><span>を</span><span class="">使用しないでください</span></span><br>
+<p>If you write generic code which handles numbers, and which can be
+expected to
+run with many different numeric type arguments, try using literals of a
+numeric
+type that will affect the arguments as little as possible through
+promotion.</p>
+<p>For example,</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">f</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mf">2.0</span> <span
+ class="o">*</span> <span class="n">x</span>
+<span class="n">f</span> <span class="p">(</span><span class="n">generic</span> <span
+ class="k">function</span><span class="nf"> with</span> <span class="mi">1</span> <span
+ class="n">method</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">f</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">f</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">/</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">f</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="mf">2.0</span>
+</pre>
+</div>
+</div>
+<p>while</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">g</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mi">2</span> <span
+ class="o">*</span> <span class="n">x</span>
+<span class="n">g</span> <span class="p">(</span><span class="n">generic</span> <span
+ class="k">function</span><span class="nf"> with</span> <span class="mi">1</span> <span
+ class="n">method</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">g</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">g</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">/</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">g</span><span
+ class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="mi">4</span>
+</pre>
+</div>
+</div>
+<p>As you can see, the second version, where we used an <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Int</span></code>
+literal, preserved
+the type of the input argument, while the first didn’t. This is because
+e.g.
+<code class="docutils literal"><span class="pre">promote_type(Int,</span>
+<span class="pre">Float64)</span> <span class="pre">==</span> <span
+ class="pre">Float64</span></code>, and promotion happens with the
+multiplication. Similarly, <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Rational</span></code>
+literals are less type disruptive than
+<a class="reference internal" href="../stdlib/numbers.html#Base.Float64"
+ title="Base.Float64"><code class="xref jl jl-obj docutils literal"><span
+ class="pre">Float64</span></code></a> literals, but more disruptive
+than <code class="xref jl jl-obj docutils literal"><span class="pre">Int</span></code>s:</p>
+<div class="highlight-julia">
+<div class="highlight">
+<pre><span class="n">julia</span><span class="o">&gt;</span> <span
+ class="n">h</span><span class="p">(</span><span class="n">x</span><span
+ class="p">)</span> <span class="o">=</span> <span class="mi">2</span><span
+ class="o">//</span><span class="mi">1</span> <span class="o">*</span> <span
+ class="n">x</span>
+<span class="n">h</span> <span class="p">(</span><span class="n">generic</span> <span
+ class="k">function</span><span class="nf"> with</span> <span class="mi">1</span> <span
+ class="n">method</span><span class="p">)</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">h</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">//</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">//</span><span class="mi">1</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">h</span><span
+ class="p">(</span><span class="mi">1</span><span class="o">/</span><span
+ class="mi">2</span><span class="p">)</span>
+<span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">h</span><span
+ class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">1</span>
+</pre>
+</div>
+</div>
+<p>Thus, use <code class="xref jl jl-obj docutils literal"><span
+ class="pre">Int</span></code> literals when possible, with <code
+ class="xref jl jl-obj docutils literal"><span class="pre">Rational{Int}</span></code>
+for literal
+non-integer numbers, in order to make it easier to use your code.</p>
+</div>
+</div>
+</div>
+<footer> </footer><a href="https://readthedocs.org"></a> </div>
+</div>
+</div>
+<script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/underscore.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+<script type="text/javascript"
+ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="../_static/js/theme.js"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+</body>
+</html>
